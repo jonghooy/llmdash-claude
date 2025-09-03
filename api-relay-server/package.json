@@ -26,13 +26,13 @@
     "eventsource-parser": "^3.0.6",
     "express": "^4.21.2",
     "morgan": "^1.10.1",
-    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.23",
-    "@types/morgan": "^1.9.10"
+    "@types/morgan": "^1.9.10",
+    "nodemon": "^3.1.10"
   }
 }

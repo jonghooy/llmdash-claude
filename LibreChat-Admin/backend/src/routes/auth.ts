@@ -1,40 +1,65 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { AdminUser } from '../models/AdminUser';
 
 const router = Router();
 
 // Login endpoint
 router.post('/login', async (req, res) => {
   try {
+    console.log('Login attempt received:', { email: req.body.email });
     const { email, password } = req.body;
     
-    // Check admin credentials - simple comparison for now
-    if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-      const token = jwt.sign(
-        { 
-          id: 'admin',
-          email: process.env.ADMIN_EMAIL,
-          role: 'admin'
-        },
-        process.env.JWT_SECRET!,
-        { expiresIn: '1h' }
-      );
-      
-      return res.json({
-        success: true,
-        token,
-        user: {
-          id: 'admin',
-          email: process.env.ADMIN_EMAIL,
-          username: process.env.ADMIN_USERNAME,
-          role: 'admin'
-        }
-      });
+    if (!email || !password) {
+      console.log('Missing email or password');
+      return res.status(400).json({ error: 'Email and password are required' });
     }
     
-    res.status(401).json({ error: 'Invalid credentials' });
+    // Find admin user in database
+    const adminUser = await AdminUser.findOne({ email: email.toLowerCase() });
+    console.log('Admin user found:', adminUser ? 'Yes' : 'No');
+    
+    if (!adminUser || !adminUser.isActive) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Check password
+    const isValidPassword = await bcrypt.compare(password, adminUser.password);
+    console.log('Password validation:', isValidPassword ? 'Success' : 'Failed');
+    
+    if (!isValidPassword) {
+      console.log('Password mismatch for user:', email);
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Update last login
+    adminUser.lastLogin = new Date();
+    await adminUser.save();
+    
+    // Generate token
+    const token = jwt.sign(
+      { 
+        id: adminUser._id.toString(),
+        email: adminUser.email,
+        role: adminUser.role
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: '24h' }
+    );
+    
+    return res.json({
+      success: true,
+      token,
+      user: {
+        id: adminUser._id.toString(),
+        email: adminUser.email,
+        name: adminUser.name,
+        role: adminUser.role
+      }
+    });
   } catch (error: any) {
+    console.error('Login error:', error);
     res.status(500).json({ error: error.message });
   }
 });

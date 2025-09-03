@@ -918,48 +918,11 @@ export const alternateName = {
 };
 
 const sharedOpenAIModels = [
-  'gpt-4o-mini',
-  'gpt-4o',
-  'gpt-4.5-preview',
-  'gpt-4.5-preview-2025-02-27',
-  'gpt-3.5-turbo',
-  'gpt-3.5-turbo-0125',
-  'gpt-4-turbo',
-  'gpt-4-turbo-2024-04-09',
-  'gpt-4-0125-preview',
-  'gpt-4-turbo-preview',
-  'gpt-4-1106-preview',
-  'gpt-3.5-turbo-1106',
-  'gpt-3.5-turbo-16k-0613',
-  'gpt-3.5-turbo-16k',
-  'gpt-4',
-  'gpt-4-0314',
-  'gpt-4-32k-0314',
-  'gpt-4-0613',
-  'gpt-3.5-turbo-0613',
+  'gpt-5',
 ];
 
 const sharedAnthropicModels = [
   'claude-sonnet-4-20250514',
-  'claude-sonnet-4-latest',
-  'claude-opus-4-20250514',
-  'claude-opus-4-latest',
-  'claude-3-7-sonnet-latest',
-  'claude-3-7-sonnet-20250219',
-  'claude-3-5-haiku-20241022',
-  'claude-3-5-sonnet-20241022',
-  'claude-3-5-sonnet-20240620',
-  'claude-3-5-sonnet-latest',
-  'claude-3-opus-20240229',
-  'claude-3-sonnet-20240229',
-  'claude-3-haiku-20240307',
-  'claude-2.1',
-  'claude-2',
-  'claude-1.2',
-  'claude-1',
-  'claude-1-100k',
-  'claude-instant-1',
-  'claude-instant-1-100k',
 ];
 
 export const bedrockModels = [
@@ -1015,13 +978,7 @@ export const defaultModels = {
     'gemini-1.0-pro-001',
   ],
   [EModelEndpoint.anthropic]: sharedAnthropicModels,
-  [EModelEndpoint.openAI]: [
-    ...sharedOpenAIModels,
-    'chatgpt-4o-latest',
-    'gpt-4-vision-preview',
-    'gpt-3.5-turbo-instruct-0914',
-    'gpt-3.5-turbo-instruct',
-  ],
+  [EModelEndpoint.openAI]: sharedOpenAIModels,
   [EModelEndpoint.bedrock]: bedrockModels,
 };
 

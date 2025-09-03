@@ -1,6 +1,5 @@
 const cookies = require('cookie');
 const jwt = require('jsonwebtoken');
-const openIdClient = require('openid-client');
 const { isEnabled } = require('@librechat/api');
 const { logger } = require('@librechat/data-schemas');
 const {
@@ -69,7 +68,8 @@ const refreshController = async (req, res) => {
   if (token_provider === 'openid' && isEnabled(process.env.OPENID_REUSE_TOKENS) === true) {
     try {
       const openIdConfig = getOpenIdConfig();
-      const tokenset = await openIdClient.refreshTokenGrant(openIdConfig, refreshToken);
+      const client = new openIdConfig.Client(openIdConfig.metadata);
+      const tokenset = await client.refresh(refreshToken);
       const claims = tokenset.claims();
       const user = await findUser({ email: claims.email });
       if (!user) {

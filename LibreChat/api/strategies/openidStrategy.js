@@ -1,12 +1,11 @@
 const undici = require('undici');
 const fetch = require('node-fetch');
 const passport = require('passport');
-const client = require('openid-client');
+const { Issuer, Strategy: OpenIDStrategy, generators, custom } = require('openid-client');
 const jwtDecode = require('jsonwebtoken/decode');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 const { hashToken, logger } = require('@librechat/data-schemas');
 const { CacheKeys, ErrorTypes } = require('librechat-data-provider');
-const { Strategy: OpenIDStrategy } = require('openid-client/passport');
 const {
   isEnabled,
   logHeaders,
@@ -150,15 +149,13 @@ const exchangeAccessTokenIfNeeded = async (config, accessToken, sub, fromCache =
         return cachedToken.access_token;
       }
     }
-    const grantResponse = await client.genericGrantRequest(
-      config,
-      'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      {
-        scope: process.env.OPENID_ON_BEHALF_FLOW_USERINFO_SCOPE || 'user.read',
-        assertion: accessToken,
-        requested_token_use: 'on_behalf_of',
-      },
-    );
+    const client = new config.Client(config.metadata);
+    const grantResponse = await client.grant({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      scope: process.env.OPENID_ON_BEHALF_FLOW_USERINFO_SCOPE || 'user.read',
+      assertion: accessToken,
+      requested_token_use: 'on_behalf_of',
+    });
     await tokensCache.set(
       sub,
       {
@@ -181,7 +178,8 @@ const exchangeAccessTokenIfNeeded = async (config, accessToken, sub, fromCache =
 const getUserInfo = async (config, accessToken, sub) => {
   try {
     const exchangedAccessToken = await exchangeAccessTokenIfNeeded(config, accessToken, sub);
-    return await client.fetchUserInfo(config, exchangedAccessToken, sub);
+    const client = new config.Client(config.metadata);
+    return await client.userinfo(exchangedAccessToken);
   } catch (error) {
     logger.warn(`[openidStrategy] getUserInfo: Error fetching user info: ${error}`);
     return null;
@@ -307,15 +305,12 @@ async function setupOpenId() {
     }
 
     /** @type {Configuration} */
-    openidConfig = await client.discovery(
-      new URL(process.env.OPENID_ISSUER),
-      process.env.OPENID_CLIENT_ID,
-      clientMetadata,
-      undefined,
-      {
-        [client.customFetch]: customFetch,
-      },
-    );
+    const issuer = await Issuer.discover(process.env.OPENID_ISSUER, {
+      [custom.http_options]: customFetch,
+    });
+    openidConfig = new issuer.Client(clientMetadata);
+    openidConfig.metadata = clientMetadata;
+    openidConfig.issuer = issuer;
 
     const requiredRole = process.env.OPENID_REQUIRED_ROLE;
     const requiredRoleParameterPath = process.env.OPENID_REQUIRED_ROLE_PARAMETER_PATH;
@@ -330,11 +325,10 @@ async function setupOpenId() {
 
     const openidLogin = new CustomOpenIDStrategy(
       {
-        config: openidConfig,
-        scope: process.env.OPENID_SCOPE,
-        callbackURL: process.env.DOMAIN_SERVER + process.env.OPENID_CALLBACK_URL,
-        clockTolerance: process.env.OPENID_CLOCK_TOLERANCE || 300,
-        usePKCE,
+        client: openidConfig,
+        params: {
+          scope: process.env.OPENID_SCOPE,
+        },
       },
       async (tokenset, done) => {
         try {

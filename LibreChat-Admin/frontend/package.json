@@ -22,7 +22,14 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "serve": "npm install -g serve && serve -s dist -l 3092",
+    "pm2:start": "pm2 start ecosystem.config.js --env production",
+    "pm2:start:dev": "pm2 start ecosystem.config.js --env development",
+    "pm2:stop": "pm2 stop librechat-admin-frontend",
+    "pm2:restart": "pm2 restart librechat-admin-frontend",
+    "pm2:logs": "pm2 logs librechat-admin-frontend",
+    "pm2:status": "pm2 status librechat-admin-frontend"
   },
   "devDependencies": {
     "@types/react": "^18.2.0",
