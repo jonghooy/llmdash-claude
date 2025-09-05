@@ -4,6 +4,7 @@ const { sleep } = require('@librechat/agents');
 const { isEnabled } = require('@librechat/api');
 const { logger } = require('@librechat/data-schemas');
 const { CacheKeys, EModelEndpoint } = require('librechat-data-provider');
+const { invalidateCache } = require('~/server/middleware/cache');
 const {
   createImportLimiters,
   createForkLimiters,
@@ -91,7 +92,7 @@ router.post('/gen_title', async (req, res) => {
   }
 });
 
-router.delete('/', async (req, res) => {
+router.delete('/', invalidateCache('convos'), async (req, res) => {
   let filter = {};
   const { conversationId, source, thread_id, endpoint } = req.body.arg;
 
