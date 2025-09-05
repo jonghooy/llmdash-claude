@@ -83,9 +83,10 @@ const startServer = async () => {
     console.warn('Response compression has been disabled via DISABLE_COMPRESSION.');
   }
 
-  app.use(staticCache(appConfig.paths.dist));
-  app.use(staticCache(appConfig.paths.fonts));
-  app.use(staticCache(appConfig.paths.assets));
+  // Serve static files under /chat path
+  app.use('/chat', staticCache(appConfig.paths.dist));
+  app.use('/chat', staticCache(appConfig.paths.fonts));
+  app.use('/chat', staticCache(appConfig.paths.assets));
 
   if (!ALLOW_SOCIAL_LOGIN) {
     console.warn('Social logins are disabled. Set ALLOW_SOCIAL_LOGIN=true to enable them.');
@@ -143,19 +144,35 @@ const startServer = async () => {
 
   app.use(ErrorController);
 
+  // Catch-all handler for /chat routes (excluding assets and API)
   app.use((req, res) => {
-    res.set({
-      'Cache-Control': process.env.INDEX_CACHE_CONTROL || 'no-cache, no-store, must-revalidate',
-      Pragma: process.env.INDEX_PRAGMA || 'no-cache',
-      Expires: process.env.INDEX_EXPIRES || '0',
-    });
+    // Don't serve index.html for API requests
+    if (req.path.startsWith('/api/')) {
+      return res.status(404).json({ message: 'Not Found' });
+    }
+    
+    // Don't serve index.html for asset requests
+    if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|webmanifest|json)$/)) {
+      return res.status(404).send('Not Found');
+    }
+    
+    // Only serve index.html for /chat routes
+    if (req.path.startsWith('/chat') || req.path === '/') {
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+        Expires: '0',
+      });
 
-    const lang = req.cookies.lang || req.headers['accept-language']?.split(',')[0] || 'en-US';
-    const saneLang = lang.replace(/"/g, '&quot;');
-    let updatedIndexHtml = indexHTML.replace(/lang="en-US"/g, `lang="${saneLang}"`);
+      const lang = req.cookies.lang || req.headers['accept-language']?.split(',')[0] || 'en-US';
+      const saneLang = lang.replace(/"/g, '&quot;');
+      let updatedIndexHtml = indexHTML.replace(/lang="en-US"/g, `lang="${saneLang}"`);
 
-    res.type('html');
-    res.send(updatedIndexHtml);
+      res.type('html');
+      res.send(updatedIndexHtml);
+    } else {
+      res.status(404).send('Not Found');
+    }
   });
 
   app.listen(port, host, () => {

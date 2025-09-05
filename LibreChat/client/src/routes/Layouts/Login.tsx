@@ -7,6 +7,7 @@ import store from '~/store';
 export default function LoginLayout() {
   const { isAuthenticated } = useAuthContext();
   const [queriesEnabled, setQueriesEnabled] = useRecoilState<boolean>(store.queriesEnabled);
+  
   useEffect(() => {
     if (queriesEnabled) {
       return;
@@ -19,5 +20,7 @@ export default function LoginLayout() {
       clearTimeout(timeout);
     };
   }, [queriesEnabled, setQueriesEnabled]);
-  return <StartupLayout isAuthenticated={isAuthenticated} />;
+  // Don't pass isAuthenticated to StartupLayout for login pages
+  // This prevents redirect loops on auth pages
+  return <StartupLayout isAuthenticated={false} />;
 }

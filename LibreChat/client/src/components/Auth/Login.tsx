@@ -91,20 +91,20 @@ function Login() {
   return (
     <>
       {error != null && <ErrorMessage>{localize(getLoginError(error))}</ErrorMessage>}
-      {startupConfig?.emailLoginEnabled === true && (
+      {startupConfig?.emailLoginEnabled === true ? (
         <LoginForm
           onSubmit={login}
           startupConfig={startupConfig}
           error={error}
           setError={setError}
         />
-      )}
+      ) : null}
       {startupConfig?.registrationEnabled === true && (
         <p className="my-4 text-center text-sm font-light text-gray-700 dark:text-white">
           {' '}
           {localize('com_auth_no_account')}{' '}
           <a
-            href="/register"
+            href="/chat/register"
             className="inline-flex p-1 text-sm font-medium text-green-600 transition-colors hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
           >
             {localize('com_auth_sign_up')}

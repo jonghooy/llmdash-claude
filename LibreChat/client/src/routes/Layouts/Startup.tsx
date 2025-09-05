@@ -11,6 +11,11 @@ const headerMap: Record<string, TranslationKeys> = {
   '/forgot-password': 'com_auth_reset_password',
   '/reset-password': 'com_auth_reset_password',
   '/login/2fa': 'com_auth_verify_your_identity',
+  '/chat/login': 'com_auth_welcome_back',
+  '/chat/register': 'com_auth_create_account',
+  '/chat/forgot-password': 'com_auth_reset_password',
+  '/chat/reset-password': 'com_auth_reset_password',
+  '/chat/login/2fa': 'com_auth_verify_your_identity',
 };
 
 export default function StartupLayout({ isAuthenticated }: { isAuthenticated?: boolean }) {
@@ -29,13 +34,19 @@ export default function StartupLayout({ isAuthenticated }: { isAuthenticated?: b
   const location = useLocation();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    // Don't redirect if we're on an auth page
+    const isAuthPage = location.pathname.includes('/login') || 
+                       location.pathname.includes('/register') || 
+                       location.pathname.includes('/forgot-password') || 
+                       location.pathname.includes('/reset-password');
+    
+    if (isAuthenticated && !isAuthPage) {
       navigate('/c/new', { replace: true });
     }
     if (data) {
       setStartupConfig(data);
     }
-  }, [isAuthenticated, navigate, data]);
+  }, [isAuthenticated, navigate, data, location.pathname]);
 
   useEffect(() => {
     document.title = startupConfig?.appTitle || 'LibreChat';
