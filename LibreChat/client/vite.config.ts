@@ -10,9 +10,18 @@ import { VitePWA } from 'vite-plugin-pwa';
 export default defineConfig(({ command }) => ({
   base: '',
   server: {
-    host: 'localhost',
+    host: true,
     port: 3090,
     strictPort: false,
+    allowedHosts: [
+      'localhost',
+      'www.llmdash.com',
+      'llmdash.com',
+      '.llmdash.com'
+    ],
+    hmr: {
+      host: 'localhost'
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3080',

@@ -46,7 +46,7 @@ const Settings: React.FC = () => {
     queryKey: ['settings'],
     queryFn: async () => {
       const token = localStorage.getItem('admin_token');
-      const response = await axios.get('http://localhost:5001/api/settings', {
+      const response = await axios.get('/admin/api/settings', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -60,7 +60,7 @@ const Settings: React.FC = () => {
     mutationFn: async (updatedSettings: Settings) => {
       const token = localStorage.getItem('admin_token');
       await axios.put(
-        'http://localhost:5001/api/settings',
+        '/admin/api/settings',
         updatedSettings,
         {
           headers: {

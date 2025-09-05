@@ -47,11 +47,11 @@ export function BrowserTTS({
     }
   }, [audioRef, isSpeaking, playbackRate, messageId]);
 
-  logger.log(
-    'MessageAudio: audioRef.current?.src, audioRef.current',
-    audioRef.current?.src,
-    audioRef.current,
-  );
+  // logger.log(
+  //   'MessageAudio: audioRef.current?.src, audioRef.current',
+  //   audioRef.current?.src,
+  //   audioRef.current,
+  // );
 
   const handleClick = () => {
     if (audioRef.current) {
@@ -89,7 +89,7 @@ export function BrowserTTS({
           height: '0px',
           width: '0px',
         }}
-        src={audioRef.current?.src}
+        src={undefined}
         onError={(error) => {
           logger.error('Error fetching audio:', error);
         }}
@@ -140,11 +140,11 @@ export function ExternalTTS({
     }
   }, [audioRef, isSpeaking, playbackRate, messageId]);
 
-  logger.log(
-    'MessageAudio: audioRef.current?.src, audioRef.current',
-    audioRef.current?.src,
-    audioRef.current,
-  );
+  // logger.log(
+  //   'MessageAudio: audioRef.current?.src, audioRef.current',
+  //   audioRef.current?.src,
+  //   audioRef.current,
+  // );
 
   return (
     <>
@@ -187,7 +187,7 @@ export function ExternalTTS({
           height: '0px',
           width: '0px',
         }}
-        src={audioRef.current?.src}
+        src={undefined}
         onError={(error) => {
           logger.error('Error fetching audio:', error);
         }}

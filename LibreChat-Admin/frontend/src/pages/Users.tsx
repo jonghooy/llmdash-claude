@@ -48,7 +48,7 @@ const Users: React.FC = () => {
     queryKey: ['users', page, rowsPerPage, searchTerm],
     queryFn: async () => {
       const token = localStorage.getItem('admin_token');
-      const response = await axios.get('http://localhost:5001/api/users', {
+      const response = await axios.get('/admin/api/users', {
         params: {
           page: page + 1,
           limit: rowsPerPage,
@@ -66,7 +66,7 @@ const Users: React.FC = () => {
     mutationFn: async ({ userId, status }: { userId: string; status: string }) => {
       const token = localStorage.getItem('admin_token');
       await axios.put(
-        `http://localhost:5001/api/users/${userId}/status`,
+        `/admin/api/users/${userId}/status`,
         { status },
         {
           headers: {

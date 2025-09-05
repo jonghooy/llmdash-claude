@@ -70,7 +70,7 @@ const Usage: React.FC = () => {
     queryKey: ['usage', timeRange],
     queryFn: async () => {
       const token = localStorage.getItem('admin_token');
-      const response = await axios.get('http://localhost:5001/api/usage/stats', {
+      const response = await axios.get('/admin/api/usage/stats', {
         params: { range: timeRange },
         headers: {
           Authorization: `Bearer ${token}`

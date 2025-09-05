@@ -40,7 +40,7 @@ const Dashboard: React.FC = () => {
     queryKey: ['dashboard'],
     queryFn: async () => {
       const token = localStorage.getItem('admin_token');
-      const response = await axios.get('http://localhost:5001/api/dashboard/overview', {
+      const response = await axios.get('/admin/api/dashboard/overview', {
         headers: {
           Authorization: `Bearer ${token}`
         }
