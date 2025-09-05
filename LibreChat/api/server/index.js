@@ -70,6 +70,14 @@ const startServer = async () => {
   app.get('/health', (_req, res) => res.status(200).send('OK'));
 
   /* Middleware */
+  // Simple performance monitoring
+  const simplePerformanceMonitor = require('./middleware/simplePerformance');
+  app.use(simplePerformanceMonitor());
+  
+  // SSE optimization
+  const sseOptimizer = require('./middleware/sseOptimizer');
+  app.use(sseOptimizer());
+  
   app.use(noIndex);
   app.use(express.json({ limit: '3mb' }));
   app.use(express.urlencoded({ extended: true, limit: '3mb' }));
@@ -78,7 +86,18 @@ const startServer = async () => {
   app.use(cookieParser());
 
   if (!isEnabled(DISABLE_COMPRESSION)) {
-    app.use(compression());
+    app.use(compression({
+      threshold: 1024, // Only compress responses larger than 1KB
+      level: 6, // Balanced compression level (1-9, default is 6)
+      filter: (req, res) => {
+        // Don't compress SSE streams
+        if (res.getHeader('Content-Type') === 'text/event-stream') {
+          return false;
+        }
+        // Use default filter for other responses
+        return compression.filter(req, res);
+      }
+    }));
   } else {
     console.warn('Response compression has been disabled via DISABLE_COMPRESSION.');
   }
