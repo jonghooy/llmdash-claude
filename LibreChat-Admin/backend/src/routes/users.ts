@@ -17,14 +17,26 @@ router.get('/', async (req, res) => {
       status = 'all'
     } = req.query;
     
-    const query: any = {};
+    const query: any = {
+      // Exclude pending users - they should only appear in Approvals page
+      $or: [
+        { approvalStatus: 'approved' },
+        { approvalStatus: { $exists: false }, role: { $in: ['ADMIN', 'admin'] } } // Admin users without approvalStatus
+      ]
+    };
     
     if (search) {
-      query.$or = [
-        { username: new RegExp(String(search), 'i') },
-        { email: new RegExp(String(search), 'i') },
-        { name: new RegExp(String(search), 'i') }
+      query.$and = [
+        query.$or,
+        {
+          $or: [
+            { username: new RegExp(String(search), 'i') },
+            { email: new RegExp(String(search), 'i') },
+            { name: new RegExp(String(search), 'i') }
+          ]
+        }
       ];
+      delete query.$or;
     }
     
     if (status === 'active') {
@@ -78,6 +90,12 @@ router.get('/', async (req, res) => {
         _id: user._id,
         username: user.username || user.name || 'Unknown',
         email: user.email,
+        name: user.name,
+        role: user.role || 'USER',
+        division: user.division,
+        team: user.team,
+        position: user.position,
+        approvalStatus: user.approvalStatus,
         createdAt: user.createdAt || new Date(),
         status: user.isActive === false ? 'suspended' : 'active',
         messageCount: stats.messageCount,
@@ -163,12 +181,63 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
-// Update user status
-router.patch('/:userId/status', async (req, res) => {
+// Update user
+router.put('/:userId', async (req, res) => {
   try {
     const db = mongoose.connection.db;
     const { userId } = req.params;
-    const { isActive, reason } = req.body;
+    const { 
+      name, 
+      username, 
+      email, 
+      role, 
+      division, 
+      team, 
+      position, 
+      approvalStatus 
+    } = req.body;
+    
+    const usersCollection = db.collection('users');
+    
+    const updateData: any = {
+      updatedAt: new Date()
+    };
+    
+    // Only update fields that are provided
+    if (name !== undefined) updateData.name = name;
+    if (username !== undefined) updateData.username = username;
+    if (email !== undefined) updateData.email = email;
+    if (role !== undefined) updateData.role = role;
+    if (division !== undefined) updateData.division = division;
+    if (team !== undefined) updateData.team = team;
+    if (position !== undefined) updateData.position = position;
+    if (approvalStatus !== undefined) updateData.approvalStatus = approvalStatus;
+    
+    const result = await usersCollection.updateOne(
+      { _id: new mongoose.Types.ObjectId(userId) },
+      { $set: updateData }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ 
+      success: true,
+      message: 'User updated successfully'
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update user status
+router.put('/:userId/status', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const { userId } = req.params;
+    const { status } = req.body;
+    const isActive = status === 'active';
     
     const usersCollection = db.collection('users');
     
@@ -177,8 +246,8 @@ router.patch('/:userId/status', async (req, res) => {
       updatedAt: new Date()
     };
     
-    if (!isActive && reason) {
-      updateData.suspendReason = reason;
+    if (!isActive && req.body.reason) {
+      updateData.suspendReason = req.body.reason;
       updateData.suspendedAt = new Date();
     } else if (isActive) {
       updateData.suspendReason = null;
@@ -286,21 +355,24 @@ router.post('/:userId/reset-password', async (req, res) => {
   }
 });
 
-// Delete user (soft delete)
-router.delete('/:userId', async (req, res) => {
+// Soft delete user (deactivate)
+router.delete('/:userId/soft', async (req, res) => {
   try {
     const db = mongoose.connection.db;
     const { userId } = req.params;
     
     const usersCollection = db.collection('users');
     
+    // Update user to soft deleted state
     const result = await usersCollection.updateOne(
       { _id: new mongoose.Types.ObjectId(userId) },
       { 
         $set: { 
           isDeleted: true,
           deletedAt: new Date(),
-          isActive: false
+          isActive: false,
+          deletedBy: (req as any).user?.id || 'admin',
+          updatedAt: new Date()
         }
       }
     );
@@ -309,9 +381,77 @@ router.delete('/:userId', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
+    // Invalidate all user sessions
+    const sessionsCollection = db.collection('sessions');
+    await sessionsCollection.deleteMany({ userId: userId });
+    
     res.json({ 
       success: true,
-      message: 'User deleted successfully'
+      message: 'User deactivated successfully (soft delete)'
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Hard delete user (permanent deletion with all data) - ADMIN ONLY
+router.delete('/:userId/hard', async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const { userId } = req.params;
+    const { confirmPhrase } = req.body;
+    
+    // Require confirmation phrase for hard delete
+    if (confirmPhrase !== 'PERMANENTLY DELETE USER') {
+      return res.status(400).json({ 
+        error: 'Confirmation phrase required. Please type: PERMANENTLY DELETE USER' 
+      });
+    }
+    
+    const usersCollection = db.collection('users');
+    
+    // First check if user exists
+    const user = await usersCollection.findOne(
+      { _id: new mongoose.Types.ObjectId(userId) }
+    );
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Delete only core user data (conversations and messages)
+    const conversationsCollection = db.collection('conversations');
+    const messagesCollection = db.collection('messages');
+    
+    // Delete only conversations and messages
+    await conversationsCollection.deleteMany({ user: userId });
+    await messagesCollection.deleteMany({ user: userId });
+    
+    // Note: Keeping files, transactions, sessions, agents, and projects for audit/recovery purposes
+    
+    // Delete the user
+    const result = await usersCollection.deleteOne(
+      { _id: new mongoose.Types.ObjectId(userId) }
+    );
+    
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'User delete failed' });
+    }
+    
+    res.json({ 
+      success: true,
+      message: 'User account and chat history permanently deleted',
+      deletedData: {
+        user: user.email,
+        conversations: 'All conversations deleted',
+        messages: 'All messages deleted'
+      },
+      retained: {
+        files: 'Files retained for recovery',
+        transactions: 'Transaction records retained for audit',
+        agents: 'AI agents retained',
+        projects: 'Projects retained'
+      }
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

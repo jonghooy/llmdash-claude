@@ -5,7 +5,6 @@ import {
   IconButton,
   Typography,
   Box,
-  Avatar,
   Menu,
   MenuItem
 } from '@mui/material';

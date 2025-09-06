@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   Container, 
   Paper, 
@@ -13,7 +12,6 @@ import { useAuthStore } from '../stores/authStore';
 import axios from 'axios';
 
 const Login: React.FC = () => {
-  const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,7 +32,7 @@ const Login: React.FC = () => {
       if (response.data.success) {
         login(response.data.token, response.data.user);
         // Force a page reload to ensure App component re-renders
-        window.location.href = '/';
+        window.location.href = '/admin';
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');

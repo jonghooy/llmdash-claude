@@ -70,13 +70,20 @@ const startServer = async () => {
   app.get('/health', (_req, res) => res.status(200).send('OK'));
 
   /* Middleware */
+  // Resource hints for performance
+  const resourceHints = require('./middleware/resourceHints');
+  app.use(resourceHints());
+  
   // Simple performance monitoring
   const simplePerformanceMonitor = require('./middleware/simplePerformance');
   app.use(simplePerformanceMonitor());
   
-  // SSE optimization
-  const sseOptimizer = require('./middleware/sseOptimizer');
-  app.use(sseOptimizer());
+  // Advanced streaming optimization
+  const streamOptimizer = require('./middleware/streamOptimizer');
+  app.use(streamOptimizer({
+    bufferSize: 4096,     // 4KB buffer before flushing
+    flushInterval: 25     // Flush every 25ms for smoother streaming
+  }));
   
   app.use(noIndex);
   app.use(express.json({ limit: '3mb' }));
@@ -160,6 +167,7 @@ const startServer = async () => {
 
   app.use('/api/tags', routes.tags);
   app.use('/api/mcp', routes.mcp);
+  app.use('/api/organization', routes.organizationAuth);
   app.use('/api/cache', require('./routes/cacheStats'));
 
   app.use(ErrorController);

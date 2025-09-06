@@ -16,6 +16,7 @@ import dashboardRoutes from './routes/dashboard';
 import usersRoutes from './routes/users';
 import usageRoutes from './routes/usage';
 import settingsRoutes from './routes/settings';
+import approvalRoutes from './routes/approval';
 
 // Import middleware
 import { authMiddleware } from './middleware/auth';
@@ -95,6 +96,7 @@ app.use('/api/dashboard', authMiddleware, dashboardRoutes);
 app.use('/api/users', authMiddleware, usersRoutes);
 app.use('/api/usage', authMiddleware, usageRoutes);
 app.use('/api/settings', authMiddleware, settingsRoutes);
+app.use('/api/approval', approvalRoutes);
 
 // Proxy to LibreChat API
 app.use('/api/librechat', authMiddleware, createProxyMiddleware({

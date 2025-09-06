@@ -118,7 +118,7 @@ const Settings: React.FC = () => {
           variant="contained"
           startIcon={<Save />}
           onClick={handleSave}
-          disabled={updateSettings.isLoading}
+          disabled={updateSettings.isPending}
         >
           Save Changes
         </Button>

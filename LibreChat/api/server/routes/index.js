@@ -27,9 +27,11 @@ const edit = require('./edit');
 const keys = require('./keys');
 const user = require('./user');
 const mcp = require('./mcp');
+const organizationAuth = require('./organizationAuth');
 
 module.exports = {
   mcp,
+  organizationAuth,
   edit,
   auth,
   keys,

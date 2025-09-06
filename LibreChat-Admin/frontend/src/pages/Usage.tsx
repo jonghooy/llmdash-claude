@@ -66,7 +66,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 const Usage: React.FC = () => {
   const [timeRange, setTimeRange] = useState('7d');
 
-  const { data, isLoading } = useQuery<UsageData>({
+  const { data } = useQuery<UsageData>({
     queryKey: ['usage', timeRange],
     queryFn: async () => {
       const token = localStorage.getItem('admin_token');

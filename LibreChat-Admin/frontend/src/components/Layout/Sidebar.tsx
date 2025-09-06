@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Drawer,
   List,
@@ -16,7 +17,8 @@ import {
   People,
   BarChart,
   Settings,
-  Logout
+  Logout,
+  HowToReg
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -28,14 +30,26 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
 
   const menuItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/' },
-    { text: 'Users', icon: <People />, path: '/users' },
-    { text: 'Usage', icon: <BarChart />, path: '/usage' },
-    { text: 'Settings', icon: <Settings />, path: '/settings' },
+    { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
+    { text: 'Users', icon: <People />, path: '/users', queryKey: ['users'] },
+    { text: 'Approvals', icon: <HowToReg />, path: '/approvals', queryKey: ['pendingUsers', 'approvalStats'] },
+    { text: 'Usage', icon: <BarChart />, path: '/usage', queryKey: ['usage'] },
+    { text: 'Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },
   ];
+
+  const handleNavigation = (path: string, queryKeys?: string[]) => {
+    // Invalidate queries to force refresh
+    if (queryKeys) {
+      queryKeys.forEach(key => {
+        queryClient.invalidateQueries({ queryKey: [key] });
+      });
+    }
+    navigate(path);
+  };
 
   const handleLogout = () => {
     logout();
@@ -67,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
           <ListItem key={item.text} disablePadding>
             <ListItemButton
               selected={location.pathname === item.path}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavigation(item.path, item.queryKey)}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.text} />

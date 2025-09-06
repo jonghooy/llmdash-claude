@@ -90,7 +90,17 @@ function Login() {
 
   return (
     <>
-      {error != null && <ErrorMessage>{localize(getLoginError(error))}</ErrorMessage>}
+      {error != null && <ErrorMessage>
+        {(() => {
+          const errorMessage = getLoginError(error);
+          // If it's a custom message string (not a translation key), show it directly
+          if (typeof errorMessage === 'string' && !errorMessage.startsWith('com_auth_')) {
+            return errorMessage;
+          }
+          // Otherwise, localize the translation key
+          return localize(errorMessage as any);
+        })()}
+      </ErrorMessage>}
       {startupConfig?.emailLoginEnabled === true ? (
         <LoginForm
           onSubmit={login}

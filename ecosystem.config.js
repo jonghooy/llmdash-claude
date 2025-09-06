@@ -107,10 +107,11 @@ module.exports = {
     // ===== LibreChat-Admin Backend =====
     {
       name: 'admin-backend',
-      script: './dist/server.js',
+      script: 'npm',
+      args: 'run dev',
       cwd: './LibreChat-Admin/backend',
-      instances: 2,
-      exec_mode: 'cluster',
+      instances: 1,
+      exec_mode: 'fork',
       watch: false,
       max_memory_restart: '1G',
       env: {

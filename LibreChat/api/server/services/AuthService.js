@@ -207,14 +207,19 @@ const registerUser = async (user, additionalData = {}) => {
     const isFirstRegisteredUser = (await countUsers()) === 0;
 
     const salt = bcrypt.genSaltSync(10);
+    const orgConfig = require('../../config/organization.config');
     const newUserData = {
       provider: 'local',
       email,
-      username,
+      username: username || name, // username이 없으면 name 사용
       name,
       avatar: null,
       role: isFirstRegisteredUser ? SystemRoles.ADMIN : SystemRoles.USER,
       password: bcrypt.hashSync(password, salt),
+      // Add approval status if required (always set for non-admin users)
+      ...(!isFirstRegisteredUser ? {
+        approvalStatus: orgConfig.registration?.requireApproval !== false ? 'pending' : 'approved'
+      } : {}),
       ...additionalData,
     };
 
