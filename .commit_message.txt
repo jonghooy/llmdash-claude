@@ -1,1 +1,1 @@
-📝 PROJECT_STATUS.md 업데이트 - 승인 시스템 구현 현황 반영
+📋 ADMIN_MENU_SYSTEM.md MVP 실행 계획 통합 업데이트 완료

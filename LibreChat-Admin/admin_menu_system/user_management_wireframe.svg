@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#f5f5f5"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="1440" height="70" fill="#1976d2"/>
+  <text x="30" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">LLMDASH Admin - 사용자 관리</text>
+  
+  <!-- Search Bar -->
+  <rect x="900" y="20" width="300" height="30" rx="15" fill="white" fill-opacity="0.2"/>
+  <circle cx="920" cy="35" r="8" fill="none" stroke="white" stroke-width="2"/>
+  <line x1="926" y1="41" x2="930" y2="45" stroke="white" stroke-width="2"/>
+  <text x="940" y="40" font-family="Arial, sans-serif" font-size="14" fill="white" opacity="0.7">사용자 검색...</text>
+  
+  <!-- Notifications -->
+  <g transform="translate(1250, 35)">
+    <circle r="20" fill="#ff9800"/>
+    <path d="M -8,-10 L 8,-10 L 6,0 L 4,3 L -4,3 L -6,0 Z" fill="white"/>
+    <circle cx="0" cy="8" r="2" fill="white"/>
+    <text x="0" y="-12" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">3</text>
+  </g>
+  
+  <!-- User profile -->
+  <g transform="translate(1380, 35)">
+    <circle r="20" fill="#607d8b"/>
+    <circle cy="-5" r="6" fill="white"/>
+    <ellipse cy="10" rx="10" ry="8" fill="white"/>
+  </g>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="70" width="260" height="830" fill="white"/>
+  
+  <!-- Sidebar Menu Items -->
+  <g id="menu-items">
+    <!-- Dashboard -->
+    <rect x="0" y="90" width="260" height="50" fill="white"/>
+    <text x="50" y="120" font-family="Arial, sans-serif" font-size="16" fill="#333">대시보드</text>
+    
+    <!-- Cost Management -->
+    <rect x="0" y="140" width="260" height="50" fill="white"/>
+    <text x="50" y="170" font-family="Arial, sans-serif" font-size="16" fill="#333">비용관리</text>
+    
+    <!-- Users (Active) -->
+    <rect x="0" y="190" width="260" height="50" fill="#e3f2fd"/>
+    <g transform="translate(30, 215)">
+      <circle r="4" fill="#1976d2"/>
+      <circle cx="-7" cy="0" r="3" fill="#1976d2"/>
+      <circle cx="7" cy="0" r="3" fill="#1976d2"/>
+    </g>
+    <text x="50" y="220" font-family="Arial, sans-serif" font-size="16" fill="#1976d2">사용자</text>
+    
+    <!-- Usage -->
+    <rect x="0" y="240" width="260" height="50" fill="white"/>
+    <text x="50" y="270" font-family="Arial, sans-serif" font-size="16" fill="#333">사용량</text>
+    
+    <!-- Settings -->
+    <rect x="0" y="290" width="260" height="50" fill="white"/>
+    <text x="50" y="320" font-family="Arial, sans-serif" font-size="16" fill="#333">설정</text>
+  </g>
+  
+  <!-- Main Content Area -->
+  <rect x="260" y="70" width="1180" height="830" fill="#fafafa"/>
+  
+  <!-- Organization Structure Section -->
+  <g id="org-structure">
+    <text x="300" y="120" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333">조직 구조</text>
+    
+    <!-- Add Team Button -->
+    <rect x="1250" y="95" width="120" height="35" rx="17" fill="#4caf50"/>
+    <text x="1280" y="118" font-family="Arial, sans-serif" font-size="14" fill="white">+ 팀 추가</text>
+    
+    <!-- Organization Tree -->
+    <rect x="300" y="140" width="540" height="320" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="320" y="170" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333">LLMDash Inc.</text>
+    
+    <!-- Tree Structure -->
+    <line x1="330" y1="180" x2="330" y2="420" stroke="#e0e0e0" stroke-width="1"/>
+    
+    <!-- Development Department -->
+    <line x1="330" y1="200" x2="350" y2="200" stroke="#e0e0e0" stroke-width="1"/>
+    <rect x="350" y="190" width="150" height="30" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
+    <text x="360" y="208" font-family="Arial, sans-serif" font-size="12" fill="#1976d2">📁 개발부 (45명)</text>
+    
+    <line x1="380" y1="220" x2="380" y2="280" stroke="#e0e0e0" stroke-width="1"/>
+    <line x1="380" y1="240" x2="400" y2="240" stroke="#e0e0e0" stroke-width="1"/>
+    <rect x="400" y="230" width="120" height="25" rx="4" fill="#f5f5f5"/>
+    <text x="410" y="247" font-family="Arial, sans-serif" font-size="11" fill="#666">백엔드팀 (15)</text>
+    
+    <line x1="380" y1="260" x2="400" y2="260" stroke="#e0e0e0" stroke-width="1"/>
+    <rect x="400" y="250" width="120" height="25" rx="4" fill="#f5f5f5"/>
+    <text x="410" y="267" font-family="Arial, sans-serif" font-size="11" fill="#666">프론트팀 (12)</text>
+    
+    <line x1="380" y1="280" x2="400" y2="280" stroke="#e0e0e0" stroke-width="1"/>
+    <rect x="400" y="270" width="120" height="25" rx="4" fill="#f5f5f5"/>
+    <text x="410" y="287" font-family="Arial, sans-serif" font-size="11" fill="#666">AI팀 (18)</text>
+    
+    <!-- Sales Department -->
+    <line x1="330" y1="320" x2="350" y2="320" stroke="#e0e0e0" stroke-width="1"/>
+    <rect x="350" y="310" width="150" height="30" rx="4" fill="#f5f5f5" stroke="#666"/>
+    <text x="360" y="328" font-family="Arial, sans-serif" font-size="12" fill="#666">📁 영업부 (30명)</text>
+    
+    <!-- Marketing Department -->
+    <line x1="330" y1="360" x2="350" y2="360" stroke="#e0e0e0" stroke-width="1"/>
+    <rect x="350" y="350" width="150" height="30" rx="4" fill="#f5f5f5" stroke="#666"/>
+    <text x="360" y="368" font-family="Arial, sans-serif" font-size="12" fill="#666">📁 마케팅부 (20명)</text>
+    
+    <!-- Team Details Panel -->
+    <rect x="860" y="140" width="540" height="320" rx="8" fill="white" stroke="#e0e0e0"/>
+    <rect x="860" y="140" width="540" height="50" fill="#f5f5f5" rx="8 8 0 0"/>
+    <text x="880" y="170" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333">개발팀 상세 정보</text>
+    
+    <text x="880" y="215" font-family="Arial, sans-serif" font-size="14" fill="#666">관리자: 김철수</text>
+    <text x="880" y="235" font-family="Arial, sans-serif" font-size="14" fill="#666">멤버: 15명</text>
+    
+    <text x="880" y="260" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">월 할당량</text>
+    <text x="880" y="280" font-family="Arial, sans-serif" font-size="14" fill="#666">예산: $5,000</text>
+    <text x="880" y="300" font-family="Arial, sans-serif" font-size="14" fill="#666">사용량: $1,234 (25%)</text>
+    <rect x="880" y="310" width="300" height="20" rx="10" fill="#e0e0e0"/>
+    <rect x="880" y="310" width="75" height="20" rx="10" fill="#4caf50"/>
+    
+    <text x="880" y="355" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333">모델별 제한</text>
+    <text x="880" y="375" font-family="Arial, sans-serif" font-size="13" fill="#666">• GPT-4: 1000 요청/일</text>
+    <text x="880" y="395" font-family="Arial, sans-serif" font-size="13" fill="#666">• Claude: 무제한</text>
+    <text x="880" y="415" font-family="Arial, sans-serif" font-size="13" fill="#666">• Gemini: 500 요청/일</text>
+    
+    <!-- Action Buttons -->
+    <rect x="1150" y="420" width="100" height="30" rx="15" fill="#1976d2"/>
+    <text x="1180" y="440" font-family="Arial, sans-serif" font-size="12" fill="white">수정</text>
+    
+    <rect x="1260" y="420" width="100" height="30" rx="15" fill="#f44336"/>
+    <text x="1290" y="440" font-family="Arial, sans-serif" font-size="12" fill="white">삭제</text>
+  </g>
+  
+  <!-- Approval Queue Section -->
+  <g id="approval-queue">
+    <text x="300" y="500" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">승인 대기 사용자</text>
+    <rect x="480" y="485" width="30" height="20" rx="10" fill="#ff9800"/>
+    <text x="490" y="499" font-family="Arial, sans-serif" font-size="12" fill="white">3</text>
+    
+    <rect x="300" y="520" width="540" height="160" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- Pending User 1 -->
+    <rect x="310" y="530" width="520" height="40" fill="#fff3e0" stroke="#ff9800" stroke-width="1" rx="4"/>
+    <circle cx="330" cy="550" r="15" fill="#ff9800"/>
+    <text x="327" y="555" font-family="Arial, sans-serif" font-size="14" fill="white">홍</text>
+    <text x="355" y="545" font-family="Arial, sans-serif" font-size="13" fill="#333">홍길동</text>
+    <text x="355" y="560" font-family="Arial, sans-serif" font-size="11" fill="#666">개발팀 요청 • 2시간 전</text>
+    <rect x="650" y="540" width="80" height="25" rx="12" fill="#4caf50"/>
+    <text x="675" y="556" font-family="Arial, sans-serif" font-size="11" fill="white">승인</text>
+    <rect x="740" y="540" width="80" height="25" rx="12" fill="#f44336"/>
+    <text x="765" y="556" font-family="Arial, sans-serif" font-size="11" fill="white">거부</text>
+    
+    <!-- Pending User 2 -->
+    <rect x="310" y="575" width="520" height="40" fill="#fff3e0" stroke="#ff9800" stroke-width="1" rx="4"/>
+    <circle cx="330" cy="595" r="15" fill="#2196f3"/>
+    <text x="327" y="600" font-family="Arial, sans-serif" font-size="14" fill="white">이</text>
+    <text x="355" y="590" font-family="Arial, sans-serif" font-size="13" fill="#333">이영희</text>
+    <text x="355" y="605" font-family="Arial, sans-serif" font-size="11" fill="#666">영업팀 요청 • 5시간 전</text>
+    <rect x="650" y="585" width="80" height="25" rx="12" fill="#4caf50"/>
+    <text x="675" y="601" font-family="Arial, sans-serif" font-size="11" fill="white">승인</text>
+    <rect x="740" y="585" width="80" height="25" rx="12" fill="#f44336"/>
+    <text x="765" y="601" font-family="Arial, sans-serif" font-size="11" fill="white">거부</text>
+    
+    <!-- Pending User 3 -->
+    <rect x="310" y="620" width="520" height="40" fill="#fff3e0" stroke="#ff9800" stroke-width="1" rx="4"/>
+    <circle cx="330" cy="640" r="15" fill="#9c27b0"/>
+    <text x="327" y="645" font-family="Arial, sans-serif" font-size="14" fill="white">박</text>
+    <text x="355" y="635" font-family="Arial, sans-serif" font-size="13" fill="#333">박민수</text>
+    <text x="355" y="650" font-family="Arial, sans-serif" font-size="11" fill="#666">신규 가입 • 1일 전</text>
+    <rect x="650" y="630" width="80" height="25" rx="12" fill="#4caf50"/>
+    <text x="675" y="646" font-family="Arial, sans-serif" font-size="11" fill="white">승인</text>
+    <rect x="740" y="630" width="80" height="25" rx="12" fill="#f44336"/>
+    <text x="765" y="646" font-family="Arial, sans-serif" font-size="11" fill="white">거부</text>
+  </g>
+  
+  <!-- User Activity Log -->
+  <g id="activity-log">
+    <text x="860" y="500" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">활동 로그</text>
+    
+    <rect x="860" y="520" width="540" height="160" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- Activity Items -->
+    <g transform="translate(880, 540)">
+      <circle r="3" fill="#4caf50"/>
+      <text x="10" y="5" font-family="Arial, sans-serif" font-size="12" fill="#666">10:23 - 김철수 - API 호출 523회</text>
+    </g>
+    
+    <g transform="translate(880, 560)">
+      <circle r="3" fill="#2196f3"/>
+      <text x="10" y="5" font-family="Arial, sans-serif" font-size="12" fill="#666">10:15 - 이영희 - 로그인</text>
+    </g>
+    
+    <g transform="translate(880, 580)">
+      <circle r="3" fill="#ff9800"/>
+      <text x="10" y="5" font-family="Arial, sans-serif" font-size="12" fill="#666">09:45 - 관리자 - 설정 변경: GPT-4 한도 증가</text>
+    </g>
+    
+    <g transform="translate(880, 600)">
+      <circle r="3" fill="#f44336"/>
+      <text x="10" y="5" font-family="Arial, sans-serif" font-size="12" fill="#666">09:30 - 시스템 - 예산 80% 도달 경고</text>
+    </g>
+    
+    <g transform="translate(880, 620)">
+      <circle r="3" fill="#4caf50"/>
+      <text x="10" y="5" font-family="Arial, sans-serif" font-size="12" fill="#666">09:15 - 박민수 - 새 프로젝트 생성</text>
+    </g>
+    
+    <g transform="translate(880, 640)">
+      <circle r="3" fill="#9c27b0"/>
+      <text x="10" y="5" font-family="Arial, sans-serif" font-size="12" fill="#666">09:00 - 시스템 - 일일 리포트 생성</text>
+    </g>
+    
+    <text x="1180" y="665" font-family="Arial, sans-serif" font-size="11" fill="#1976d2" text-decoration="underline">더 보기...</text>
+  </g>
+  
+  <!-- User Statistics -->
+  <g id="user-stats">
+    <text x="300" y="720" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">사용자 통계</text>
+    
+    <!-- Stats Cards -->
+    <rect x="300" y="740" width="260" height="100" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="320" y="770" font-family="Arial, sans-serif" font-size="14" fill="#666">총 사용자</text>
+    <text x="320" y="800" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#333">95명</text>
+    <path d="M 320,815 L 325,810 L 330,815" stroke="#4caf50" stroke-width="2" fill="none"/>
+    <text x="335" y="820" font-family="Arial, sans-serif" font-size="12" fill="#4caf50">+5 이번 주</text>
+    
+    <rect x="580" y="740" width="260" height="100" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="600" y="770" font-family="Arial, sans-serif" font-size="14" fill="#666">활성 사용자</text>
+    <text x="600" y="800" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#333">42명</text>
+    <text x="600" y="820" font-family="Arial, sans-serif" font-size="12" fill="#666">44.2% 활성률</text>
+    
+    <rect x="860" y="740" width="260" height="100" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="880" y="770" font-family="Arial, sans-serif" font-size="14" fill="#666">신규 가입</text>
+    <text x="880" y="800" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#333">5명</text>
+    <text x="880" y="820" font-family="Arial, sans-serif" font-size="12" fill="#666">이번 달</text>
+    
+    <rect x="1140" y="740" width="260" height="100" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="1160" y="770" font-family="Arial, sans-serif" font-size="14" fill="#666">차단된 사용자</text>
+    <text x="1160" y="800" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#f44336">2명</text>
+    <text x="1160" y="820" font-family="Arial, sans-serif" font-size="12" fill="#666">보안 위반</text>
+  </g>
+  
+  <!-- Action Buttons at Bottom -->
+  <rect x="300" y="860" width="140" height="35" rx="17" fill="#4caf50"/>
+  <text x="335" y="883" font-family="Arial, sans-serif" font-size="14" fill="white">일괄 승인</text>
+  
+  <rect x="450" y="860" width="140" height="35" rx="17" fill="#1976d2"/>
+  <text x="475" y="883" font-family="Arial, sans-serif" font-size="14" fill="white">사용자 내보내기</text>
+  
+  <rect x="600" y="860" width="140" height="35" rx="17" fill="#607d8b"/>
+  <text x="630" y="883" font-family="Arial, sans-serif" font-size="14" fill="white">권한 관리</text>
+</svg>

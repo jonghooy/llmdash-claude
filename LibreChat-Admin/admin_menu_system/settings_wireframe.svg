@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440" height="900" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#f5f5f5"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="1440" height="70" fill="#1976d2"/>
+  <text x="30" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">LLMDASH Admin - 시스템 설정</text>
+  
+  <!-- Notifications -->
+  <g transform="translate(1250, 35)">
+    <circle r="20" fill="#ff9800"/>
+    <path d="M -8,-10 L 8,-10 L 6,0 L 4,3 L -4,3 L -6,0 Z" fill="white"/>
+    <circle cx="0" cy="8" r="2" fill="white"/>
+    <text x="0" y="-12" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">3</text>
+  </g>
+  
+  <!-- User profile -->
+  <g transform="translate(1380, 35)">
+    <circle r="20" fill="#607d8b"/>
+    <circle cy="-5" r="6" fill="white"/>
+    <ellipse cy="10" rx="10" ry="8" fill="white"/>
+  </g>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="70" width="260" height="830" fill="white"/>
+  
+  <!-- Sidebar Menu Items -->
+  <g id="menu-items">
+    <!-- Dashboard -->
+    <rect x="0" y="90" width="260" height="50" fill="white"/>
+    <text x="50" y="120" font-family="Arial, sans-serif" font-size="16" fill="#333">대시보드</text>
+    
+    <!-- Cost Management -->
+    <rect x="0" y="140" width="260" height="50" fill="white"/>
+    <text x="50" y="170" font-family="Arial, sans-serif" font-size="16" fill="#333">비용관리</text>
+    
+    <!-- Users -->
+    <rect x="0" y="190" width="260" height="50" fill="white"/>
+    <text x="50" y="220" font-family="Arial, sans-serif" font-size="16" fill="#333">사용자</text>
+    
+    <!-- Usage -->
+    <rect x="0" y="240" width="260" height="50" fill="white"/>
+    <text x="50" y="270" font-family="Arial, sans-serif" font-size="16" fill="#333">사용량</text>
+    
+    <!-- Settings (Active) -->
+    <rect x="0" y="290" width="260" height="50" fill="#e3f2fd"/>
+    <g transform="translate(30, 315)">
+      <circle r="8" fill="none" stroke="#1976d2" stroke-width="2"/>
+      <circle r="3" fill="#1976d2"/>
+      <rect x="-1" y="-12" width="2" height="4" fill="#1976d2"/>
+      <rect x="-1" y="8" width="2" height="4" fill="#1976d2"/>
+      <rect x="-12" y="-1" width="4" height="2" fill="#1976d2"/>
+      <rect x="8" y="-1" width="4" height="2" fill="#1976d2"/>
+    </g>
+    <text x="50" y="320" font-family="Arial, sans-serif" font-size="16" fill="#1976d2">설정</text>
+  </g>
+  
+  <!-- Settings Sub-menu -->
+  <rect x="20" y="340" width="240" height="40" fill="#f5f5f5"/>
+  <text x="50" y="365" font-family="Arial, sans-serif" font-size="14" fill="#1976d2">• 일반 설정</text>
+  <rect x="20" y="380" width="240" height="40" fill="white"/>
+  <text x="50" y="405" font-family="Arial, sans-serif" font-size="14" fill="#666">• API 관리</text>
+  <rect x="20" y="420" width="240" height="40" fill="white"/>
+  <text x="50" y="445" font-family="Arial, sans-serif" font-size="14" fill="#666">• 통합 설정</text>
+  <rect x="20" y="460" width="240" height="40" fill="white"/>
+  <text x="50" y="485" font-family="Arial, sans-serif" font-size="14" fill="#666">• 보안 설정</text>
+  <rect x="20" y="500" width="240" height="40" fill="white"/>
+  <text x="50" y="525" font-family="Arial, sans-serif" font-size="14" fill="#666">• 알림 설정</text>
+  <rect x="20" y="540" width="240" height="40" fill="white"/>
+  <text x="50" y="565" font-family="Arial, sans-serif" font-size="14" fill="#666">• 백업/복구</text>
+  
+  <!-- Main Content Area -->
+  <rect x="260" y="70" width="1180" height="830" fill="#fafafa"/>
+  
+  <!-- General Settings Section -->
+  <g id="general-settings">
+    <text x="300" y="120" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333">일반 설정</text>
+    
+    <!-- Company Info Card -->
+    <rect x="300" y="140" width="540" height="280" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="320" y="170" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333">회사 정보</text>
+    <rect x="320" y="180" width="500" height="1" fill="#e0e0e0"/>
+    
+    <!-- Company Name -->
+    <text x="320" y="210" font-family="Arial, sans-serif" font-size="13" fill="#666">회사명</text>
+    <rect x="320" y="220" width="480" height="35" rx="4" fill="#f5f5f5" stroke="#e0e0e0"/>
+    <text x="330" y="242" font-family="Arial, sans-serif" font-size="14" fill="#333">LLMDash Inc.</text>
+    
+    <!-- Plan -->
+    <text x="320" y="275" font-family="Arial, sans-serif" font-size="13" fill="#666">플랜</text>
+    <rect x="320" y="285" width="480" height="35" rx="4" fill="#f5f5f5" stroke="#e0e0e0"/>
+    <text x="330" y="307" font-family="Arial, sans-serif" font-size="14" fill="#333">Enterprise</text>
+    <rect x="700" y="290" width="90" height="25" rx="12" fill="#4caf50"/>
+    <text x="725" y="306" font-family="Arial, sans-serif" font-size="11" fill="white">업그레이드</text>
+    
+    <!-- Timezone -->
+    <text x="320" y="340" font-family="Arial, sans-serif" font-size="13" fill="#666">타임존</text>
+    <rect x="320" y="350" width="480" height="35" rx="4" fill="white" stroke="#e0e0e0"/>
+    <text x="330" y="372" font-family="Arial, sans-serif" font-size="14" fill="#333">Asia/Seoul (UTC+09:00) ▼</text>
+    
+    <!-- Language -->
+    <text x="320" y="405" font-family="Arial, sans-serif" font-size="13" fill="#666">언어</text>
+    <rect x="320" y="415" width="150" height="35" rx="4" fill="white" stroke="#1976d2" stroke-width="2"/>
+    <text x="370" y="437" font-family="Arial, sans-serif" font-size="14" fill="#1976d2">한국어</text>
+    <rect x="480" y="415" width="150" height="35" rx="4" fill="white" stroke="#e0e0e0"/>
+    <text x="530" y="437" font-family="Arial, sans-serif" font-size="14" fill="#666">English</text>
+    <rect x="640" y="415" width="150" height="35" rx="4" fill="white" stroke="#e0e0e0"/>
+    <text x="690" y="437" font-family="Arial, sans-serif" font-size="14" fill="#666">日本語</text>
+    
+    <!-- Branding Settings Card -->
+    <rect x="860" y="140" width="540" height="280" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="880" y="170" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333">브랜딩 설정</text>
+    <rect x="880" y="180" width="500" height="1" fill="#e0e0e0"/>
+    
+    <!-- Logo Upload -->
+    <text x="880" y="210" font-family="Arial, sans-serif" font-size="13" fill="#666">로고</text>
+    <rect x="880" y="220" width="120" height="120" rx="4" fill="#f5f5f5" stroke="#e0e0e0" stroke-dasharray="5,5"/>
+    <text x="920" y="280" font-family="Arial, sans-serif" font-size="12" fill="#999" text-anchor="middle">로고 업로드</text>
+    <circle cx="940" cy="260" r="20" fill="#e0e0e0"/>
+    <text x="935" y="268" font-family="Arial, sans-serif" font-size="24" fill="#999">+</text>
+    
+    <!-- Primary Color -->
+    <text x="1020" y="210" font-family="Arial, sans-serif" font-size="13" fill="#666">주 색상</text>
+    <rect x="1020" y="220" width="200" height="35" rx="4" fill="white" stroke="#e0e0e0"/>
+    <rect x="1025" y="225" width="25" height="25" rx="2" fill="#1976d2"/>
+    <text x="1055" y="242" font-family="Arial, sans-serif" font-size="14" fill="#333">#1976d2</text>
+    
+    <!-- Secondary Color -->
+    <text x="1020" y="275" font-family="Arial, sans-serif" font-size="13" fill="#666">보조 색상</text>
+    <rect x="1020" y="285" width="200" height="35" rx="4" fill="white" stroke="#e0e0e0"/>
+    <rect x="1025" y="290" width="25" height="25" rx="2" fill="#dc004e"/>
+    <text x="1055" y="307" font-family="Arial, sans-serif" font-size="14" fill="#333">#dc004e</text>
+    
+    <!-- Font -->
+    <text x="880" y="365" font-family="Arial, sans-serif" font-size="13" fill="#666">폰트</text>
+    <rect x="880" y="375" width="340" height="35" rx="4" fill="white" stroke="#e0e0e0"/>
+    <text x="890" y="397" font-family="Arial, sans-serif" font-size="14" fill="#333">Arial, sans-serif ▼</text>
+  </g>
+  
+  <!-- System Status Section -->
+  <g id="system-status">
+    <text x="300" y="460" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">시스템 상태</text>
+    
+    <rect x="300" y="480" width="1100" height="120" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- Status Items -->
+    <g transform="translate(320, 510)">
+      <circle r="8" fill="#4caf50"/>
+      <text x="20" y="5" font-family="Arial, sans-serif" font-size="14" fill="#333">API 서버</text>
+      <text x="120" y="5" font-family="Arial, sans-serif" font-size="13" fill="#666">정상 운영 중</text>
+      <text x="250" y="5" font-family="Arial, sans-serif" font-size="12" fill="#999">응답시간: 124ms</text>
+    </g>
+    
+    <g transform="translate(320, 540)">
+      <circle r="8" fill="#4caf50"/>
+      <text x="20" y="5" font-family="Arial, sans-serif" font-size="14" fill="#333">데이터베이스</text>
+      <text x="120" y="5" font-family="Arial, sans-serif" font-size="13" fill="#666">정상 운영 중</text>
+      <text x="250" y="5" font-family="Arial, sans-serif" font-size="12" fill="#999">연결: 45/100</text>
+    </g>
+    
+    <g transform="translate(320, 570)">
+      <circle r="8" fill="#4caf50"/>
+      <text x="20" y="5" font-family="Arial, sans-serif" font-size="14" fill="#333">캐시 서버</text>
+      <text x="120" y="5" font-family="Arial, sans-serif" font-size="13" fill="#666">정상 운영 중</text>
+      <text x="250" y="5" font-family="Arial, sans-serif" font-size="12" fill="#999">메모리: 2.1GB/8GB</text>
+    </g>
+    
+    <!-- Last Backup -->
+    <rect x="700" y="510" width="1" height="70" fill="#e0e0e0"/>
+    <text x="720" y="530" font-family="Arial, sans-serif" font-size="14" fill="#333">마지막 백업</text>
+    <text x="720" y="550" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1976d2">2시간 전</text>
+    <text x="720" y="570" font-family="Arial, sans-serif" font-size="12" fill="#666">2024-01-15 14:30:00</text>
+    
+    <!-- System Uptime -->
+    <rect x="1000" y="510" width="1" height="70" fill="#e0e0e0"/>
+    <text x="1020" y="530" font-family="Arial, sans-serif" font-size="14" fill="#333">시스템 가동 시간</text>
+    <text x="1020" y="550" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#4caf50">99.9%</text>
+    <text x="1020" y="570" font-family="Arial, sans-serif" font-size="12" fill="#666">30일 12시간 45분</text>
+  </g>
+  
+  <!-- Security Settings Section -->
+  <g id="security">
+    <text x="300" y="640" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">보안 설정</text>
+    
+    <!-- 2FA Settings -->
+    <rect x="300" y="660" width="340" height="180" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="320" y="690" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#333">2단계 인증 (2FA)</text>
+    
+    <!-- Toggle Switch -->
+    <rect x="320" y="710" width="60" height="30" rx="15" fill="#4caf50"/>
+    <circle cx="365" cy="725" r="12" fill="white"/>
+    <text x="390" y="730" font-family="Arial, sans-serif" font-size="13" fill="#333">활성화됨</text>
+    
+    <text x="320" y="765" font-family="Arial, sans-serif" font-size="12" fill="#666">인증 방법:</text>
+    <rect x="320" y="775" width="100" height="30" rx="4" fill="#e3f2fd" stroke="#1976d2"/>
+    <text x="350" y="794" font-family="Arial, sans-serif" font-size="12" fill="#1976d2">Google OTP</text>
+    <rect x="430" y="775" width="100" height="30" rx="4" fill="white" stroke="#e0e0e0"/>
+    <text x="465" y="794" font-family="Arial, sans-serif" font-size="12" fill="#666">SMS</text>
+    
+    <!-- IP Restriction -->
+    <rect x="660" y="660" width="340" height="180" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="680" y="690" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#333">IP 제한</text>
+    
+    <!-- Toggle Switch -->
+    <rect x="680" y="710" width="60" height="30" rx="15" fill="#e0e0e0"/>
+    <circle cx="695" cy="725" r="12" fill="white"/>
+    <text x="750" y="730" font-family="Arial, sans-serif" font-size="13" fill="#666">비활성화</text>
+    
+    <text x="680" y="765" font-family="Arial, sans-serif" font-size="12" fill="#666">허용 IP 목록:</text>
+    <rect x="680" y="775" width="300" height="50" rx="4" fill="#f5f5f5" stroke="#e0e0e0"/>
+    <text x="690" y="795" font-family="Arial, sans-serif" font-size="11" fill="#999">192.168.1.0/24</text>
+    <text x="690" y="810" font-family="Arial, sans-serif" font-size="11" fill="#999">10.0.0.0/8</text>
+    
+    <!-- Audit Log -->
+    <rect x="1020" y="660" width="380" height="180" rx="8" fill="white" stroke="#e0e0e0"/>
+    <text x="1040" y="690" font-family="Arial, sans-serif" font-size="15" font-weight="bold" fill="#333">감사 로그</text>
+    
+    <!-- Toggle Switch -->
+    <rect x="1040" y="710" width="60" height="30" rx="15" fill="#4caf50"/>
+    <circle cx="1085" cy="725" r="12" fill="white"/>
+    <text x="1110" y="730" font-family="Arial, sans-serif" font-size="13" fill="#333">활성화됨</text>
+    
+    <text x="1040" y="765" font-family="Arial, sans-serif" font-size="12" fill="#666">보관 기간: 90일</text>
+    <text x="1040" y="785" font-family="Arial, sans-serif" font-size="12" fill="#666">로그 크기: 1.2GB</text>
+    
+    <rect x="1040" y="800" width="120" height="25" rx="12" fill="#1976d2"/>
+    <text x="1070" y="817" font-family="Arial, sans-serif" font-size="11" fill="white">로그 다운로드</text>
+  </g>
+  
+  <!-- Action Buttons -->
+  <rect x="1100" y="860" width="140" height="35" rx="17" fill="#4caf50"/>
+  <text x="1130" y="883" font-family="Arial, sans-serif" font-size="14" fill="white">변경사항 저장</text>
+  
+  <rect x="1250" y="860" width="140" height="35" rx="17" fill="#607d8b"/>
+  <text x="1295" y="883" font-family="Arial, sans-serif" font-size="14" fill="white">초기화</text>
+</svg>

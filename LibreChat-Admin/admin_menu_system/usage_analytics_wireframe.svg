@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440" height="1000" viewBox="0 0 1440 1000" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1440" height="1000" fill="#f5f5f5"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="1440" height="70" fill="#1976d2"/>
+  <text x="30" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">LLMDASH Admin - 사용량 분석</text>
+  
+  <!-- Date Range Selector -->
+  <rect x="950" y="20" width="250" height="30" rx="15" fill="white" fill-opacity="0.2"/>
+  <text x="970" y="40" font-family="Arial, sans-serif" font-size="14" fill="white">기간: 최근 30일 ▼</text>
+  
+  <!-- Notifications -->
+  <g transform="translate(1250, 35)">
+    <circle r="20" fill="#ff9800"/>
+    <path d="M -8,-10 L 8,-10 L 6,0 L 4,3 L -4,3 L -6,0 Z" fill="white"/>
+    <circle cx="0" cy="8" r="2" fill="white"/>
+    <text x="0" y="-12" font-family="Arial, sans-serif" font-size="10" fill="white" text-anchor="middle">3</text>
+  </g>
+  
+  <!-- User profile -->
+  <g transform="translate(1380, 35)">
+    <circle r="20" fill="#607d8b"/>
+    <circle cy="-5" r="6" fill="white"/>
+    <ellipse cy="10" rx="10" ry="8" fill="white"/>
+  </g>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="70" width="260" height="930" fill="white"/>
+  
+  <!-- Sidebar Menu Items -->
+  <g id="menu-items">
+    <!-- Dashboard -->
+    <rect x="0" y="90" width="260" height="50" fill="white"/>
+    <text x="50" y="120" font-family="Arial, sans-serif" font-size="16" fill="#333">대시보드</text>
+    
+    <!-- Cost Management -->
+    <rect x="0" y="140" width="260" height="50" fill="white"/>
+    <text x="50" y="170" font-family="Arial, sans-serif" font-size="16" fill="#333">비용관리</text>
+    
+    <!-- Users -->
+    <rect x="0" y="190" width="260" height="50" fill="white"/>
+    <text x="50" y="220" font-family="Arial, sans-serif" font-size="16" fill="#333">사용자</text>
+    
+    <!-- Usage (Active) -->
+    <rect x="0" y="240" width="260" height="50" fill="#e3f2fd"/>
+    <g transform="translate(30, 265)">
+      <rect x="-10" y="-8" width="4" height="8" fill="#1976d2"/>
+      <rect x="-4" y="-12" width="4" height="12" fill="#1976d2"/>
+      <rect x="2" y="-6" width="4" height="6" fill="#1976d2"/>
+      <rect x="8" y="-10" width="4" height="10" fill="#1976d2"/>
+    </g>
+    <text x="50" y="270" font-family="Arial, sans-serif" font-size="16" fill="#1976d2">사용량</text>
+    
+    <!-- Settings -->
+    <rect x="0" y="290" width="260" height="50" fill="white"/>
+    <text x="50" y="320" font-family="Arial, sans-serif" font-size="16" fill="#333">설정</text>
+  </g>
+  
+  <!-- Main Content Area -->
+  <rect x="260" y="70" width="1180" height="930" fill="#fafafa"/>
+  
+  <!-- Usage Heatmap Section -->
+  <g id="usage-heatmap">
+    <text x="300" y="120" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333">사용량 히트맵 (시간별)</text>
+    
+    <rect x="300" y="140" width="1100" height="280" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- Days of Week -->
+    <text x="320" y="180" font-family="Arial, sans-serif" font-size="12" fill="#666">월</text>
+    <text x="320" y="210" font-family="Arial, sans-serif" font-size="12" fill="#666">화</text>
+    <text x="320" y="240" font-family="Arial, sans-serif" font-size="12" fill="#666">수</text>
+    <text x="320" y="270" font-family="Arial, sans-serif" font-size="12" fill="#666">목</text>
+    <text x="320" y="300" font-family="Arial, sans-serif" font-size="12" fill="#666">금</text>
+    <text x="320" y="330" font-family="Arial, sans-serif" font-size="12" fill="#666">토</text>
+    <text x="320" y="360" font-family="Arial, sans-serif" font-size="12" fill="#666">일</text>
+    
+    <!-- Hour Labels -->
+    <text x="365" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">00</text>
+    <text x="425" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">02</text>
+    <text x="485" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">04</text>
+    <text x="545" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">06</text>
+    <text x="605" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">08</text>
+    <text x="665" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">10</text>
+    <text x="725" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">12</text>
+    <text x="785" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">14</text>
+    <text x="845" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">16</text>
+    <text x="905" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">18</text>
+    <text x="965" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">20</text>
+    <text x="1025" y="160" font-family="Arial, sans-serif" font-size="10" fill="#999">22</text>
+    
+    <!-- Heatmap Grid (Monday) -->
+    <g id="monday-heatmap">
+      <rect x="360" y="170" width="25" height="20" fill="#e8f5e9"/>
+      <rect x="390" y="170" width="25" height="20" fill="#e8f5e9"/>
+      <rect x="420" y="170" width="25" height="20" fill="#e8f5e9"/>
+      <rect x="450" y="170" width="25" height="20" fill="#e8f5e9"/>
+      <rect x="480" y="170" width="25" height="20" fill="#c8e6c9"/>
+      <rect x="510" y="170" width="25" height="20" fill="#a5d6a7"/>
+      <rect x="540" y="170" width="25" height="20" fill="#81c784"/>
+      <rect x="570" y="170" width="25" height="20" fill="#66bb6a"/>
+      <rect x="600" y="170" width="25" height="20" fill="#ff9800"/>
+      <rect x="630" y="170" width="25" height="20" fill="#ff9800"/>
+      <rect x="660" y="170" width="25" height="20" fill="#ff9800"/>
+      <rect x="690" y="170" width="25" height="20" fill="#ff9800"/>
+      <rect x="720" y="170" width="25" height="20" fill="#f44336"/>
+      <rect x="750" y="170" width="25" height="20" fill="#f44336"/>
+      <rect x="780" y="170" width="25" height="20" fill="#f44336"/>
+      <rect x="810" y="170" width="25" height="20" fill="#f44336"/>
+      <rect x="840" y="170" width="25" height="20" fill="#ff9800"/>
+      <rect x="870" y="170" width="25" height="20" fill="#ff9800"/>
+      <rect x="900" y="170" width="25" height="20" fill="#66bb6a"/>
+      <rect x="930" y="170" width="25" height="20" fill="#66bb6a"/>
+      <rect x="960" y="170" width="25" height="20" fill="#a5d6a7"/>
+      <rect x="990" y="170" width="25" height="20" fill="#c8e6c9"/>
+      <rect x="1020" y="170" width="25" height="20" fill="#e8f5e9"/>
+      <rect x="1050" y="170" width="25" height="20" fill="#e8f5e9"/>
+    </g>
+    
+    <!-- Similar patterns for other days (simplified) -->
+    <g id="tuesday-sunday" opacity="0.8">
+      <!-- Tuesday to Friday similar pattern -->
+      <rect x="360" y="200" width="715" height="20" fill="url(#weekdayGradient)"/>
+      <rect x="360" y="230" width="715" height="20" fill="url(#weekdayGradient)"/>
+      <rect x="360" y="260" width="715" height="20" fill="url(#weekdayGradient)"/>
+      <rect x="360" y="290" width="715" height="20" fill="url(#weekdayGradient)"/>
+      
+      <!-- Weekend pattern -->
+      <rect x="360" y="320" width="715" height="20" fill="url(#weekendGradient)"/>
+      <rect x="360" y="350" width="715" height="20" fill="url(#weekendGradient)"/>
+    </g>
+    
+    <!-- Gradient definitions -->
+    <defs>
+      <linearGradient id="weekdayGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#e8f5e9;stop-opacity:1" />
+        <stop offset="25%" style="stop-color:#66bb6a;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#f44336;stop-opacity:1" />
+        <stop offset="75%" style="stop-color:#ff9800;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#e8f5e9;stop-opacity:1" />
+      </linearGradient>
+      <linearGradient id="weekendGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#e8f5e9;stop-opacity:1" />
+        <stop offset="40%" style="stop-color:#e8f5e9;stop-opacity:1" />
+        <stop offset="50%" style="stop-color:#66bb6a;stop-opacity:1" />
+        <stop offset="60%" style="stop-color:#e8f5e9;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#e8f5e9;stop-opacity:1" />
+      </linearGradient>
+    </defs>
+    
+    <!-- Legend -->
+    <rect x="320" y="390" width="40" height="15" fill="#e8f5e9"/>
+    <text x="365" y="402" font-family="Arial, sans-serif" font-size="11" fill="#666">낮음</text>
+    <rect x="420" y="390" width="40" height="15" fill="#66bb6a"/>
+    <text x="465" y="402" font-family="Arial, sans-serif" font-size="11" fill="#666">보통</text>
+    <rect x="520" y="390" width="40" height="15" fill="#ff9800"/>
+    <text x="565" y="402" font-family="Arial, sans-serif" font-size="11" fill="#666">높음</text>
+    <rect x="620" y="390" width="40" height="15" fill="#f44336"/>
+    <text x="665" y="402" font-family="Arial, sans-serif" font-size="11" fill="#666">매우 높음</text>
+  </g>
+  
+  <!-- Model Performance Comparison -->
+  <g id="model-comparison">
+    <text x="300" y="460" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">모델 성능 비교</text>
+    
+    <rect x="300" y="480" width="540" height="220" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- Table Header -->
+    <rect x="300" y="480" width="540" height="40" fill="#f5f5f5" rx="8 8 0 0"/>
+    <text x="320" y="505" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#333">모델</text>
+    <text x="420" y="505" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#333">응답시간</text>
+    <text x="520" y="505" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#333">비용</text>
+    <text x="620" y="505" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#333">정확도</text>
+    <text x="720" y="505" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#333">사용률</text>
+    
+    <line x1="300" y1="520" x2="840" y2="520" stroke="#e0e0e0"/>
+    
+    <!-- GPT-4 -->
+    <text x="320" y="545" font-family="Arial, sans-serif" font-size="12" fill="#333">GPT-4</text>
+    <text x="420" y="545" font-family="Arial, sans-serif" font-size="12" fill="#666">245ms</text>
+    <text x="520" y="545" font-family="Arial, sans-serif" font-size="12" fill="#666">$$$$</text>
+    <rect x="620" y="535" width="80" height="15" rx="7" fill="#e0e0e0"/>
+    <rect x="620" y="535" width="72" height="15" rx="7" fill="#4caf50"/>
+    <text x="650" y="545" font-family="Arial, sans-serif" font-size="10" fill="white">90%</text>
+    <text x="720" y="545" font-family="Arial, sans-serif" font-size="12" fill="#666">45%</text>
+    
+    <line x1="300" y1="560" x2="840" y2="560" stroke="#e0e0e0"/>
+    
+    <!-- Claude -->
+    <text x="320" y="585" font-family="Arial, sans-serif" font-size="12" fill="#333">Claude</text>
+    <text x="420" y="585" font-family="Arial, sans-serif" font-size="12" fill="#666">189ms</text>
+    <text x="520" y="585" font-family="Arial, sans-serif" font-size="12" fill="#666">$$$</text>
+    <rect x="620" y="575" width="80" height="15" rx="7" fill="#e0e0e0"/>
+    <rect x="620" y="575" width="68" height="15" rx="7" fill="#4caf50"/>
+    <text x="650" y="585" font-family="Arial, sans-serif" font-size="10" fill="white">85%</text>
+    <text x="720" y="585" font-family="Arial, sans-serif" font-size="12" fill="#666">32%</text>
+    
+    <line x1="300" y1="600" x2="840" y2="600" stroke="#e0e0e0"/>
+    
+    <!-- GPT-3.5 -->
+    <text x="320" y="625" font-family="Arial, sans-serif" font-size="12" fill="#333">GPT-3.5</text>
+    <text x="420" y="625" font-family="Arial, sans-serif" font-size="12" fill="#666">123ms</text>
+    <text x="520" y="625" font-family="Arial, sans-serif" font-size="12" fill="#666">$$</text>
+    <rect x="620" y="615" width="80" height="15" rx="7" fill="#e0e0e0"/>
+    <rect x="620" y="615" width="60" height="15" rx="7" fill="#ff9800"/>
+    <text x="650" y="625" font-family="Arial, sans-serif" font-size="10" fill="white">75%</text>
+    <text x="720" y="625" font-family="Arial, sans-serif" font-size="12" fill="#666">15%</text>
+    
+    <line x1="300" y1="640" x2="840" y2="640" stroke="#e0e0e0"/>
+    
+    <!-- Gemini -->
+    <text x="320" y="665" font-family="Arial, sans-serif" font-size="12" fill="#333">Gemini</text>
+    <text x="420" y="665" font-family="Arial, sans-serif" font-size="12" fill="#666">156ms</text>
+    <text x="520" y="665" font-family="Arial, sans-serif" font-size="12" fill="#666">$$</text>
+    <rect x="620" y="655" width="80" height="15" rx="7" fill="#e0e0e0"/>
+    <rect x="620" y="655" width="64" height="15" rx="7" fill="#ff9800"/>
+    <text x="650" y="665" font-family="Arial, sans-serif" font-size="10" fill="white">80%</text>
+    <text x="720" y="665" font-family="Arial, sans-serif" font-size="12" fill="#666">8%</text>
+  </g>
+  
+  <!-- Top 10 Users -->
+  <g id="top-users">
+    <text x="860" y="460" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">사용자 TOP 10</text>
+    
+    <rect x="860" y="480" width="540" height="220" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- User List -->
+    <g transform="translate(880, 500)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffc107">1.</text>
+      <circle cx="25" cy="-5" r="12" fill="#1976d2"/>
+      <text x="22" y="0" font-family="Arial, sans-serif" font-size="10" fill="white">김</text>
+      <text x="45" y="0" font-family="Arial, sans-serif" font-size="13" fill="#333">김철수</text>
+      <rect x="120" y="-10" width="150" height="15" rx="7" fill="#e0e0e0"/>
+      <rect x="120" y="-10" width="120" height="15" rx="7" fill="#1976d2"/>
+      <text x="280" y="0" font-family="Arial, sans-serif" font-size="12" fill="#666">2,345 요청</text>
+    </g>
+    
+    <g transform="translate(880, 530)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#999">2.</text>
+      <circle cx="25" cy="-5" r="12" fill="#2196f3"/>
+      <text x="22" y="0" font-family="Arial, sans-serif" font-size="10" fill="white">이</text>
+      <text x="45" y="0" font-family="Arial, sans-serif" font-size="13" fill="#333">이영희</text>
+      <rect x="120" y="-10" width="150" height="15" rx="7" fill="#e0e0e0"/>
+      <rect x="120" y="-10" width="100" height="15" rx="7" fill="#2196f3"/>
+      <text x="280" y="0" font-family="Arial, sans-serif" font-size="12" fill="#666">1,890 요청</text>
+    </g>
+    
+    <g transform="translate(880, 560)">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#cd7f32">3.</text>
+      <circle cx="25" cy="-5" r="12" fill="#03a9f4"/>
+      <text x="22" y="0" font-family="Arial, sans-serif" font-size="10" fill="white">박</text>
+      <text x="45" y="0" font-family="Arial, sans-serif" font-size="13" fill="#333">박민수</text>
+      <rect x="120" y="-10" width="150" height="15" rx="7" fill="#e0e0e0"/>
+      <rect x="120" y="-10" width="85" height="15" rx="7" fill="#03a9f4"/>
+      <text x="280" y="0" font-family="Arial, sans-serif" font-size="12" fill="#666">1,567 요청</text>
+    </g>
+    
+    <!-- Remaining users 4-10 (simplified) -->
+    <text x="880" y="590" font-family="Arial, sans-serif" font-size="12" fill="#666">4. 최정훈 - 1,234 요청</text>
+    <text x="880" y="610" font-family="Arial, sans-serif" font-size="12" fill="#666">5. 정수진 - 987 요청</text>
+    <text x="880" y="630" font-family="Arial, sans-serif" font-size="12" fill="#666">6. 강민호 - 876 요청</text>
+    <text x="880" y="650" font-family="Arial, sans-serif" font-size="12" fill="#666">7. 윤서연 - 765 요청</text>
+    <text x="880" y="670" font-family="Arial, sans-serif" font-size="12" fill="#666">8. 임재현 - 654 요청</text>
+  </g>
+  
+  <!-- Anomaly Detection -->
+  <g id="anomaly">
+    <text x="300" y="740" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">이상 패턴 감지</text>
+    
+    <rect x="300" y="760" width="540" height="140" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- Warning Icon -->
+    <circle cx="330" cy="800" r="15" fill="#ff9800"/>
+    <text x="325" y="805" font-family="Arial, sans-serif" font-size="16" fill="white" font-weight="bold">!</text>
+    
+    <text x="360" y="790" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#e65100">비정상 트래픽 감지</text>
+    
+    <text x="360" y="815" font-family="Arial, sans-serif" font-size="12" fill="#666">• 새벽 3시 트래픽 급증 (평소 대비 342%)</text>
+    <text x="360" y="835" font-family="Arial, sans-serif" font-size="12" fill="#666">• IP 192.168.1.100에서 반복 요청 감지</text>
+    <text x="360" y="855" font-family="Arial, sans-serif" font-size="12" fill="#666">• GPT-4 모델 요청 비정상적 증가</text>
+    
+    <rect x="680" y="865" width="120" height="25" rx="12" fill="#1976d2"/>
+    <text x="715" y="882" font-family="Arial, sans-serif" font-size="12" fill="white">상세 분석</text>
+  </g>
+  
+  <!-- Request Distribution -->
+  <g id="request-dist">
+    <text x="860" y="740" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#333">요청 분포</text>
+    
+    <rect x="860" y="760" width="540" height="140" rx="8" fill="white" stroke="#e0e0e0"/>
+    
+    <!-- Pie Chart Representation -->
+    <circle cx="950" cy="830" r="50" fill="#1976d2"/>
+    <path d="M 950,830 L 950,780 A 50,50 0 0,1 990,810 Z" fill="#2196f3"/>
+    <path d="M 950,830 L 990,810 A 50,50 0 0,1 990,850 Z" fill="#03a9f4"/>
+    <path d="M 950,830 L 990,850 A 50,50 0 0,1 950,880 Z" fill="#00bcd4"/>
+    
+    <!-- Legend -->
+    <rect x="1040" y="790" width="15" height="15" fill="#1976d2"/>
+    <text x="1060" y="802" font-family="Arial, sans-serif" font-size="12" fill="#666">텍스트 생성 (45%)</text>
+    
+    <rect x="1040" y="815" width="15" height="15" fill="#2196f3"/>
+    <text x="1060" y="827" font-family="Arial, sans-serif" font-size="12" fill="#666">코드 생성 (25%)</text>
+    
+    <rect x="1040" y="840" width="15" height="15" fill="#03a9f4"/>
+    <text x="1060" y="852" font-family="Arial, sans-serif" font-size="12" fill="#666">번역 (20%)</text>
+    
+    <rect x="1040" y="865" width="15" height="15" fill="#00bcd4"/>
+    <text x="1060" y="877" font-family="Arial, sans-serif" font-size="12" fill="#666">기타 (10%)</text>
+  </g>
+  
+  <!-- Export Options -->
+  <g id="export">
+    <text x="300" y="940" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#333">데이터 내보내기</text>
+    
+    <rect x="500" y="920" width="100" height="35" rx="17" fill="#4caf50"/>
+    <text x="535" y="943" font-family="Arial, sans-serif" font-size="14" fill="white">CSV</text>
+    
+    <rect x="610" y="920" width="100" height="35" rx="17" fill="#2196f3"/>
+    <text x="640" y="943" font-family="Arial, sans-serif" font-size="14" fill="white">Excel</text>
+    
+    <rect x="720" y="920" width="100" height="35" rx="17" fill="#f44336"/>
+    <text x="755" y="943" font-family="Arial, sans-serif" font-size="14" fill="white">PDF</text>
+    
+    <rect x="1250" y="920" width="140" height="35" rx="17" fill="#1976d2"/>
+    <text x="1275" y="943" font-family="Arial, sans-serif" font-size="14" fill="white">리포트 생성</text>
+  </g>
+</svg>
