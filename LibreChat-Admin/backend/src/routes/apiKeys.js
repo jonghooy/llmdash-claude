@@ -223,8 +223,20 @@ router.post('/test', async (req, res) => {
   try {
     const { provider, apiKey } = req.body;
     
-    if (!provider || !apiKey) {
-      return res.status(400).json({ error: 'Provider and API key are required' });
+    if (!provider) {
+      return res.status(400).json({ error: 'Provider is required' });
+    }
+    
+    let keyToTest = apiKey;
+    
+    // If no key provided, try to use the stored key
+    if (!keyToTest || keyToTest === 'use-stored-key') {
+      const existingKey = await ApiKey.findOne({ provider });
+      if (!existingKey || existingKey.displayKey === 'Not configured') {
+        return res.status(400).json({ error: 'No API key found. Please save a key first.' });
+      }
+      // Get the decrypted key
+      keyToTest = existingKey.getDecryptedKey ? existingKey.getDecryptedKey() : existingKey.apiKey;
     }
     
     let testResult;
@@ -232,13 +244,13 @@ router.post('/test', async (req, res) => {
     // Test the API key based on provider
     switch (provider) {
       case 'openai':
-        testResult = await testOpenAIKey(apiKey);
+        testResult = await testOpenAIKey(keyToTest);
         break;
       case 'google':
-        testResult = await testGoogleKey(apiKey);
+        testResult = await testGoogleKey(keyToTest);
         break;
       case 'anthropic':
-        testResult = await testAnthropicKey(apiKey);
+        testResult = await testAnthropicKey(keyToTest);
         break;
       default:
         return res.status(400).json({ error: 'Invalid provider' });
@@ -246,7 +258,7 @@ router.post('/test', async (req, res) => {
     
     // Update the stored key's validation status if it exists
     const existingKey = await ApiKey.findOne({ provider });
-    if (existingKey && existingKey.displayKey === (apiKey.length > 10 ? apiKey.slice(0, 6) + '...' + apiKey.slice(-4) : 'Key set')) {
+    if (existingKey) {
       existingKey.isValid = testResult.isValid;
       existingKey.lastTested = new Date();
       existingKey.testResult = testResult.message;

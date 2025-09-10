@@ -3,10 +3,11 @@ const crypto = require('crypto');
 
 // Encryption helpers
 const algorithm = 'aes-256-gcm';
-const secretKey = process.env.ENCRYPTION_KEY || crypto.randomBytes(32).toString('hex').slice(0, 32);
-const iv = crypto.randomBytes(16);
+// Use a fixed default key if not provided (in production, always set ENCRYPTION_KEY env var)
+const secretKey = process.env.ENCRYPTION_KEY || 'default-encryption-key-change-me'.padEnd(32, '0').slice(0, 32);
 
 function encrypt(text) {
+  const iv = crypto.randomBytes(16); // Generate new IV for each encryption
   const cipher = crypto.createCipheriv(algorithm, Buffer.from(secretKey, 'utf8'), iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
@@ -93,15 +94,8 @@ const ApiKeySchema = new mongoose.Schema({
 // Update timestamp on save
 ApiKeySchema.pre('save', function(next) {
   this.updatedAt = new Date();
-  // Mask the API key for display (show only first 6 and last 4 characters)
-  if (this.isModified('apiKey')) {
-    const rawKey = this.apiKey;
-    if (rawKey && rawKey.length > 10) {
-      this.displayKey = rawKey.slice(0, 6) + '...' + rawKey.slice(-4);
-    } else {
-      this.displayKey = 'Key set';
-    }
-  }
+  // displayKey should be set by the route, not here
+  // because at this point apiKey is already encrypted
   next();
 });
 
