@@ -1,1 +1,1 @@
-💰 OpenAI 공식 문서 기반 GPT-5 및 GPT-4.1 가격 업데이트
+🔐 Model Permissions 페이지 구현 - 모델 활성화/비활성화 기능 추가

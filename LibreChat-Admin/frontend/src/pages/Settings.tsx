@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import ModelManagement from './Settings/ModelManagement';
 import ModelPricing from './Settings/SimpleModelPricing';
+import ModelPermissions from './Settings/ModelPermissions';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -80,10 +81,7 @@ const SettingsPage: React.FC = () => {
         <ModelPricing />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Typography variant="h6">Model Permissions</Typography>
-        <Typography color="textSecondary">
-          Manage model access permissions. Coming soon...
-        </Typography>
+        <ModelPermissions />
       </TabPanel>
       <TabPanel value={value} index={3}>
         <Typography variant="h6">System Configuration</Typography>

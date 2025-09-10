@@ -19,6 +19,7 @@ import settingsRoutes from './routes/settings';
 import approvalRoutes from './routes/approval';
 import modelRegistryRoutes from './routes/modelRegistry';
 import modelPricingRoutes from './routes/modelPricing';
+import modelPermissionsRoutes from './routes/modelPermissions';
 
 // Import middleware
 import { authMiddleware } from './middleware/auth';
@@ -108,6 +109,7 @@ app.use('/api/approval', approvalRoutes);
 // Model management routes (accessible without auth for debugging)
 app.use('/api/model-registry', modelRegistryRoutes);
 app.use('/api/model-pricing', modelPricingRoutes);
+app.use('/api/model-permissions', modelPermissionsRoutes);
 
 // Proxy to LibreChat API
 app.use('/api/librechat', authMiddleware, createProxyMiddleware({
