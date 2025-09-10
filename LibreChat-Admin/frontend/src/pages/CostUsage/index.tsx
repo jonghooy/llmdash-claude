@@ -4,13 +4,11 @@ import {
   Paper,
   Tabs,
   Tab,
-  Typography,
-  Grid,
-  Card,
-  CardContent
+  Typography
 } from '@mui/material';
-import { BarChart, AttachMoney, TrendingUp } from '@mui/icons-material';
+import { BarChart, AttachMoney } from '@mui/icons-material';
 import Usage from '../Usage';
+import CostAnalysis from '../CostAnalysis';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -29,7 +27,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`cost-usage-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box>{children}</Box>}
     </div>
   );
 }
@@ -40,84 +38,6 @@ function a11yProps(index: number) {
     'aria-controls': `cost-usage-tabpanel-${index}`,
   };
 }
-
-const CostOverview: React.FC = () => {
-  return (
-    <Box>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Total Cost (This Month)
-              </Typography>
-              <Typography variant="h4">
-                $0.00
-              </Typography>
-              <Typography variant="body2" color="success.main">
-                ↑ 0% from last month
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Average Cost per User
-              </Typography>
-              <Typography variant="h4">
-                $0.00
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                0 active users
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-        
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography color="textSecondary" gutterBottom>
-                Most Used Model
-              </Typography>
-              <Typography variant="h5">
-                N/A
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                $0.00 total cost
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      <Box sx={{ mt: 3 }}>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Cost by Model
-          </Typography>
-          <Typography color="textSecondary">
-            No cost data available yet
-          </Typography>
-        </Paper>
-      </Box>
-
-      <Box sx={{ mt: 3 }}>
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom>
-            Cost Trends
-          </Typography>
-          <Typography color="textSecondary">
-            Cost tracking will be available once models are configured
-          </Typography>
-        </Paper>
-      </Box>
-    </Box>
-  );
-};
 
 const CostUsage: React.FC = () => {
   const [value, setValue] = useState(0);
@@ -155,7 +75,7 @@ const CostUsage: React.FC = () => {
         </TabPanel>
         
         <TabPanel value={value} index={1}>
-          <CostOverview />
+          <CostAnalysis />
         </TabPanel>
       </Paper>
     </Box>

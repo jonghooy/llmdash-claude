@@ -36,7 +36,6 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
     { text: 'Cost & Usage', icon: <AttachMoney />, path: '/cost-usage', queryKey: ['usage', 'costs'] },
-    { text: 'Cost Analysis', icon: <Analytics />, path: '/cost-analysis', queryKey: ['cost-analysis'] },
     { text: 'Organization', icon: <Business />, path: '/organization', queryKey: ['users', 'pendingUsers', 'approvalStats'] },
     { text: 'Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },
   ];
