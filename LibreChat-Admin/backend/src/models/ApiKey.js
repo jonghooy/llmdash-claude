@@ -48,8 +48,7 @@ const ApiKeySchema = new mongoose.Schema({
   apiKey: {
     type: String,
     required: true,
-    set: encrypt,
-    get: decrypt
+    set: encrypt
   },
   displayKey: {
     type: String,
@@ -97,9 +96,6 @@ const ApiKeySchema = new mongoose.Schema({
     type: String,
     default: 'admin'
   }
-}, {
-  toJSON: { getters: true },
-  toObject: { getters: true }
 });
 
 // Update timestamp on save
