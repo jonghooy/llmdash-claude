@@ -9,6 +9,7 @@ import {
 import ModelManagement from './Settings/ModelManagement';
 import ModelPricing from './Settings/SimpleModelPricing';
 import ModelPermissions from './Settings/ModelPermissions';
+import ApiKeys from './Settings/ApiKeys';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -90,10 +91,7 @@ const SettingsPage: React.FC = () => {
         </Typography>
       </TabPanel>
       <TabPanel value={value} index={4}>
-        <Typography variant="h6">API Keys</Typography>
-        <Typography color="textSecondary">
-          Manage API keys and integrations. Coming soon...
-        </Typography>
+        <ApiKeys />
       </TabPanel>
     </Box>
   );
