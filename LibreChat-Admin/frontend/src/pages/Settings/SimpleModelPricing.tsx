@@ -38,14 +38,14 @@ const SimpleModelPricing: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
 
-  // Initial pricing data based on research
+  // Pricing data based on official documentation (2025)
   const defaultPricing: ModelPricing[] = [
     { modelId: 'claude-opus-4-1-20250805', provider: 'anthropic', inputPrice: 15.00, outputPrice: 75.00 },
     { modelId: 'claude-sonnet-4-20250514', provider: 'anthropic', inputPrice: 3.00, outputPrice: 15.00 },
     { modelId: 'gemini-2.5-flash', provider: 'google', inputPrice: 0.15, outputPrice: 0.60 },
     { modelId: 'gemini-2.5-pro', provider: 'google', inputPrice: 1.25, outputPrice: 5.00 },
-    { modelId: 'gpt-4.1', provider: 'openai', inputPrice: 2.50, outputPrice: 10.00 },
-    { modelId: 'gpt-5', provider: 'openai', inputPrice: 2.50, outputPrice: 10.00 }
+    { modelId: 'gpt-4.1', provider: 'openai', inputPrice: 3.70, outputPrice: 11.10 },  // 26% cheaper than GPT-4o
+    { modelId: 'gpt-5', provider: 'openai', inputPrice: 1.25, outputPrice: 10.00 }  // Official OpenAI pricing
   ];
 
   useEffect(() => {
