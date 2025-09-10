@@ -13,20 +13,13 @@ router.get('/', async (req, res) => {
     if (status) filter.status = status;
     if (tier) filter['features.tier'] = tier;
     
-    const pricings = await ModelPricing.find(filter).sort({ createdAt: -1 });
+    const pricings = await ModelPricing.find(filter).sort({ modelId: 1 });
     
-    res.json({
-      success: true,
-      data: pricings,
-      count: pricings.length
-    });
+    // Return array directly for simple frontend
+    res.json(pricings);
   } catch (error) {
     console.error('Error fetching model pricing:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch model pricing',
-      error: error.message
-    });
+    res.status(500).json([]);
   }
 });
 
@@ -82,47 +75,40 @@ router.get('/by-model/:modelId', async (req, res) => {
   }
 });
 
-// POST /api/model-pricing - Create new model pricing entry
+// POST /api/model-pricing - Create or update model pricing entry
 router.post('/', async (req, res) => {
   try {
-    const pricingData = req.body;
+    const { modelId, provider, inputPrice, outputPrice, currency = 'USD', unit = 'per_million_tokens' } = req.body;
     
-    // Check if modelId already exists
-    const existingPricing = await ModelPricing.findOne({ modelId: pricingData.modelId });
-    if (existingPricing) {
-      return res.status(400).json({
-        success: false,
-        message: 'Pricing for this model ID already exists'
-      });
-    }
+    // Upsert pricing data
+    const pricing = await ModelPricing.findOneAndUpdate(
+      { modelId },
+      {
+        modelId,
+        provider,
+        inputPrice,
+        outputPrice,
+        currency,
+        unit,
+        updatedAt: new Date()
+      },
+      { 
+        new: true, 
+        upsert: true,
+        setDefaultsOnInsert: true
+      }
+    );
     
-    // Set lastUpdated in pricing object
-    if (pricingData.pricing) {
-      pricingData.pricing.lastUpdated = new Date();
-    }
-    
-    const pricing = new ModelPricing(pricingData);
-    await pricing.save();
-    
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       data: pricing,
-      message: 'Model pricing entry created successfully'
+      message: 'Model pricing updated successfully'
     });
   } catch (error) {
-    console.error('Error creating model pricing entry:', error);
-    
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation error',
-        errors: Object.values(error.errors).map(err => err.message)
-      });
-    }
-    
+    console.error('Error updating model pricing:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create model pricing entry',
+      message: 'Failed to update model pricing',
       error: error.message
     });
   }

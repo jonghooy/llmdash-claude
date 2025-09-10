@@ -7,7 +7,7 @@ import {
   Typography
 } from '@mui/material';
 import ModelManagement from './Settings/ModelManagement';
-import ModelPricing from './Settings/ModelPricing';
+import ModelPricing from './Settings/SimpleModelPricing';
 
 interface TabPanelProps {
   children?: React.ReactNode;
