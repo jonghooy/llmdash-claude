@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/jonghooy/work/llmdash-claude/LibreChat-Admin/backend/api/logs/.86f6d11557317a795b778e93bd18092c300b58ee-audit.json",
+    "files": [
+        {
+            "date": 1757524378339,
+            "name": "/home/jonghooy/work/llmdash-claude/LibreChat-Admin/backend/api/logs/meiliSync-2025-09-11.log",
+            "hash": "5b8bb50920e0a0b2abbaa102f4857e254e4b6ce350d8aff905a9906e4613c032"
+        }
+    ],
+    "hashType": "sha256"
+}

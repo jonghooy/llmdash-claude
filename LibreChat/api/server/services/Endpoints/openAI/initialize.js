@@ -8,6 +8,7 @@ const {
   createHandleLLMNewToken,
 } = require('@librechat/api');
 const { getUserKeyValues, checkUserKeyExpiry } = require('~/server/services/UserService');
+const { getAdminApiKeys } = require('~/server/services/AdminApiKeys');
 const OpenAIClient = require('~/app/clients/OpenAIClient');
 
 const initializeClient = async ({
@@ -33,8 +34,11 @@ const initializeClient = async ({
   const endpoint = overrideEndpoint ?? req.body.endpoint;
   const contextStrategy = isEnabled(OPENAI_SUMMARIZE) ? 'summarize' : null;
 
+  // Try to get API keys from admin panel first, fallback to env vars
+  const adminKeys = await getAdminApiKeys();
+  
   const credentials = {
-    [EModelEndpoint.openAI]: OPENAI_API_KEY,
+    [EModelEndpoint.openAI]: adminKeys.openai || OPENAI_API_KEY,
     [EModelEndpoint.azureOpenAI]: AZURE_API_KEY,
   };
 

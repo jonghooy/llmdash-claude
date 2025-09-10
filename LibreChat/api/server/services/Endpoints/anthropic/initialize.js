@@ -1,17 +1,23 @@
 const { EModelEndpoint } = require('librechat-data-provider');
 const { getUserKey, checkUserKeyExpiry } = require('~/server/services/UserService');
+const { getAdminApiKeys } = require('~/server/services/AdminApiKeys');
 const { getLLMConfig } = require('~/server/services/Endpoints/anthropic/llm');
 const AnthropicClient = require('~/app/clients/AnthropicClient');
 
 const initializeClient = async ({ req, res, endpointOption, overrideModel, optionsOnly }) => {
   const appConfig = req.config;
   const { ANTHROPIC_API_KEY, ANTHROPIC_REVERSE_PROXY, PROXY } = process.env;
+  
+  // Try to get API keys from admin panel first, fallback to env vars
+  const adminKeys = await getAdminApiKeys();
+  const effectiveAnthropicKey = adminKeys.anthropic || ANTHROPIC_API_KEY;
+  
   const expiresAt = req.body.key;
-  const isUserProvided = ANTHROPIC_API_KEY === 'user_provided';
+  const isUserProvided = effectiveAnthropicKey === 'user_provided';
 
   const anthropicApiKey = isUserProvided
     ? await getUserKey({ userId: req.user.id, name: EModelEndpoint.anthropic })
-    : ANTHROPIC_API_KEY;
+    : effectiveAnthropicKey;
 
   if (!anthropicApiKey) {
     throw new Error('Anthropic API key not provided. Please provide it again.');

@@ -2,11 +2,17 @@ const path = require('path');
 const { EModelEndpoint, AuthKeys } = require('librechat-data-provider');
 const { getGoogleConfig, isEnabled, loadServiceKey } = require('@librechat/api');
 const { getUserKey, checkUserKeyExpiry } = require('~/server/services/UserService');
+const { getAdminApiKeys } = require('~/server/services/AdminApiKeys');
 const { GoogleClient } = require('~/app');
 
 const initializeClient = async ({ req, res, endpointOption, overrideModel, optionsOnly }) => {
   const { GOOGLE_KEY, GOOGLE_REVERSE_PROXY, GOOGLE_AUTH_HEADER, PROXY } = process.env;
-  const isUserProvided = GOOGLE_KEY === 'user_provided';
+  
+  // Try to get API keys from admin panel first, fallback to env vars
+  const adminKeys = await getAdminApiKeys();
+  const effectiveGoogleKey = adminKeys.google || GOOGLE_KEY;
+  
+  const isUserProvided = effectiveGoogleKey === 'user_provided';
   const { key: expiresAt } = req.body;
 
   let userKey = null;
@@ -19,7 +25,7 @@ const initializeClient = async ({ req, res, endpointOption, overrideModel, optio
 
   /** Check if GOOGLE_KEY is provided at all (including 'user_provided') */
   const isGoogleKeyProvided =
-    (GOOGLE_KEY && GOOGLE_KEY.trim() !== '') || (isUserProvided && userKey != null);
+    (effectiveGoogleKey && effectiveGoogleKey.trim() !== '') || (isUserProvided && userKey != null);
 
   if (!isGoogleKeyProvided) {
     /** Only attempt to load service key if GOOGLE_KEY is not provided */
@@ -41,7 +47,7 @@ const initializeClient = async ({ req, res, endpointOption, overrideModel, optio
     ? userKey
     : {
         [AuthKeys.GOOGLE_SERVICE_KEY]: serviceKey,
-        [AuthKeys.GOOGLE_API_KEY]: GOOGLE_KEY,
+        [AuthKeys.GOOGLE_API_KEY]: effectiveGoogleKey,
       };
 
   let clientOptions = {};

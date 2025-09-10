@@ -6,6 +6,7 @@ import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
 import Organization from './pages/Organization';
 import CostUsage from './pages/CostUsage';
+import CostAnalysis from './pages/CostAnalysis';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/authStore';
@@ -36,6 +37,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/cost-usage" element={<CostUsage />} />
+            <Route path="/cost-analysis" element={<CostAnalysis />} />
             <Route path="/organization" element={<Organization />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" />} />
