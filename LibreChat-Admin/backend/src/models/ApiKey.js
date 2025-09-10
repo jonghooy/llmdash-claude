@@ -16,15 +16,26 @@ function encrypt(text) {
 }
 
 function decrypt(text) {
-  const parts = text.split(':');
-  const iv = Buffer.from(parts[0], 'hex');
-  const authTag = Buffer.from(parts[1], 'hex');
-  const encrypted = parts[2];
-  const decipher = crypto.createDecipheriv(algorithm, Buffer.from(secretKey, 'utf8'), iv);
-  decipher.setAuthTag(authTag);
-  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+  try {
+    if (!text || typeof text !== 'string') {
+      throw new Error('Invalid encrypted text');
+    }
+    const parts = text.split(':');
+    if (parts.length !== 3) {
+      throw new Error('Invalid encrypted format');
+    }
+    const iv = Buffer.from(parts[0], 'hex');
+    const authTag = Buffer.from(parts[1], 'hex');
+    const encrypted = parts[2];
+    const decipher = crypto.createDecipheriv(algorithm, Buffer.from(secretKey, 'utf8'), iv);
+    decipher.setAuthTag(authTag);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (error) {
+    console.error('Decryption error:', error.message);
+    throw error;
+  }
 }
 
 const ApiKeySchema = new mongoose.Schema({
@@ -108,7 +119,15 @@ ApiKeySchema.methods.toJSON = function() {
 
 // Method to get decrypted API key
 ApiKeySchema.methods.getDecryptedKey = function() {
-  return decrypt(this.apiKey);
+  if (!this.apiKey) {
+    return null;
+  }
+  try {
+    return decrypt(this.apiKey);
+  } catch (error) {
+    console.error('Error decrypting API key:', error.message);
+    return null;
+  }
 };
 
 module.exports = mongoose.model('ApiKey', ApiKeySchema);

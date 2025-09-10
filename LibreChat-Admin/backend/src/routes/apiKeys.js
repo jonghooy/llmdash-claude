@@ -236,7 +236,11 @@ router.post('/test', async (req, res) => {
         return res.status(400).json({ error: 'No API key found. Please save a key first.' });
       }
       // Get the decrypted key
-      keyToTest = existingKey.getDecryptedKey ? existingKey.getDecryptedKey() : existingKey.apiKey;
+      const decryptedKey = existingKey.getDecryptedKey ? existingKey.getDecryptedKey() : null;
+      if (!decryptedKey) {
+        return res.status(400).json({ error: 'Unable to decrypt stored API key. Please re-save the key.' });
+      }
+      keyToTest = decryptedKey;
     }
     
     let testResult;
