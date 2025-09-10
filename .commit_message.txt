@@ -1,1 +1,1 @@
-🔐 Model Permissions 페이지 구현 - 모델 활성화/비활성화 기능 추가
+🔧 Model Permissions API 경로 수정 - Production 환경 호환성 개선

@@ -83,7 +83,11 @@ const ModelPermissions: React.FC = () => {
     setMessage(null);
     
     try {
-      const response = await fetch('/api/model-permissions');
+      // Use full path for production
+      const apiUrl = window.location.hostname === 'localhost' 
+        ? '/api/model-permissions'
+        : '/admin/api/model-permissions';
+      const response = await fetch(apiUrl);
       
       if (response.ok) {
         const data = await response.json();
@@ -131,7 +135,11 @@ const ModelPermissions: React.FC = () => {
 
   const updatePermission = async (modelId: string, enabled: boolean, reason: string, provider: string) => {
     try {
-      const response = await fetch(`/api/model-permissions/${modelId}/toggle`, {
+      // Use full path for production
+      const apiUrl = window.location.hostname === 'localhost'
+        ? `/api/model-permissions/${modelId}/toggle`
+        : `/admin/api/model-permissions/${modelId}/toggle`;
+      const response = await fetch(apiUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
