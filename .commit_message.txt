@@ -1,1 +1,1 @@
-🎨 Cost Analysis를 Cost & Usage 페이지의 탭으로 통합
+🏢 Organization 메뉴에 사업부 및 팀 관리 기능 추가

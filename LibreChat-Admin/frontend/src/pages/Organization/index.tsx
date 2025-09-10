@@ -6,9 +6,10 @@ import {
   Tab,
   Typography
 } from '@mui/material';
-import { People, HowToReg } from '@mui/icons-material';
+import { People, HowToReg, Business } from '@mui/icons-material';
 import Users from '../Users';
 import Approvals from '../Approvals';
+import DepartmentManagement from './DepartmentManagement';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -67,6 +68,12 @@ const Organization: React.FC = () => {
               iconPosition="start"
               {...a11yProps(1)} 
             />
+            <Tab 
+              label="Departments & Teams" 
+              icon={<Business />}
+              iconPosition="start"
+              {...a11yProps(2)} 
+            />
           </Tabs>
         </Box>
         
@@ -76,6 +83,10 @@ const Organization: React.FC = () => {
         
         <TabPanel value={value} index={1}>
           <Approvals />
+        </TabPanel>
+        
+        <TabPanel value={value} index={2}>
+          <DepartmentManagement />
         </TabPanel>
       </Paper>
     </Box>

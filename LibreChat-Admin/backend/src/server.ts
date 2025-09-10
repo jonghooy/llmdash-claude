@@ -22,6 +22,7 @@ import modelPricingRoutes from './routes/modelPricing';
 import modelPermissionsRoutes from './routes/modelPermissions';
 import apiKeysRoutes from './routes/apiKeys';
 import costAnalysisRoutes from './routes/costAnalysis';
+const departmentsRoutes = require('./routes/departments');
 
 // Import middleware
 import { authMiddleware } from './middleware/auth';
@@ -114,6 +115,7 @@ app.use('/api/model-pricing', modelPricingRoutes);
 app.use('/api/model-permissions', modelPermissionsRoutes);
 app.use('/api/api-keys', apiKeysRoutes);
 app.use('/api/cost-analysis', costAnalysisRoutes);
+app.use('/api/departments', authMiddleware, departmentsRoutes);
 
 // Proxy to LibreChat API
 app.use('/api/librechat', authMiddleware, createProxyMiddleware({
