@@ -1,1 +1,1 @@
-🏢 Organization 메뉴에 사업부 및 팀 관리 기능 추가
+⚙️ System Configuration을 별도 메뉴로 분리 및 Model Settings 재구성

@@ -18,6 +18,7 @@ import {
   AttachMoney,
   Analytics,
   Settings,
+  SettingsApplications,
   Logout
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
@@ -37,7 +38,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
     { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
     { text: 'Cost & Usage', icon: <AttachMoney />, path: '/cost-usage', queryKey: ['usage', 'costs'] },
     { text: 'Organization', icon: <Business />, path: '/organization', queryKey: ['users', 'pendingUsers', 'approvalStats'] },
-    { text: 'Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },
+    { text: 'Model Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },
+    { text: 'System Config', icon: <SettingsApplications />, path: '/system-config', queryKey: ['systemConfig'] },
   ];
 
   const handleNavigation = (path: string, queryKeys?: string[]) => {

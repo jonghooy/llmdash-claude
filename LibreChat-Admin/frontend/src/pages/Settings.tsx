@@ -54,7 +54,7 @@ const SettingsPage: React.FC = () => {
   return (
     <Box sx={{ width: '100%' }}>
       <Typography variant="h4" component="h1" gutterBottom>
-        Settings
+        Model Settings
       </Typography>
       
       <Paper sx={{ width: '100%', mb: 2 }}>
@@ -70,8 +70,7 @@ const SettingsPage: React.FC = () => {
           <Tab label="Model Management" {...a11yProps(0)} />
           <Tab label="Model Pricing" {...a11yProps(1)} />
           <Tab label="Model Permissions" {...a11yProps(2)} />
-          <Tab label="System Configuration" {...a11yProps(3)} />
-          <Tab label="API Keys" {...a11yProps(4)} />
+          <Tab label="API Keys" {...a11yProps(3)} />
         </Tabs>
       </Paper>
 
@@ -85,12 +84,6 @@ const SettingsPage: React.FC = () => {
         <ModelPermissions />
       </TabPanel>
       <TabPanel value={value} index={3}>
-        <Typography variant="h6">System Configuration</Typography>
-        <Typography color="textSecondary">
-          Configure system settings. Coming soon...
-        </Typography>
-      </TabPanel>
-      <TabPanel value={value} index={4}>
         <ApiKeys />
       </TabPanel>
     </Box>
