@@ -14,11 +14,10 @@ import {
 } from '@mui/material';
 import {
   Dashboard,
-  People,
-  BarChart,
+  Business,
+  AttachMoney,
   Settings,
-  Logout,
-  HowToReg
+  Logout
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -35,9 +34,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
 
   const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
-    { text: 'Users', icon: <People />, path: '/users', queryKey: ['users'] },
-    { text: 'Approvals', icon: <HowToReg />, path: '/approvals', queryKey: ['pendingUsers', 'approvalStats'] },
-    { text: 'Usage', icon: <BarChart />, path: '/usage', queryKey: ['usage'] },
+    { text: 'Cost & Usage', icon: <AttachMoney />, path: '/cost-usage', queryKey: ['usage', 'costs'] },
+    { text: 'Organization', icon: <Business />, path: '/organization', queryKey: ['users', 'pendingUsers', 'approvalStats'] },
     { text: 'Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },
   ];
 

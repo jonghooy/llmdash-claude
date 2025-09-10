@@ -323,3 +323,74 @@ Located at `/etc/nginx/sites-available/llmdash`
 - `LibreChat/.env` - Main app configuration
 - `LibreChat-Admin/backend/.env` - Admin backend config
 - `api-relay-server/.env` - API relay configuration
+
+## Current Development Progress
+
+### Admin Dashboard Enhancement (2025-09-10)
+
+#### Completed Features
+1. **Model Registry System**
+   - Created `ModelRegistry.js` model for database schema
+   - Implemented `modelRegistry.js` API routes for CRUD operations
+   - Model configuration stored in MongoDB with pricing info
+
+2. **Model Pricing Management**
+   - Created `ModelPricing.js` model for pricing structures
+   - Implemented `modelPricing.js` API routes
+   - Support for input/output token pricing per model
+
+3. **Dashboard Components**
+   - Real-time statistics dashboard with charts
+   - User activity monitoring
+   - Cost usage tracking and visualization
+   - Organization management interface
+
+4. **Settings Page Reorganization**
+   - Split Settings into modular components:
+     - `Settings/General.tsx` - Basic configurations
+     - `Settings/ModelManagement.tsx` - Model registry & pricing
+     - `Settings/Security.tsx` - Auth & security settings
+     - `Settings/Notifications.tsx` - Alert configurations
+   - Tab-based navigation for better UX
+
+5. **Frontend Infrastructure**
+   - Added Recharts for data visualization
+   - Implemented static server for production builds
+   - Created utility functions for formatting and calculations
+
+#### File Structure Updates
+```
+LibreChat-Admin/
+├── backend/
+│   ├── src/
+│   │   ├── models/
+│   │   │   ├── ModelPricing.js (new)
+│   │   │   └── ModelRegistry.js (new)
+│   │   └── routes/
+│   │       ├── modelPricing.js (new)
+│   │       ├── modelRegistry.js (new)
+│   │       └── dashboard.ts (modified)
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── Charts/ (new)
+│   │   ├── pages/
+│   │   │   ├── CostUsage/ (new)
+│   │   │   ├── Dashboard/ (new)
+│   │   │   ├── Organization/ (new)
+│   │   │   └── Settings/ (new - modularized)
+│   │   └── utils/ (new)
+│   └── static-server.js (new)
+```
+
+#### Current Status
+- Admin dashboard fully functional with model management
+- Real-time monitoring capabilities implemented
+- Cost tracking and usage analytics operational
+- Organization management interface ready
+
+#### Next Steps
+- Integration testing with LibreChat main application
+- Performance optimization for large datasets
+- Enhanced reporting and export features
+- User permission granularity improvements

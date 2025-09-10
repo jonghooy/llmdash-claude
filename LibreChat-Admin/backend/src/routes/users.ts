@@ -18,10 +18,11 @@ router.get('/', async (req, res) => {
     } = req.query;
     
     const query: any = {
-      // Exclude pending users - they should only appear in Approvals page
+      // Exclude only pending users - they should only appear in Approvals page
       $or: [
         { approvalStatus: 'approved' },
-        { approvalStatus: { $exists: false }, role: { $in: ['ADMIN', 'admin'] } } // Admin users without approvalStatus
+        { approvalStatus: { $exists: false } }, // Users without approvalStatus field (legacy users)
+        { approvalStatus: { $ne: 'pending' } } // Any status except pending
       ]
     };
     

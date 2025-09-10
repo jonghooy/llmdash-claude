@@ -2,319 +2,103 @@ import React, { useState } from 'react';
 import {
   Box,
   Paper,
-  Typography,
-  TextField,
-  Button,
-  Grid,
-  Divider,
-  Switch,
-  FormControlLabel,
-  Alert,
-  Snackbar,
-  Card,
-  CardContent,
-  Slider
+  Tabs,
+  Tab,
+  Typography
 } from '@mui/material';
-import { Save } from '@mui/icons-material';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import axios from 'axios';
+import ModelManagement from './Settings/ModelManagement';
+import ModelPricing from './Settings/ModelPricing';
 
-interface Settings {
-  rateLimits: {
-    messagePerMinute: number;
-    tokensPerDay: number;
-    concurrentRequests: number;
-  };
-  models: {
-    openai: string[];
-    anthropic: string[];
-    google: string[];
-  };
-  features: {
-    registration: boolean;
-    socialLogin: boolean;
-    fileUpload: boolean;
-    plugins: boolean;
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`settings-tabpanel-${index}`}
+      aria-labelledby={`settings-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ py: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `settings-tab-${index}`,
+    'aria-controls': `settings-tabpanel-${index}`,
   };
 }
 
-const Settings: React.FC = () => {
-  const [settings, setSettings] = useState<Settings | null>(null);
-  const [successMessage, setSuccessMessage] = useState('');
+const SettingsPage: React.FC = () => {
+  const [value, setValue] = useState(0);
 
-  const { isLoading } = useQuery<Settings>({
-    queryKey: ['settings'],
-    queryFn: async () => {
-      const token = localStorage.getItem('admin_token');
-      const response = await axios.get('/admin/api/settings', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setSettings(response.data);
-      return response.data;
-    }
-  });
-
-  const updateSettings = useMutation({
-    mutationFn: async (updatedSettings: Settings) => {
-      const token = localStorage.getItem('admin_token');
-      await axios.put(
-        '/admin/api/settings',
-        updatedSettings,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-    },
-    onSuccess: () => {
-      setSuccessMessage('Settings updated successfully');
-    }
-  });
-
-  const handleSave = () => {
-    if (settings) {
-      updateSettings.mutate(settings);
-    }
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
   };
-
-  const handleRateLimitChange = (field: string, value: number) => {
-    if (settings) {
-      setSettings({
-        ...settings,
-        rateLimits: {
-          ...settings.rateLimits,
-          [field]: value
-        }
-      });
-    }
-  };
-
-  const handleFeatureToggle = (feature: string) => {
-    if (settings) {
-      setSettings({
-        ...settings,
-        features: {
-          ...settings.features,
-          [feature]: !settings.features[feature as keyof typeof settings.features]
-        }
-      });
-    }
-  };
-
-  if (isLoading || !settings) {
-    return <Typography>Loading settings...</Typography>;
-  }
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">
-          Settings
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<Save />}
-          onClick={handleSave}
-          disabled={updateSettings.isPending}
+    <Box sx={{ width: '100%' }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Settings
+      </Typography>
+      
+      <Paper sx={{ width: '100%', mb: 2 }}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="scrollable"
+          scrollButtons="auto"
+          aria-label="settings tabs"
         >
-          Save Changes
-        </Button>
-      </Box>
+          <Tab label="Model Management" {...a11yProps(0)} />
+          <Tab label="Model Pricing" {...a11yProps(1)} />
+          <Tab label="Model Permissions" {...a11yProps(2)} />
+          <Tab label="System Configuration" {...a11yProps(3)} />
+          <Tab label="API Keys" {...a11yProps(4)} />
+        </Tabs>
+      </Paper>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Rate Limits
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <Box sx={{ mb: 3 }}>
-                <Typography gutterBottom>
-                  Messages per Minute: {settings.rateLimits.messagePerMinute}
-                </Typography>
-                <Slider
-                  value={settings.rateLimits.messagePerMinute}
-                  onChange={(_, value) => handleRateLimitChange('messagePerMinute', value as number)}
-                  min={1}
-                  max={60}
-                  valueLabelDisplay="auto"
-                />
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography gutterBottom>
-                  Tokens per Day: {settings.rateLimits.tokensPerDay.toLocaleString()}
-                </Typography>
-                <Slider
-                  value={settings.rateLimits.tokensPerDay}
-                  onChange={(_, value) => handleRateLimitChange('tokensPerDay', value as number)}
-                  min={1000}
-                  max={1000000}
-                  step={1000}
-                  valueLabelDisplay="auto"
-                />
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography gutterBottom>
-                  Concurrent Requests: {settings.rateLimits.concurrentRequests}
-                </Typography>
-                <Slider
-                  value={settings.rateLimits.concurrentRequests}
-                  onChange={(_, value) => handleRateLimitChange('concurrentRequests', value as number)}
-                  min={1}
-                  max={20}
-                  valueLabelDisplay="auto"
-                />
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Features
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={settings.features.registration}
-                    onChange={() => handleFeatureToggle('registration')}
-                  />
-                }
-                label="User Registration"
-              />
-              
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={settings.features.socialLogin}
-                    onChange={() => handleFeatureToggle('socialLogin')}
-                  />
-                }
-                label="Social Login"
-              />
-              
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={settings.features.fileUpload}
-                    onChange={() => handleFeatureToggle('fileUpload')}
-                  />
-                }
-                label="File Upload"
-              />
-              
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={settings.features.plugins}
-                    onChange={() => handleFeatureToggle('plugins')}
-                  />
-                }
-                label="Plugins"
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Available Models
-              </Typography>
-              <Divider sx={{ mb: 2 }} />
-              
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    OpenAI Models
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    value={settings.models.openai.join('\n')}
-                    onChange={(e) => {
-                      setSettings({
-                        ...settings,
-                        models: {
-                          ...settings.models,
-                          openai: e.target.value.split('\n').filter(m => m.trim())
-                        }
-                      });
-                    }}
-                  />
-                </Grid>
-                
-                <Grid item xs={12} md={4}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Anthropic Models
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    value={settings.models.anthropic.join('\n')}
-                    onChange={(e) => {
-                      setSettings({
-                        ...settings,
-                        models: {
-                          ...settings.models,
-                          anthropic: e.target.value.split('\n').filter(m => m.trim())
-                        }
-                      });
-                    }}
-                  />
-                </Grid>
-                
-                <Grid item xs={12} md={4}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Google Models
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    value={settings.models.google.join('\n')}
-                    onChange={(e) => {
-                      setSettings({
-                        ...settings,
-                        models: {
-                          ...settings.models,
-                          google: e.target.value.split('\n').filter(m => m.trim())
-                        }
-                      });
-                    }}
-                  />
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      <Snackbar
-        open={!!successMessage}
-        autoHideDuration={6000}
-        onClose={() => setSuccessMessage('')}
-      >
-        <Alert severity="success" onClose={() => setSuccessMessage('')}>
-          {successMessage}
-        </Alert>
-      </Snackbar>
+      <TabPanel value={value} index={0}>
+        <ModelManagement />
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        <ModelPricing />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        <Typography variant="h6">Model Permissions</Typography>
+        <Typography color="textSecondary">
+          Manage model access permissions. Coming soon...
+        </Typography>
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        <Typography variant="h6">System Configuration</Typography>
+        <Typography color="textSecondary">
+          Configure system settings. Coming soon...
+        </Typography>
+      </TabPanel>
+      <TabPanel value={value} index={4}>
+        <Typography variant="h6">API Keys</Typography>
+        <Typography color="textSecondary">
+          Manage API keys and integrations. Coming soon...
+        </Typography>
+      </TabPanel>
     </Box>
   );
 };
 
-export default Settings;
+export default SettingsPage;

@@ -4,11 +4,10 @@ import { Box } from '@mui/material';
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
-import Users from './pages/Users';
-import Usage from './pages/Usage';
+import Organization from './pages/Organization';
+import CostUsage from './pages/CostUsage';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
-import Approvals from './pages/Approvals';
 import { useAuthStore } from './stores/authStore';
 
 function App() {
@@ -36,9 +35,8 @@ function App() {
         <Box sx={{ flexGrow: 1, p: 3, overflow: 'auto', bgcolor: 'background.default' }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/users" element={<Users />} />
-            <Route path="/usage" element={<Usage />} />
-            <Route path="/approvals" element={<Approvals />} />
+            <Route path="/cost-usage" element={<CostUsage />} />
+            <Route path="/organization" element={<Organization />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>

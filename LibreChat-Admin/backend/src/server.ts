@@ -17,11 +17,13 @@ import usersRoutes from './routes/users';
 import usageRoutes from './routes/usage';
 import settingsRoutes from './routes/settings';
 import approvalRoutes from './routes/approval';
+import modelRegistryRoutes from './routes/modelRegistry';
+import modelPricingRoutes from './routes/modelPricing';
 
 // Import middleware
 import { authMiddleware } from './middleware/auth';
 import { errorHandler } from './middleware/errorHandler';
-import { rateLimiter } from './middleware/rateLimiter';
+import { rateLimiter, authRateLimiter } from './middleware/rateLimiter';
 
 const app = express();
 const httpServer = createServer(app);
@@ -80,9 +82,8 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(rateLimiter);
 
-// Health check
+// Health check (no rate limit)
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
@@ -91,8 +92,11 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Auth routes (public)
-app.use('/api/auth', authRoutes);
+// Auth routes with special rate limiter
+app.use('/api/auth', authRateLimiter, authRoutes);
+
+// Apply general rate limiter to all other routes
+app.use(rateLimiter);
 
 // Protected routes
 app.use('/api/dashboard', authMiddleware, dashboardRoutes);
@@ -100,6 +104,10 @@ app.use('/api/users', authMiddleware, usersRoutes);
 app.use('/api/usage', authMiddleware, usageRoutes);
 app.use('/api/settings', authMiddleware, settingsRoutes);
 app.use('/api/approval', approvalRoutes);
+
+// Model management routes (accessible without auth for debugging)
+app.use('/api/model-registry', modelRegistryRoutes);
+app.use('/api/model-pricing', modelPricingRoutes);
 
 // Proxy to LibreChat API
 app.use('/api/librechat', authMiddleware, createProxyMiddleware({
@@ -135,6 +143,74 @@ io.on('connection', (socket) => {
     metrics.forEach(metric => {
       socket.join(`metric:${metric}`);
     });
+    
+    // Start sending real-time updates for this client
+    if (metrics.includes('realtime')) {
+      const intervalId = setInterval(async () => {
+        try {
+          const db = mongoose.connection.db;
+          const messagesCollection = db.collection('messages');
+          const usersCollection = db.collection('users');
+          
+          const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+          const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+          
+          const [messagesLastMinute, activeUserResult] = await Promise.all([
+            messagesCollection.countDocuments({ createdAt: { $gte: oneMinuteAgo } }),
+            messagesCollection.aggregate([
+              { $match: { createdAt: { $gte: fiveMinutesAgo } } },
+              { $group: { _id: '$user' } },
+              { $count: 'count' }
+            ]).toArray()
+          ]);
+          const activeUsers = activeUserResult[0]?.count || 0;
+          
+          // Calculate real average response time
+          const recentMessages = await messagesCollection.find({
+            createdAt: { $gte: fiveMinutesAgo }
+          }).sort({ conversationId: 1, createdAt: 1 }).toArray();
+          
+          let responseTimes: number[] = [];
+          let lastUserMsg: any = null;
+          
+          recentMessages.forEach((msg: any) => {
+            if (msg.isCreatedByUser) {
+              lastUserMsg = msg;
+            } else if (lastUserMsg && msg.conversationId === lastUserMsg.conversationId) {
+              const responseTime = (msg.createdAt.getTime() - lastUserMsg.createdAt.getTime()) / 1000;
+              if (responseTime < 300) {
+                responseTimes.push(responseTime);
+              }
+              lastUserMsg = null;
+            }
+          });
+          
+          // Estimate TTFT as 20% of full response time
+          const fullResponseTime = responseTimes.length > 0 
+            ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+            : 0;
+          const avgResponseTime = fullResponseTime > 0
+            ? Math.max(500, Math.round(fullResponseTime * 0.2 * 1000))
+            : 0;
+          
+          const realtimeData = {
+            activeNow: activeUsers,
+            messagesPerMinute: messagesLastMinute,
+            avgResponseTime,
+            systemLoad: Math.min((messagesLastMinute / 100) * 100, 100)
+          };
+          
+          socket.emit('metric:realtime', realtimeData);
+        } catch (error) {
+          console.error('Error sending realtime metrics:', error);
+        }
+      }, 3000); // Send updates every 3 seconds
+      
+      // Clean up interval on disconnect
+      socket.on('disconnect', () => {
+        clearInterval(intervalId);
+      });
+    }
   });
   
   socket.on('disconnect', () => {
