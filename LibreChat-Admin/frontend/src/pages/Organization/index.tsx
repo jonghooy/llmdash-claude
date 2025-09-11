@@ -11,83 +11,39 @@ import Users from '../Users';
 import Approvals from '../Approvals';
 import DepartmentManagement from './DepartmentManagement';
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`organization-tabpanel-${index}`}
-      aria-labelledby={`organization-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `organization-tab-${index}`,
-    'aria-controls': `organization-tabpanel-${index}`,
-  };
-}
-
 const Organization: React.FC = () => {
-  const [value, setValue] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Organization Management
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1">
+          Organization Management
+        </Typography>
+      </Box>
       
-      <Paper sx={{ width: '100%' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="organization tabs">
-            <Tab 
-              label="Users" 
-              icon={<People />} 
-              iconPosition="start"
-              {...a11yProps(0)} 
-            />
-            <Tab 
-              label="Approvals" 
-              icon={<HowToReg />}
-              iconPosition="start"
-              {...a11yProps(1)} 
-            />
-            <Tab 
-              label="Departments & Teams" 
-              icon={<Business />}
-              iconPosition="start"
-              {...a11yProps(2)} 
-            />
-          </Tabs>
+      <Paper sx={{ mb: 3 }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
+          <Tab icon={<People />} label="Users" />
+          <Tab icon={<HowToReg />} label="Approvals" />
+          <Tab icon={<Business />} label="Departments & Teams" />
+        </Tabs>
+        
+        <Box sx={{ p: 3 }}>
+          {activeTab === 0 && <Users />}
+          {activeTab === 1 && <Approvals />}
+          {activeTab === 2 && <DepartmentManagement />}
         </Box>
-        
-        <TabPanel value={value} index={0}>
-          <Users />
-        </TabPanel>
-        
-        <TabPanel value={value} index={1}>
-          <Approvals />
-        </TabPanel>
-        
-        <TabPanel value={value} index={2}>
-          <DepartmentManagement />
-        </TabPanel>
       </Paper>
     </Box>
   );

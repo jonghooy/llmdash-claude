@@ -1,1 +1,1 @@
-⚙️ System Configuration을 별도 메뉴로 분리 및 Model Settings 재구성
+🎨 모든 메뉴 페이지에 통일된 탭 UI 적용 (System Config, Model Settings, Organization, Cost & Usage)

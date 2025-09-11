@@ -17,7 +17,9 @@ import {
   Card,
   CardContent,
   CardActions,
-  Chip
+  Chip,
+  Tabs,
+  Tab
 } from '@mui/material';
 import {
   Save,
@@ -141,7 +143,7 @@ const SystemConfiguration: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [activeSection, setActiveSection] = useState<string>('general');
+  const [activeTab, setActiveTab] = useState(0);
 
   const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -209,14 +211,12 @@ const SystemConfiguration: React.FC = () => {
     }));
   };
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
   const renderGeneralSettings = () => (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          <Language sx={{ mr: 1, verticalAlign: 'middle' }} />
-          General Settings
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+    <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <TextField
@@ -306,18 +306,11 @@ const SystemConfiguration: React.FC = () => {
             </Grid>
           )}
         </Grid>
-      </CardContent>
-    </Card>
+    </Box>
   );
 
   const renderSecuritySettings = () => (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          <Security sx={{ mr: 1, verticalAlign: 'middle' }} />
-          Security Settings
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+    <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
             <TextField
@@ -426,18 +419,11 @@ const SystemConfiguration: React.FC = () => {
             />
           </Grid>
         </Grid>
-      </CardContent>
-    </Card>
+    </Box>
   );
 
   const renderStorageSettings = () => (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          <Storage sx={{ mr: 1, verticalAlign: 'middle' }} />
-          Storage Settings
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+    <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <TextField
@@ -509,18 +495,11 @@ const SystemConfiguration: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
-      </CardContent>
-    </Card>
+    </Box>
   );
 
   const renderEmailSettings = () => (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          <Email sx={{ mr: 1, verticalAlign: 'middle' }} />
-          Email Settings
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+    <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <TextField
@@ -585,18 +564,11 @@ const SystemConfiguration: React.FC = () => {
             />
           </Grid>
         </Grid>
-      </CardContent>
-    </Card>
+    </Box>
   );
 
   const renderRateLimitSettings = () => (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          <Schedule sx={{ mr: 1, verticalAlign: 'middle' }} />
-          Rate Limiting
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+    <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <TextField
@@ -638,18 +610,11 @@ const SystemConfiguration: React.FC = () => {
             />
           </Grid>
         </Grid>
-      </CardContent>
-    </Card>
+    </Box>
   );
 
   const renderLoggingSettings = () => (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          <Notifications sx={{ mr: 1, verticalAlign: 'middle' }} />
-          Logging Settings
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
+    <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
@@ -698,8 +663,7 @@ const SystemConfiguration: React.FC = () => {
             />
           </Grid>
         </Grid>
-      </CardContent>
-    </Card>
+    </Box>
   );
 
   return (
@@ -741,26 +705,29 @@ const SystemConfiguration: React.FC = () => {
         </Alert>
       )}
 
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          {renderGeneralSettings()}
-        </Grid>
-        <Grid item xs={12}>
-          {renderSecuritySettings()}
-        </Grid>
-        <Grid item xs={12}>
-          {renderStorageSettings()}
-        </Grid>
-        <Grid item xs={12}>
-          {renderEmailSettings()}
-        </Grid>
-        <Grid item xs={12}>
-          {renderRateLimitSettings()}
-        </Grid>
-        <Grid item xs={12}>
-          {renderLoggingSettings()}
-        </Grid>
-      </Grid>
+      <Paper sx={{ mb: 3 }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
+        >
+          <Tab icon={<Language />} label="General" />
+          <Tab icon={<Security />} label="Security" />
+          <Tab icon={<Storage />} label="Storage" />
+          <Tab icon={<Email />} label="Email" />
+          <Tab icon={<Schedule />} label="Rate Limiting" />
+          <Tab icon={<Notifications />} label="Logging" />
+        </Tabs>
+        
+        {activeTab === 0 && renderGeneralSettings()}
+        {activeTab === 1 && renderSecuritySettings()}
+        {activeTab === 2 && renderStorageSettings()}
+        {activeTab === 3 && renderEmailSettings()}
+        {activeTab === 4 && renderRateLimitSettings()}
+        {activeTab === 5 && renderLoggingSettings()}
+      </Paper>
     </Box>
   );
 };

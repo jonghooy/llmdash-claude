@@ -6,86 +6,55 @@ import {
   Tab,
   Typography
 } from '@mui/material';
+import {
+  ModelTraining,
+  AttachMoney,
+  Security,
+  VpnKey
+} from '@mui/icons-material';
 import ModelManagement from './Settings/ModelManagement';
 import ModelPricing from './Settings/SimpleModelPricing';
 import ModelPermissions from './Settings/ModelPermissions';
 import ApiKeys from './Settings/ApiKeys';
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`settings-tabpanel-${index}`}
-      aria-labelledby={`settings-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ py: 3 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `settings-tab-${index}`,
-    'aria-controls': `settings-tabpanel-${index}`,
-  };
-}
 
 const SettingsPage: React.FC = () => {
-  const [value, setValue] = useState(0);
+  const [activeTab, setActiveTab] = useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Model Settings
-      </Typography>
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1">
+          Model Settings
+        </Typography>
+      </Box>
       
-      <Paper sx={{ width: '100%', mb: 2 }}>
+      <Paper sx={{ mb: 3 }}>
         <Tabs
-          value={value}
-          onChange={handleChange}
-          indicatorColor="primary"
-          textColor="primary"
+          value={activeTab}
+          onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
-          aria-label="settings tabs"
+          sx={{ borderBottom: 1, borderColor: 'divider' }}
         >
-          <Tab label="Model Management" {...a11yProps(0)} />
-          <Tab label="Model Pricing" {...a11yProps(1)} />
-          <Tab label="Model Permissions" {...a11yProps(2)} />
-          <Tab label="API Keys" {...a11yProps(3)} />
+          <Tab icon={<ModelTraining />} label="Model Management" />
+          <Tab icon={<AttachMoney />} label="Model Pricing" />
+          <Tab icon={<Security />} label="Model Permissions" />
+          <Tab icon={<VpnKey />} label="API Keys" />
         </Tabs>
+        
+        <Box sx={{ p: 3 }}>
+          {activeTab === 0 && <ModelManagement />}
+          {activeTab === 1 && <ModelPricing />}
+          {activeTab === 2 && <ModelPermissions />}
+          {activeTab === 3 && <ApiKeys />}
+        </Box>
       </Paper>
-
-      <TabPanel value={value} index={0}>
-        <ModelManagement />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <ModelPricing />
-      </TabPanel>
-      <TabPanel value={value} index={2}>
-        <ModelPermissions />
-      </TabPanel>
-      <TabPanel value={value} index={3}>
-        <ApiKeys />
-      </TabPanel>
     </Box>
   );
 };
