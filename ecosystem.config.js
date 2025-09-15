@@ -62,20 +62,15 @@ module.exports = {
     // ===== LibreChat Frontend (Production) =====
     {
       name: 'librechat-frontend',
-      script: 'serve',
-      args: '-s client/dist -l 3090',
+      script: './client/static-server.cjs',
       cwd: './LibreChat',
       instances: 1,
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '512M',
-      interpreter: 'none',
       env: {
         NODE_ENV: 'production',
-        PM2_SERVE_PATH: './client/dist',
-        PM2_SERVE_PORT: 3090,
-        PM2_SERVE_SPA: 'true',
-        PM2_SERVE_HOMEPAGE: '/index.html'
+        PORT: 3095
       },
       error_file: './logs/pm2/frontend-err.log',
       out_file: './logs/pm2/frontend-out.log',

@@ -24,6 +24,7 @@ import FileFormChat from './Files/FileFormChat';
 import { cn, removeFocusRings } from '~/utils';
 import TextareaHeader from './TextareaHeader';
 import PromptsCommand from './PromptsCommand';
+import PromptSelector from '../PromptSelector';
 import AudioRecorder from './AudioRecorder';
 import CollapseChat from './CollapseChat';
 import StreamAudio from './StreamAudio';
@@ -181,6 +182,11 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
     setIsEditingBadges(false);
     setBackupBadges([]);
   }, [setIsEditingBadges, setBackupBadges]);
+  
+  const handleSelectPrompt = useCallback((prompt: string) => {
+    methods.setValue('text', prompt, { shouldValidate: true });
+    textAreaRef.current?.focus();
+  }, [methods]);
 
   const handleCancelBadges = useCallback(() => {
     if (backupBadges.length > 0) {
@@ -300,8 +306,9 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
                 isRTL ? 'flex-row-reverse' : 'flex-row',
               )}
             >
-              <div className={`${isRTL ? 'mr-2' : 'ml-2'}`}>
+              <div className={`${isRTL ? 'mr-2' : 'ml-2'} flex gap-1`}>
                 <AttachFileChat conversation={conversation} disableInputs={disableInputs} />
+                <PromptSelector onSelectPrompt={handleSelectPrompt} />
               </div>
               <BadgeRow
                 showEphemeralBadges={!isAgentsEndpoint(endpoint) && !isAssistantsEndpoint(endpoint)}

@@ -10,12 +10,16 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 3080,
-        HOST: '0.0.0.0'
+        HOST: '0.0.0.0',
+        ENABLE_ORG_MEMORY: 'true',
+        ADMIN_API_URL: 'http://localhost:5001'
       },
       env_development: {
         NODE_ENV: 'development',
         PORT: 3080,
-        HOST: '0.0.0.0'
+        HOST: '0.0.0.0',
+        ENABLE_ORG_MEMORY: 'true',
+        ADMIN_API_URL: 'http://localhost:5001'
       },
       error_file: './logs/pm2/backend-err.log',
       out_file: './logs/pm2/backend-out.log',

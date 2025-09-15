@@ -12,8 +12,13 @@ import {
   Grow,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Zoom,
+  Skeleton,
+  useTheme,
+  alpha
 } from '@mui/material';
+import { keyframes } from '@mui/system';
 import { 
   People, 
   ChatBubble, 
@@ -124,16 +129,62 @@ const DynamicDashboard: React.FC = () => {
     setAnchorEl(null);
   };
 
-  const AnimatedStatCard = ({ title, value, icon, color, subtitle, trend }: any) => (
-    <Grow in={true} timeout={1000}>
+  const theme = useTheme();
+
+  // Pulse animation for live indicators
+  const pulse = keyframes`
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  `;
+
+  // Slide in animation
+  const slideIn = keyframes`
+    from {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  `;
+
+  const AnimatedStatCard = ({ title, value, icon, color, subtitle, trend, delay = 0 }: any) => {
+    const colorPalette = theme.palette[color as keyof typeof theme.palette] as any;
+    return (
+    <Zoom in={true} timeout={500 + delay * 100}>
       <Card 
         sx={{ 
           height: '100%',
-          background: `linear-gradient(135deg, ${color}.light 0%, white 100%)`,
-          transition: 'all 0.3s ease',
+          background: `linear-gradient(135deg, ${alpha(colorPalette?.light || '#f0f0f0', 0.1)} 0%, white 100%)`,
+          border: `1px solid ${alpha(colorPalette?.main || '#333', 0.1)}`,
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          position: 'relative',
+          overflow: 'hidden',
           '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: 4
+            transform: 'translateY(-8px) scale(1.02)',
+            boxShadow: theme.shadows[8],
+            border: `1px solid ${alpha(colorPalette?.main || '#333', 0.3)}`,
+          },
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: `linear-gradient(90deg, ${colorPalette?.light || '#f0f0f0'}, ${colorPalette?.main || '#333'})`,
+            animation: `${slideIn} 1s ease-out`
           }
         }}
       >
@@ -143,16 +194,18 @@ const DynamicDashboard: React.FC = () => {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Box 
                   sx={{ 
-                    backgroundColor: `${color}.main`,
+                    background: `linear-gradient(135deg, ${colorPalette?.main || '#333'}, ${colorPalette?.dark || '#111'})`,
                     borderRadius: 2,
-                    p: 1,
+                    p: 1.5,
                     mr: 2,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    justifyContent: 'center',
+                    animation: `${pulse} 2s infinite`,
+                    boxShadow: `0 4px 12px ${alpha(colorPalette?.main || '#333', 0.3)}`
                   }}
                 >
-                  {React.cloneElement(icon, { sx: { color: 'white' } })}
+                  {React.cloneElement(icon, { sx: { color: 'white', fontSize: 28 } })}
                 </Box>
                 <Typography color="text.secondary" variant="subtitle2">
                   {title}
@@ -178,8 +231,9 @@ const DynamicDashboard: React.FC = () => {
           </Box>
         </CardContent>
       </Card>
-    </Grow>
-  );
+    </Zoom>
+    );
+  };
 
   const getSystemStatus = () => {
     if (realtimeData.systemLoad < 30) return { color: 'success', text: 'Healthy' };
@@ -223,14 +277,27 @@ const DynamicDashboard: React.FC = () => {
       </Box>
 
       {/* Real-time Metrics Bar */}
-      <Paper 
-        sx={{ 
-          p: 2, 
-          mb: 3, 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white'
-        }}
-      >
+      <Fade in={true} timeout={800}>
+        <Paper 
+          sx={{ 
+            p: 2, 
+            mb: 3, 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            position: 'relative',
+            overflow: 'hidden',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: '-100%',
+              width: '100%',
+              height: '100%',
+              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+              animation: `${slideIn} 3s infinite`
+            }
+          }}
+        >
         <Grid container spacing={3} alignItems="center">
           <Grid item xs={12} md={3}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -294,6 +361,7 @@ const DynamicDashboard: React.FC = () => {
           </Grid>
         </Grid>
       </Paper>
+    </Fade>
       
       {/* Main Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
@@ -305,6 +373,7 @@ const DynamicDashboard: React.FC = () => {
             color="primary"
             subtitle={`+${data?.users?.new || 0} today`}
             trend={5}
+            delay={0}
           />
         </Grid>
         
@@ -316,6 +385,7 @@ const DynamicDashboard: React.FC = () => {
             color="success"
             subtitle={`${realtimeData.activeNow} online now`}
             trend={12}
+            delay={1}
           />
         </Grid>
         
@@ -327,6 +397,7 @@ const DynamicDashboard: React.FC = () => {
             color="info"
             subtitle={`${realtimeData.messagesPerMinute}/min`}
             trend={-3}
+            delay={2}
           />
         </Grid>
         
@@ -336,6 +407,7 @@ const DynamicDashboard: React.FC = () => {
             value={`$${data?.costs?.month?.toFixed(2) || '0.00'}`}
             icon={<AttachMoney />}
             color="warning"
+            delay={3}
             subtitle={`$${data?.costs?.today?.toFixed(2) || '0.00'} today`}
             trend={data?.costs?.trend}
           />

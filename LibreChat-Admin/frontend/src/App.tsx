@@ -8,6 +8,8 @@ import Organization from './pages/Organization';
 import CostUsage from './pages/CostUsage';
 import Settings from './pages/Settings';
 import SystemConfiguration from './pages/SystemConfiguration';
+import Prompts from './pages/Prompts';
+import Memory from './pages/Memory';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/authStore';
 
@@ -38,6 +40,8 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/cost-usage" element={<CostUsage />} />
             <Route path="/organization" element={<Organization />} />
+            <Route path="/prompts" element={<Prompts />} />
+            <Route path="/memory" element={<Memory />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/system-config" element={<SystemConfiguration />} />
             <Route path="*" element={<Navigate to="/" />} />

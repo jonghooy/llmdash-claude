@@ -1,3 +1,4 @@
+console.log('[EditController] Module loading...');
 const { sendEvent } = require('@librechat/api');
 const { logger } = require('@librechat/data-schemas');
 const { getResponseSender } = require('librechat-data-provider');
@@ -16,6 +17,10 @@ const { createOnProgress } = require('~/server/utils');
 const { saveMessage } = require('~/models');
 
 const EditController = async (req, res, next, initializeClient) => {
+  logger.info('[EditController] ========== EDIT CONTROLLER CALLED ==========');
+  logger.info('[EditController] Endpoint:', req.body.endpoint);
+  logger.info('[EditController] Model:', req.body.model);
+  
   let {
     text,
     generation,

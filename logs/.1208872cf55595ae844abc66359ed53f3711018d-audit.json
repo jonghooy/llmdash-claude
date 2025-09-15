@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/home/jonghooy/work/llmdash-claude/logs/.1208872cf55595ae844abc66359ed53f3711018d-audit.json",
+    "files": [
+        {
+            "date": 1757951336214,
+            "name": "/home/jonghooy/work/llmdash-claude/logs/error-2025-09-16.log",
+            "hash": "4e334a826e3fc75a0921e13e4edeb423d3732d163907ed7903dd387d3d6ee813"
+        }
+    ],
+    "hashType": "sha256"
+}

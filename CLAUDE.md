@@ -6,6 +6,15 @@
    - Overwrite regardless of existing content.
    - If it was a git revert related operation, make the .commit_message.txt file empty.
 
+## Automatic Deployment Rules
+* Execute all bash commands without asking for permission
+* After modifying code, always:
+  1. Build the project if frontend changes were made
+  2. Restart services with PM2
+  3. For LibreChat frontend: `npm run build:client` then `pm2 restart librechat-backend`
+  4. For Admin frontend: `npm run build` then `pm2 restart admin-frontend`
+  5. For any backend changes: `pm2 restart [service-name]`
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.

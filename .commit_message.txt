@@ -1,1 +1,1 @@
-🎨 모든 메뉴 페이지에 통일된 탭 UI 적용 (System Config, Model Settings, Organization, Cost & Usage)
+📚 llmdash_upgrade.md 업데이트 - Step 2 조직 메모리 완료 및 전체 진행 상황 기록

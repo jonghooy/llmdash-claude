@@ -9,6 +9,11 @@
             "date": 1757524378339,
             "name": "/home/jonghooy/work/llmdash-claude/LibreChat-Admin/backend/api/logs/meiliSync-2025-09-11.log",
             "hash": "5b8bb50920e0a0b2abbaa102f4857e254e4b6ce350d8aff905a9906e4613c032"
+        },
+        {
+            "date": 1757606592438,
+            "name": "/home/jonghooy/work/llmdash-claude/LibreChat-Admin/backend/api/logs/meiliSync-2025-09-12.log",
+            "hash": "27bdbe57fc2cd6bcfd5f2390899647994f5f9a5c727058ab57ec659d54aabf9a"
         }
     ],
     "hashType": "sha256"

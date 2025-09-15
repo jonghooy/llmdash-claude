@@ -4,7 +4,8 @@ import {
   Paper,
   Tabs,
   Tab,
-  Typography
+  Typography,
+  Fade
 } from '@mui/material';
 import {
   ModelTraining,
@@ -40,7 +41,32 @@ const SettingsPage: React.FC = () => {
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          sx={{ 
+            borderBottom: 1, 
+            borderColor: 'divider',
+            '& .MuiTab-root': {
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              minHeight: 64,
+              '&:hover': {
+                backgroundColor: 'action.hover',
+                transform: 'translateY(-2px)',
+              },
+            },
+            '& .Mui-selected': {
+              fontWeight: 600,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            },
+            '& .MuiSvgIcon-root': {
+              transition: 'transform 0.3s ease',
+            },
+            '& .MuiTab-root.Mui-selected .MuiSvgIcon-root': {
+              transform: 'scale(1.2)',
+            }
+          }}
         >
           <Tab icon={<ModelTraining />} label="Model Management" />
           <Tab icon={<AttachMoney />} label="Model Pricing" />
@@ -48,11 +74,27 @@ const SettingsPage: React.FC = () => {
           <Tab icon={<VpnKey />} label="API Keys" />
         </Tabs>
         
-        <Box sx={{ p: 3 }}>
-          {activeTab === 0 && <ModelManagement />}
-          {activeTab === 1 && <ModelPricing />}
-          {activeTab === 2 && <ModelPermissions />}
-          {activeTab === 3 && <ApiKeys />}
+        <Box sx={{ p: 3, position: 'relative', minHeight: 400 }}>
+          <Fade in={activeTab === 0} timeout={500}>
+            <Box sx={{ display: activeTab === 0 ? 'block' : 'none' }}>
+              <ModelManagement />
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 1} timeout={500}>
+            <Box sx={{ display: activeTab === 1 ? 'block' : 'none' }}>
+              <ModelPricing />
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 2} timeout={500}>
+            <Box sx={{ display: activeTab === 2 ? 'block' : 'none' }}>
+              <ModelPermissions />
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 3} timeout={500}>
+            <Box sx={{ display: activeTab === 3 ? 'block' : 'none' }}>
+              <ApiKeys />
+            </Box>
+          </Fade>
         </Box>
       </Paper>
     </Box>

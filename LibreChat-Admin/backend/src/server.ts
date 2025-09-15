@@ -21,8 +21,10 @@ import modelRegistryRoutes from './routes/modelRegistry';
 import modelPricingRoutes from './routes/modelPricing';
 import modelPermissionsRoutes from './routes/modelPermissions';
 import apiKeysRoutes from './routes/apiKeys';
-import costAnalysisRoutes from './routes/costAnalysis';
+// import costAnalysisRoutes from './routes/costAnalysis';
 const departmentsRoutes = require('./routes/departments');
+const promptsRoutes = require('./routes/prompts');
+const memoryRoutes = require('./routes/memory');
 
 // Import middleware
 import { authMiddleware } from './middleware/auth';
@@ -114,8 +116,10 @@ app.use('/api/model-registry', modelRegistryRoutes);
 app.use('/api/model-pricing', modelPricingRoutes);
 app.use('/api/model-permissions', modelPermissionsRoutes);
 app.use('/api/api-keys', apiKeysRoutes);
-app.use('/api/cost-analysis', costAnalysisRoutes);
+// app.use('/api/cost-analysis', costAnalysisRoutes);
 app.use('/api/departments', authMiddleware, departmentsRoutes);
+app.use('/api/prompts', authMiddleware, promptsRoutes);
+app.use('/api/memory', memoryRoutes);  // Auth handled in route file
 
 // Proxy to LibreChat API
 app.use('/api/librechat', authMiddleware, createProxyMiddleware({

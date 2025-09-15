@@ -19,7 +19,9 @@ import {
   CardActions,
   Chip,
   Tabs,
-  Tab
+  Tab,
+  Fade,
+  Slide
 } from '@mui/material';
 import {
   Save,
@@ -711,7 +713,32 @@ const SystemConfiguration: React.FC = () => {
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
-          sx={{ borderBottom: 1, borderColor: 'divider' }}
+          sx={{ 
+            borderBottom: 1, 
+            borderColor: 'divider',
+            '& .MuiTab-root': {
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              minHeight: 64,
+              '&:hover': {
+                backgroundColor: 'action.hover',
+                transform: 'translateY(-2px)',
+              },
+            },
+            '& .Mui-selected': {
+              fontWeight: 600,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            },
+            '& .MuiSvgIcon-root': {
+              transition: 'transform 0.3s ease',
+            },
+            '& .MuiTab-root.Mui-selected .MuiSvgIcon-root': {
+              transform: 'scale(1.2)',
+            }
+          }}
         >
           <Tab icon={<Language />} label="General" />
           <Tab icon={<Security />} label="Security" />
@@ -721,12 +748,38 @@ const SystemConfiguration: React.FC = () => {
           <Tab icon={<Notifications />} label="Logging" />
         </Tabs>
         
-        {activeTab === 0 && renderGeneralSettings()}
-        {activeTab === 1 && renderSecuritySettings()}
-        {activeTab === 2 && renderStorageSettings()}
-        {activeTab === 3 && renderEmailSettings()}
-        {activeTab === 4 && renderRateLimitSettings()}
-        {activeTab === 5 && renderLoggingSettings()}
+        <Box sx={{ position: 'relative', minHeight: 400 }}>
+          <Fade in={activeTab === 0} timeout={500}>
+            <Box sx={{ display: activeTab === 0 ? 'block' : 'none' }}>
+              {renderGeneralSettings()}
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 1} timeout={500}>
+            <Box sx={{ display: activeTab === 1 ? 'block' : 'none' }}>
+              {renderSecuritySettings()}
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 2} timeout={500}>
+            <Box sx={{ display: activeTab === 2 ? 'block' : 'none' }}>
+              {renderStorageSettings()}
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 3} timeout={500}>
+            <Box sx={{ display: activeTab === 3 ? 'block' : 'none' }}>
+              {renderEmailSettings()}
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 4} timeout={500}>
+            <Box sx={{ display: activeTab === 4 ? 'block' : 'none' }}>
+              {renderRateLimitSettings()}
+            </Box>
+          </Fade>
+          <Fade in={activeTab === 5} timeout={500}>
+            <Box sx={{ display: activeTab === 5 ? 'block' : 'none' }}>
+              {renderLoggingSettings()}
+            </Box>
+          </Fade>
+        </Box>
       </Paper>
     </Box>
   );

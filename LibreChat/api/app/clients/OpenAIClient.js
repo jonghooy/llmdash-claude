@@ -1,3 +1,6 @@
+const { logger } = require('@librechat/data-schemas');
+logger.info('[OpenAIClient] Module loading at startup...');
+
 const { OllamaClient } = require('./OllamaClient');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 const { SplitStreamHandler, CustomOpenAIClient: OpenAI } = require('@librechat/agents');
@@ -41,7 +44,7 @@ const { runTitleChain } = require('./chains');
 const { tokenSplit } = require('./document');
 const BaseClient = require('./BaseClient');
 const { createLLM } = require('./llm');
-const { logger } = require('~/config');
+// const { logger } = require('~/config'); // Already imported from @librechat/data-schemas at line 1
 
 class OpenAIClient extends BaseClient {
   constructor(apiKey, options = {}) {
@@ -373,6 +376,8 @@ class OpenAIClient extends BaseClient {
   }
 
   async buildMessages(messages, parentMessageId, { promptPrefix = null }, opts) {
+    logger.info('[OpenAIClient] buildMessages called');
+    
     let orderedMessages = this.constructor.getMessagesForConversation({
       messages,
       parentMessageId,
@@ -388,6 +393,43 @@ class OpenAIClient extends BaseClient {
     if (typeof this.options.artifactsPrompt === 'string' && this.options.artifactsPrompt) {
       promptPrefix = `${promptPrefix ?? ''}\n${this.options.artifactsPrompt}`.trim();
     }
+
+    // Add organization memory context
+    logger.info('[OpenAIClient] ========== MEMORY INTEGRATION START ==========');
+    logger.info('[OpenAIClient] Request object exists:', !!this.options.req);
+    logger.info('[OpenAIClient] Request headers:', Object.keys(this.options.req?.headers || {}));
+    
+    try {
+      logger.info('[OpenAIClient] Loading OrgMemory module...');
+      const { getOrgMemoryContext } = require('~/server/services/OrgMemory');
+      
+      logger.info('[OpenAIClient] Calling getOrgMemoryContext...');
+      const orgMemoryContext = await getOrgMemoryContext(this.options.req);
+      
+      logger.info('[OpenAIClient] Memory context received:', {
+        exists: !!orgMemoryContext,
+        length: orgMemoryContext?.length || 0,
+        preview: orgMemoryContext ? orgMemoryContext.substring(0, 100) + '...' : 'none'
+      });
+      
+      if (orgMemoryContext) {
+        const originalLength = promptPrefix.length;
+        promptPrefix = `${orgMemoryContext}\n${promptPrefix}`.trim();
+        logger.info('[OpenAIClient] Prompt prefix updated:', {
+          originalLength,
+          newLength: promptPrefix.length,
+          memoryAdded: promptPrefix.length - originalLength
+        });
+        logger.info('[OpenAIClient] ✓ Organization memory successfully added to context');
+      } else {
+        logger.warn('[OpenAIClient] No organization memory context to add');
+      }
+    } catch (error) {
+      logger.error('[OpenAIClient] ✗ Error adding org memory context:', error.message);
+      logger.error('[OpenAIClient] Error stack:', error.stack);
+    }
+    
+    logger.info('[OpenAIClient] ========== MEMORY INTEGRATION END ==========');
 
     if (this.options.attachments) {
       const attachments = await this.options.attachments;

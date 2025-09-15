@@ -6,13 +6,18 @@ import {
   Typography,
   Box,
   Menu,
-  MenuItem
+  MenuItem,
+  Tooltip,
+  useTheme as useMuiTheme
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  AccountCircle
+  AccountCircle,
+  Brightness4,
+  Brightness7
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -21,6 +26,8 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const user = useAuthStore((state) => state.user);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const { isDarkMode, toggleTheme } = useTheme();
+  const muiTheme = useMuiTheme();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -31,12 +38,19 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <AppBar position="static" elevation={1}>
+    <AppBar 
+      position="static" 
+      elevation={0}
+      sx={{ 
+        backgroundColor: muiTheme.palette.background.paper,
+        borderBottom: `1px solid ${muiTheme.palette.divider}`,
+        color: muiTheme.palette.text.primary
+      }}
+    >
       <Toolbar>
         <IconButton
           size="large"
           edge="start"
-          color="inherit"
           aria-label="menu"
           onClick={onMenuClick}
           sx={{ mr: 2 }}
@@ -44,12 +58,18 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <MenuIcon />
         </IconButton>
         
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
           Admin Dashboard
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography variant="body2" sx={{ mr: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Tooltip title={isDarkMode ? "라이트 모드로 전환" : "다크 모드로 전환"}>
+            <IconButton onClick={toggleTheme} color="inherit">
+              {isDarkMode ? <Brightness7 /> : <Brightness4 />}
+            </IconButton>
+          </Tooltip>
+          
+          <Typography variant="body2" sx={{ mr: 1 }}>
             {user?.email || 'Admin'}
           </Typography>
           <IconButton
@@ -58,7 +78,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             aria-controls="menu-appbar"
             aria-haspopup="true"
             onClick={handleMenu}
-            color="inherit"
           >
             <AccountCircle />
           </IconButton>

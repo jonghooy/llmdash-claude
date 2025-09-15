@@ -28,10 +28,12 @@ const keys = require('./keys');
 const user = require('./user');
 const mcp = require('./mcp');
 const organizationAuth = require('./organizationAuth');
+const adminPrompts = require('./adminPrompts');
 
 module.exports = {
   mcp,
   organizationAuth,
+  adminPrompts,
   edit,
   auth,
   keys,

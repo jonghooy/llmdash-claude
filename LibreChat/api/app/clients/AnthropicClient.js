@@ -519,6 +519,17 @@ class AnthropicClient extends BaseClient {
     if (typeof this.options.artifactsPrompt === 'string' && this.options.artifactsPrompt) {
       promptPrefix = `${promptPrefix ?? ''}\n${this.options.artifactsPrompt}`.trim();
     }
+
+    // Add organization memory context
+    try {
+      const { getOrgMemoryContext } = require('~/server/services/OrgMemory');
+      const orgMemoryContext = await getOrgMemoryContext(this.options.req);
+      if (orgMemoryContext) {
+        promptPrefix = `${orgMemoryContext}\n${promptPrefix}`.trim();
+      }
+    } catch (error) {
+      logger.debug('[AnthropicClient] Error adding org memory context:', error.message);
+    }
     if (promptPrefix) {
       // If the prompt prefix doesn't end with the end token, add it.
       if (!promptPrefix.endsWith(`${this.endToken}`)) {
