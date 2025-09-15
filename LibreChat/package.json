@@ -164,6 +164,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.876.0",
+    "@modelcontextprotocol/sdk": "^1.18.0",
     "@smithy/eventstream-codec": "^4.0.5",
     "@smithy/signature-v4": "^5.1.3",
     "ioredis": "^5.7.0",

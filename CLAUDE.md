@@ -8,12 +8,14 @@
 
 ## Automatic Deployment Rules
 * Execute all bash commands without asking for permission
+* Execute all development tasks without asking for confirmation
 * After modifying code, always:
   1. Build the project if frontend changes were made
   2. Restart services with PM2
   3. For LibreChat frontend: `npm run build:client` then `pm2 restart librechat-backend`
   4. For Admin frontend: `npm run build` then `pm2 restart admin-frontend`
   5. For any backend changes: `pm2 restart [service-name]`
+* Automatically commit and push changes when significant work is completed
 
 # CLAUDE.md
 

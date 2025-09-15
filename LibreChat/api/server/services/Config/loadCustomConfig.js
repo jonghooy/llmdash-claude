@@ -13,6 +13,7 @@ const {
   validateSettingDefinitions,
 } = require('librechat-data-provider');
 const getLogStores = require('~/cache/getLogStores');
+const { getAdminMCPIntegration } = require('../AdminMCPIntegration');
 
 const projectRoot = path.resolve(__dirname, '..', '..', '..', '..');
 const defaultConfigPath = path.resolve(projectRoot, 'librechat.yaml');
@@ -118,6 +119,28 @@ https://www.librechat.ai/docs/configuration/stt_tts`);
   (customConfig.endpoints?.custom ?? [])
     .filter((endpoint) => endpoint.customParams)
     .forEach((endpoint) => parseCustomParams(endpoint.name, endpoint.customParams));
+
+  // Integrate MCP servers from Admin Dashboard
+  try {
+    if (process.env.ENABLE_ADMIN_MCP_INTEGRATION === 'true') {
+      const adminMCPIntegration = getAdminMCPIntegration();
+      const adminMCPServers = await adminMCPIntegration.getMCPServersForLibreChat();
+
+      if (Object.keys(adminMCPServers).length > 0) {
+        logger.info(`[LoadConfig] Integrating ${Object.keys(adminMCPServers).length} MCP servers from Admin Dashboard`);
+
+        // Merge Admin MCP servers with existing config
+        customConfig.mcpServers = {
+          ...(customConfig.mcpServers || {}),
+          ...adminMCPServers
+        };
+
+        logger.debug('[LoadConfig] MCP servers after integration:', Object.keys(customConfig.mcpServers));
+      }
+    }
+  } catch (error) {
+    logger.error('[LoadConfig] Error integrating Admin MCP servers:', error);
+  }
 
   if (customConfig.cache) {
     const cache = getLogStores(CacheKeys.STATIC_CONFIG);

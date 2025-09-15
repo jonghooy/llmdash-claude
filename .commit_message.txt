@@ -1,1 +1,1 @@
-📚 llmdash_upgrade.md 업데이트 - Step 2 조직 메모리 완료 및 전체 진행 상황 기록
+🚀 MCP 서버 관리 시스템 구현 및 LibreChat 통합 시작

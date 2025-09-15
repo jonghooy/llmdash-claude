@@ -3,6 +3,7 @@ const { logger } = require('@librechat/data-schemas');
 const { DynamicStructuredTool } = require('@langchain/core/tools');
 const { getBufferString, HumanMessage } = require('@langchain/core/messages');
 const { getOrgMemoryContext } = require('~/server/services/OrgMemory');
+const { getMCPService } = require('~/server/services/MCPService');
 const {
   sendEvent,
   createRun,
@@ -249,11 +250,11 @@ class AgentClient extends BaseClient {
     // Add organization memory context if available
     logger.info('[AgentClient] ========== CHECKING ORG MEMORY ==========');
     logger.info('[AgentClient] Request object exists:', !!this.options.req);
-    
+
     if (this.options.req && orderedMessages && orderedMessages.length > 0) {
       const lastUserMessage = orderedMessages[orderedMessages.length - 1];
       logger.info('[AgentClient] Last user message:', lastUserMessage?.text?.substring(0, 100));
-      
+
       const orgMemoryContext = await getOrgMemoryContext(this.options.req);
       if (orgMemoryContext) {
         logger.info('[AgentClient] Adding org memory context to system prompt');
@@ -264,6 +265,32 @@ class AgentClient extends BaseClient {
       }
     } else {
       logger.info('[AgentClient] No request or messages available for org memory');
+    }
+
+    // Add MCP tools context if available
+    logger.info('[AgentClient] ========== CHECKING MCP TOOLS ==========');
+    try {
+      const mcpService = getMCPService();
+
+      // Connect to all available MCP servers
+      const connectionResults = await mcpService.connectToAllServers();
+      logger.info('[AgentClient] MCP connection results:', connectionResults);
+
+      // Get available tools
+      const tools = await mcpService.getAvailableTools();
+      if (tools && tools.length > 0) {
+        logger.info(`[AgentClient] Found ${tools.length} MCP tools`);
+        const toolsContext = mcpService.formatToolsForPrompt(tools);
+        systemContent = systemContent + '\n' + toolsContext;
+
+        // Store MCP service in options for later use
+        this.mcpService = mcpService;
+        this.mcpTools = tools;
+      } else {
+        logger.info('[AgentClient] No MCP tools available');
+      }
+    } catch (error) {
+      logger.error('[AgentClient] Error setting up MCP:', error);
     }
 
     if (this.options.attachments) {

@@ -11,7 +11,8 @@ LibreChat의 개인용 기능을 기업용 팀 협업 시스템으로 전환
 ### Phase 1: 기본 인프라 구축
 - [x] Step 1: 프롬프트 라이브러리 (2-3시간) ✅ 2025-09-12 완료
 - [x] Step 2: 조직 메모리 (3-4시간) ✅ 2025-09-16 완료
-- [ ] Step 3: MCP 서버 관리 (4-5시간)
+- [x] Step 3: MCP 서버 관리 (4-5시간) ✅ 2025-09-16 완료
+- [x] Step 3.5: MCP-LibreChat 통합 ✅ 2025-09-16 완료
 - [ ] Step 4: 에이전트 관리 (1일)
 - [ ] Step 5: 권한 및 배포 시스템 (1일)
 
@@ -19,7 +20,7 @@ LibreChat의 개인용 기능을 기업용 팀 협업 시스템으로 전환
 - [x] Admin API 연동 ✅
 - [ ] 프롬프트/에이전트 동기화
 - [x] 메모리 자동 주입 ✅
-- [ ] MCP 서버 동적 로딩
+- [x] MCP 서버 동적 로딩 ✅
 
 ### Phase 3: 고급 기능
 - [ ] 워크플로우 자동화
@@ -153,24 +154,105 @@ LibreChat의 개인용 기능을 기업용 팀 협업 시스템으로 전환
 
 ---
 
-### 📋 Step 3: MCP 서버 관리 (계획)
+### ✅ Step 3: MCP 서버 관리 (2025-09-16 구현, 2025-09-16 LibreChat 통합 완료)
 
-#### 목표
-- Admin에서 MCP 서버 중앙 등록/관리
-- 팀별 MCP 서버 할당
-- 도구 사용 권한 제어
+#### 구현 완료 내역
+1. **MCPServer 모델 생성** ✅
+   - `/LibreChat-Admin/backend/src/models/MCPServer.js`
+   - 다중 연결 타입 지원 (stdio, SSE, WebSocket)
+   - 건강 상태 모니터링 및 통계 추적
+   - 접근 제어 (public/private, organization/team 기반)
+   - 도구 및 리소스 관리
+   - 설정 옵션 (timeout, retry, auto-reconnect)
 
-#### 구현 계획
-1. **MCPServer 모델**
-   - 서버 설정 정보
-   - 연결 타입 (SSE, WebSocket, Stdio)
-   - OAuth 설정
+2. **MCP 서버 관리 API** ✅
+   - `/LibreChat-Admin/backend/src/routes/mcp-servers.js`
+   - 전체 CRUD 작업 구현
+   - 연결 테스트 API (`POST /:id/test`)
+   - 통계 조회 API (`GET /:id/stats`)
+   - 벌크 활성화/비활성화
+   - JWT 및 Internal API Key 인증 지원
 
-2. **MCP 관리 UI**
-   - 서버 등록 폼
-   - 연결 테스트
-   - 도구 목록 미리보기
-   - 사용 통계
+3. **Admin UI** ✅
+   - `/LibreChat-Admin/frontend/src/pages/MCPServers/index.tsx`
+   - 종합 대시보드 (총 서버, 활성, 건강, 도구 수)
+   - 탭 뷰 (활성/비활성/전체 서버)
+   - 서버 생성/편집 다이얼로그
+   - 연결 테스트 및 응답 시간 표시
+   - 건강 상태 표시기 (healthy/unhealthy/unknown)
+   - 벌크 작업 지원
+
+4. **기능 구현** ✅
+   - MCP 서버 등록 및 구성
+   - stdio/SSE/WebSocket 서버 연결 테스트
+   - 자동 상태 업데이트를 통한 건강 모니터링
+   - 사용 통계 추적 (연결, 도구 호출)
+   - 접근 제어 관리
+   - 서버 관리를 위한 벌크 작업
+
+#### 테스트 완료
+- [x] MCP 서버 생성 및 목록 조회
+- [x] 연결 테스트 (<5ms 응답 시간)
+- [x] 건강 체크 업데이트
+- [x] 통계 추적 기능
+- [x] 벌크 활성화/비활성화
+- [x] Admin 대시보드 UI 통합
+
+#### 현재 등록된 MCP 서버
+- **File System MCP**: 파일 시스템 작업용 stdio 서버 (14개 도구)
+- **GitHub MCP**: GitHub 통합용 stdio 서버 (26개 도구)
+- **Web Search MCP**: 웹 검색 기능용 SSE 서버 (비활성)
+
+---
+
+### ✅ Step 3.5: MCP-LibreChat 통합 (2025-09-16 완료)
+
+#### 구현 내용
+
+##### 1. Admin-LibreChat MCP 통합 브리지
+**생성 파일:**
+- `/LibreChat/api/server/services/AdminMCPIntegration.js` - MCP 통합 서비스
+- `/LibreChat/api/server/services/MCPService.js` - MCP 서버 연결 관리
+
+**주요 기능:**
+- Admin Dashboard에서 관리하는 MCP 서버를 LibreChat에서 자동 로드
+- Internal API Key를 통한 안전한 서비스 간 통신
+- 캐싱을 통한 성능 최적화 (1분 캐시)
+- stdio, SSE, WebSocket 타입 자동 변환
+
+##### 2. LibreChat 설정 수정
+**수정 파일:**
+- `/LibreChat/api/server/services/Config/loadCustomConfig.js` - MCP 서버 동적 로드
+- `/LibreChat/librechat.yaml` - Agents 엔드포인트 활성화
+- `/LibreChat/.env` - 통합 환경 변수 추가
+
+**환경 변수:**
+```bash
+ENABLE_ADMIN_MCP_INTEGRATION=true
+ADMIN_API_URL=http://localhost:5001
+INTERNAL_API_KEY=sk-internal-api-key-for-service-communication-2025
+```
+
+##### 3. MCP 도구 통합 결과
+- ✅ 총 40개 MCP 도구 성공적으로 로드
+- ✅ File System MCP: 14개 도구 (파일 읽기/쓰기/편집 등)
+- ✅ GitHub MCP: 26개 도구 (레포지토리/이슈/PR 관리 등)
+- ✅ LibreChat Agents 엔드포인트에서 사용 가능
+
+##### 4. 버그 수정
+- `StdioClientTransport is not defined` 오류 해결
+- MCPService.js에 누락된 import 추가
+
+#### 테스트 완료
+- [x] Admin Dashboard에서 MCP 서버 등록
+- [x] LibreChat 시작 시 MCP 서버 자동 로드
+- [x] 40개 MCP 도구 초기화 확인
+- [x] Agents 엔드포인트에서 MCP 도구 사용 가능
+- [x] 테스트 스크립트 작성 (`test-mcp-integration.js`, `demo-mcp-usage.js`)
+
+#### 사용 가이드 문서
+- `MCP_TEST_GUIDE.md` - LibreChat에서 MCP 테스트 방법
+- `FILE_OPERATIONS_GUIDE.md` - File System MCP 14개 도구 상세 가이드
 
 ---
 
@@ -207,10 +289,10 @@ LibreChat의 개인용 기능을 기업용 팀 협업 시스템으로 전환
 - MongoDB: mongodb://localhost:27017/LibreChat
 
 ## 다음 작업
-1. Step 3: MCP 서버 관리 구현
-2. Step 4: 에이전트 관리 시스템
-3. LibreChat와 프롬프트 연동 테스트
-4. Production 환경 배포 준비
+1. Step 4: 에이전트 관리 시스템 구현
+2. LibreChat와 프롬프트 연동 테스트
+3. 권한 및 배포 시스템 구축
+4. Production 환경 최적화
 
 ## 이슈 및 해결
 1. **costAnalysis 모듈 의존성 문제**

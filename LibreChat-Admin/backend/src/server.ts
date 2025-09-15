@@ -25,6 +25,7 @@ import apiKeysRoutes from './routes/apiKeys';
 const departmentsRoutes = require('./routes/departments');
 const promptsRoutes = require('./routes/prompts');
 const memoryRoutes = require('./routes/memory');
+const mcpServersRoutes = require('./routes/mcp-servers');
 
 // Import middleware
 import { authMiddleware } from './middleware/auth';
@@ -120,6 +121,7 @@ app.use('/api/api-keys', apiKeysRoutes);
 app.use('/api/departments', authMiddleware, departmentsRoutes);
 app.use('/api/prompts', authMiddleware, promptsRoutes);
 app.use('/api/memory', memoryRoutes);  // Auth handled in route file
+app.use('/api/mcp-servers', mcpServersRoutes);  // Auth handled in route file
 
 // Proxy to LibreChat API
 app.use('/api/librechat', authMiddleware, createProxyMiddleware({
