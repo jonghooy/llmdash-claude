@@ -11,6 +11,7 @@ import SystemConfiguration from './pages/SystemConfiguration';
 import Prompts from './pages/Prompts';
 import Memory from './pages/Memory';
 import MCPServers from './pages/MCPServers';
+import Agents from './pages/Agents';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/authStore';
 
@@ -44,6 +45,7 @@ function App() {
             <Route path="/prompts" element={<Prompts />} />
             <Route path="/memory" element={<Memory />} />
             <Route path="/mcp-servers" element={<MCPServers />} />
+            <Route path="/agents" element={<Agents />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/system-config" element={<SystemConfiguration />} />
             <Route path="*" element={<Navigate to="/" />} />

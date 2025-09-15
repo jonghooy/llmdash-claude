@@ -122,6 +122,7 @@ app.use('/api/departments', authMiddleware, departmentsRoutes);
 app.use('/api/prompts', authMiddleware, promptsRoutes);
 app.use('/api/memory', memoryRoutes);  // Auth handled in route file
 app.use('/api/mcp-servers', mcpServersRoutes);  // Auth handled in route file
+app.use('/api/agents', require('./routes/agents'));  // Auth handled in route file
 
 // Proxy to LibreChat API
 app.use('/api/librechat', authMiddleware, createProxyMiddleware({

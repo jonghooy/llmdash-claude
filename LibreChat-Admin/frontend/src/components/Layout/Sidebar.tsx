@@ -24,7 +24,8 @@ import {
   Logout,
   Description,
   Storage,
-  Extension
+  Extension,
+  SmartToy
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -47,6 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
     { text: 'Prompts', icon: <Description />, path: '/prompts', queryKey: ['prompts'] },
     { text: 'Memory', icon: <Storage />, path: '/memory', queryKey: ['memory'] },
     { text: 'MCP Servers', icon: <Extension />, path: '/mcp-servers', queryKey: ['mcpServers'] },
+    { text: 'Agents', icon: <SmartToy />, path: '/agents', queryKey: ['agents'] },
     { text: 'Model Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },
     { text: 'System Config', icon: <SettingsApplications />, path: '/system-config', queryKey: ['systemConfig'] },
   ];

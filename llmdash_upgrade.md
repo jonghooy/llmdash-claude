@@ -13,12 +13,12 @@ LibreChat의 개인용 기능을 기업용 팀 협업 시스템으로 전환
 - [x] Step 2: 조직 메모리 (3-4시간) ✅ 2025-09-16 완료
 - [x] Step 3: MCP 서버 관리 (4-5시간) ✅ 2025-09-16 완료
 - [x] Step 3.5: MCP-LibreChat 통합 ✅ 2025-09-16 완료
-- [ ] Step 4: 에이전트 관리 (1일)
+- [x] Step 4: 에이전트 관리 (1일) ✅ 2025-09-16 완료
 - [ ] Step 5: 권한 및 배포 시스템 (1일)
 
 ### Phase 2: LibreChat 통합
 - [x] Admin API 연동 ✅
-- [ ] 프롬프트/에이전트 동기화
+- [x] 프롬프트/에이전트 동기화 ✅
 - [x] 메모리 자동 주입 ✅
 - [x] MCP 서버 동적 로딩 ✅
 
@@ -256,23 +256,80 @@ INTERNAL_API_KEY=sk-internal-api-key-for-service-communication-2025
 
 ---
 
-### 🤖 Step 4: 에이전트 관리 (계획)
+### ✅ Step 4: 에이전트 관리 시스템 (2025-09-16 완료)
 
-#### 목표
-- LibreChat의 에이전트를 Admin에서 생성/관리
-- 프롬프트 템플릿과 MCP 도구 연결
-- 팀별 에이전트 할당
+#### 구현 완료 내역
 
-#### 구현 계획
-1. **Agent 모델**
-   - name, instructions, tools
-   - 프롬프트 템플릿 연결
-   - MCP 도구 선택
+##### 1. Agent 모델 생성 ✅
+**파일 생성:**
+- `/LibreChat-Admin/backend/src/models/Agent.js` - 에이전트 데이터 모델
 
-2. **에이전트 관리 UI**
-   - 에이전트 빌더
-   - 도구 선택 인터페이스
-   - 테스트 환경
+**스키마 구조:**
+- 기본 정보: name, description, avatar
+- 타입 및 카테고리: assistant, specialist, workflow, custom
+- 모델 설정: model, temperature, maxTokens
+- 프롬프트: systemPrompt, instructions
+- 연결 리소스: prompts[], mcpServers[], tools[]
+- 능력 설정: codeExecution, fileAccess, webSearch, imageGeneration, dataAnalysis
+- 접근 제어: isPublic, isActive, organization, teams
+- 사용 통계: usageCount, totalTokens, rating, avgResponseTime
+
+##### 2. API 엔드포인트 구현 ✅
+**파일 생성:**
+- `/LibreChat-Admin/backend/src/routes/agents.js` - API 라우트
+
+**구현된 엔드포인트:**
+- `GET /api/agents` - 에이전트 목록 조회
+- `GET /api/agents/:id` - 에이전트 상세 조회
+- `POST /api/agents` - 에이전트 생성
+- `PUT /api/agents/:id` - 에이전트 수정
+- `DELETE /api/agents/:id` - 에이전트 비활성화
+- `POST /api/agents/:id/duplicate` - 에이전트 복제
+- `POST /api/agents/:id/test` - 에이전트 테스트
+- `POST /api/agents/:id/usage` - 사용 통계 업데이트
+- `POST /api/agents/:id/rate` - 평점 업데이트
+- `GET /api/agents/:id/stats` - 통계 조회
+- `GET /api/agents/popular/list` - 인기 에이전트 조회
+
+##### 3. Admin UI 구현 ✅
+**파일 생성:**
+- `/LibreChat-Admin/frontend/src/pages/Agents/index.tsx` - 에이전트 관리 UI
+
+**UI 기능:**
+- 통계 대시보드 (총 에이전트, 활성, MCP 도구 사용, 총 사용량)
+- 탭 뷰 (전체/활성/공개/도구 포함)
+- 에이전트 테이블 (이름, 타입, 카테고리, 모델, 도구, 사용량, 평점, 상태)
+- 생성/편집 다이얼로그
+- MCP 서버 연결 인터페이스
+- 프롬프트 템플릿 연결
+- 능력 설정 체크박스
+- 태그 시스템
+- 온도 슬라이더
+- 복제 및 테스트 기능
+
+##### 4. MCP 통합 ✅
+- MCP 서버 자동 연결
+- 도구 자동 추가 (서버 선택 시)
+- 40개 MCP 도구 사용 가능:
+  - File System MCP: 14개 도구
+  - GitHub MCP: 26개 도구
+
+#### 테스트 완료
+- [x] Agent 모델 CRUD 작업
+- [x] MCP 서버 연결 (2개 서버)
+- [x] 에이전트 테스트 API
+- [x] UI 렌더링 및 상호작용
+- [x] 3개 에이전트 생성 및 테스트
+
+#### 생성된 에이전트
+1. **Coding Assistant** - 코딩 전문 에이전트
+2. **Full-Stack Developer AI** - 풀스택 개발 에이전트
+3. **Data Analyst AI** - 데이터 분석 에이전트
+
+#### 테스트 문서
+- `test-agents.js` - 에이전트 관리 테스트
+- `test-agent-complete.js` - 전체 기능 테스트
+- `AGENT_TEST_RESULTS.md` - 테스트 결과 문서
 
 ---
 
@@ -289,9 +346,9 @@ INTERNAL_API_KEY=sk-internal-api-key-for-service-communication-2025
 - MongoDB: mongodb://localhost:27017/LibreChat
 
 ## 다음 작업
-1. Step 4: 에이전트 관리 시스템 구현
-2. LibreChat와 프롬프트 연동 테스트
-3. 권한 및 배포 시스템 구축
+1. Step 5: 권한 및 배포 시스템 구축
+2. 워크플로우 자동화 구현
+3. 사용 분석 대시보드 구축
 4. Production 환경 최적화
 
 ## 이슈 및 해결
