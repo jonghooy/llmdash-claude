@@ -1,1 +1,1 @@
-🎨 Phase 3 시작: LibreChat → LLMDash 브랜딩 전환 및 Admin 관리 기능 UI 숨김 처리
+🐛 API 라우팅 오류 수정 - base href를 /chat/로 설정하여 401/404 에러 해결
