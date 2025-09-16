@@ -37,10 +37,10 @@ export default function Footer({ className }: { className?: string }) {
   const mainContentParts = (
     typeof config?.customFooter === 'string'
       ? config.customFooter
-      : '[LibreChat ' +
+      : '[LLMDash ' +
         Constants.VERSION +
-        '](https://librechat.ai) - ' +
-        localize('com_ui_latest_footer')
+        '](https://www.llmdash.com) - ' +
+        'Enterprise AI Chat Platform'
   ).split('|');
 
   useEffect(() => {

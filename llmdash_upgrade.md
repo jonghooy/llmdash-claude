@@ -8,24 +8,24 @@ LibreChat의 개인용 기능을 기업용 팀 협업 시스템으로 전환
 
 ## 전체 구현 계획
 
-### Phase 1: 기본 인프라 구축
-- [x] Step 1: 프롬프트 라이브러리 (2-3시간) ✅ 2025-09-12 완료
-- [x] Step 2: 조직 메모리 (3-4시간) ✅ 2025-09-16 완료
-- [x] Step 3: MCP 서버 관리 (4-5시간) ✅ 2025-09-16 완료
-- [x] Step 3.5: MCP-LibreChat 통합 ✅ 2025-09-16 완료
-- [x] Step 4: 에이전트 관리 (1일) ✅ 2025-09-16 완료
-- [ ] Step 5: 권한 및 배포 시스템 (1일)
+### ✅ Phase 1: 기본 인프라 구축 (2025-09-16 완료)
+- [x] Step 1: 프롬프트 라이브러리 ✅ 2025-09-12
+- [x] Step 2: 조직 메모리 ✅ 2025-09-16
+- [x] Step 3: MCP 서버 관리 ✅ 2025-09-16
+- [x] Step 3.5: MCP-LibreChat 통합 ✅ 2025-09-16
+- [x] Step 4: 에이전트 관리 ✅ 2025-09-16
 
-### Phase 2: LibreChat 통합
+### ✅ Phase 2: LibreChat 통합 (2025-09-16 완료)
 - [x] Admin API 연동 ✅
 - [x] 프롬프트/에이전트 동기화 ✅
 - [x] 메모리 자동 주입 ✅
 - [x] MCP 서버 동적 로딩 ✅
 
-### Phase 3: 고급 기능
-- [ ] 워크플로우 자동화
-- [ ] 사용 분석 및 최적화
-- [ ] 보안 강화
+### Phase 3: LibreChat UI 커스터마이징 및 브랜드 전환 (진행중)
+- [ ] LibreChat → LLMDash 브랜드 전환
+- [ ] Admin 관리 기능 UI 숨김 처리
+- [ ] UI/UX Look & Feel 개선
+- [ ] 테마 및 색상 커스터마이징
 
 ---
 
@@ -582,6 +582,58 @@ Frontend:
 - [x] 비용 계산 정확도 검증
 - [x] 모든 차트 정상 표시
 - [x] $NaN 이슈 해결
+
+---
+
+## Phase 3: LibreChat UI 커스터마이징 (2025-09-16 시작)
+
+### 구현 계획
+
+#### 1. 브랜드 전환 (LibreChat → LLMDash)
+**수정 파일:**
+- `/LibreChat/client/index.html` - 타이틀, 메타 설명, 파비콘
+- `/LibreChat/client/src/components/Chat/Footer.tsx` - Footer 브랜드 링크
+- `/LibreChat/client/src/components/Auth/AuthLayout.tsx` - 로그인 페이지 브랜딩
+- `/LibreChat/librechat.yaml` - 사이트 설정
+
+**변경 내용:**
+- 모든 "LibreChat" 텍스트를 "LLMDash"로 변경
+- 제품 설명 및 링크 업데이트
+- 로고 및 파비콘 교체 (필요시)
+
+#### 2. Admin 관리 기능 UI 숨김
+**제거할 기능들:**
+- Side Panel의 Prompts 탭 (Admin Dashboard로 이동)
+- Side Panel의 Memory Viewer (Admin Dashboard로 이동)
+- Agent Builder (Admin Dashboard로 이동)
+- Parameters 고급 설정 (Admin Dashboard로 이동)
+- Chat Input의 Prompt Selector (Admin에서 중앙 관리)
+
+**수정 파일:**
+- `/LibreChat/client/src/hooks/Nav/useSideNavLinks.ts` - 사이드 패널 링크 제거
+- `/LibreChat/client/src/components/Chat/Input/ChatForm.tsx` - Prompt Selector 제거
+
+#### 3. UI/UX Look & Feel 개선
+**계획된 변경사항:**
+- 색상 팔레트 커스터마이징
+- 버튼 및 입력 필드 스타일 통일
+- Navigation 패널 디자인 개선
+- Chat 영역 레이아웃 최적화
+- 다크/라이트 테마 조정
+
+#### 4. 환경 변수 설정
+```bash
+# LibreChat/.env 추가
+SITE_NAME=LLMDash
+APP_TITLE=LLMDash
+CUSTOM_FOOTER=LLMDash © 2025 - Enterprise AI Chat Platform
+```
+
+### 예상 완료 시간
+- 브랜드 전환: 30분
+- 기능 숨김: 1시간
+- UI 개선: 1-2시간
+- 테스트 및 배포: 30분
 
 ## 참고 사항
 - 각 Step은 독립적으로 동작 가능하도록 설계

@@ -84,55 +84,59 @@ export default function useSideNavLinks({
       });
     }
 
-    if (
-      endpointsConfig?.[EModelEndpoint.agents] &&
-      hasAccessToAgents &&
-      hasAccessToCreateAgents &&
-      endpointsConfig[EModelEndpoint.agents].disableBuilder !== true
-    ) {
-      links.push({
-        title: 'com_sidepanel_agent_builder',
-        label: '',
-        icon: Blocks,
-        id: EModelEndpoint.agents,
-        Component: AgentPanelSwitch,
-      });
-    }
+    // Removed Agent Builder - now managed in Admin Dashboard
+    // if (
+    //   endpointsConfig?.[EModelEndpoint.agents] &&
+    //   hasAccessToAgents &&
+    //   hasAccessToCreateAgents &&
+    //   endpointsConfig[EModelEndpoint.agents].disableBuilder !== true
+    // ) {
+    //   links.push({
+    //     title: 'com_sidepanel_agent_builder',
+    //     label: '',
+    //     icon: Blocks,
+    //     id: EModelEndpoint.agents,
+    //     Component: AgentPanelSwitch,
+    //   });
+    // }
 
-    if (hasAccessToPrompts) {
-      links.push({
-        title: 'com_ui_prompts',
-        label: '',
-        icon: MessageSquareQuote,
-        id: 'prompts',
-        Component: PromptsAccordion,
-      });
-    }
+    // Removed Prompts - now managed in Admin Dashboard
+    // if (hasAccessToPrompts) {
+    //   links.push({
+    //     title: 'com_ui_prompts',
+    //     label: '',
+    //     icon: MessageSquareQuote,
+    //     id: 'prompts',
+    //     Component: PromptsAccordion,
+    //   });
+    // }
 
-    if (hasAccessToMemories && hasAccessToReadMemories) {
-      links.push({
-        title: 'com_ui_memories',
-        label: '',
-        icon: Database,
-        id: 'memories',
-        Component: MemoryViewer,
-      });
-    }
+    // Removed Memories - now managed in Admin Dashboard
+    // if (hasAccessToMemories && hasAccessToReadMemories) {
+    //   links.push({
+    //     title: 'com_ui_memories',
+    //     label: '',
+    //     icon: Database,
+    //     id: 'memories',
+    //     Component: MemoryViewer,
+    //   });
+    // }
 
-    if (
-      interfaceConfig.parameters === true &&
-      isParamEndpoint(endpoint ?? '', endpointType ?? '') === true &&
-      !isAgentsEndpoint(endpoint) &&
-      keyProvided
-    ) {
-      links.push({
-        title: 'com_sidepanel_parameters',
-        label: '',
-        icon: Settings2,
-        id: 'parameters',
-        Component: Parameters,
-      });
-    }
+    // Removed Parameters - advanced settings managed in Admin Dashboard
+    // if (
+    //   interfaceConfig.parameters === true &&
+    //   isParamEndpoint(endpoint ?? '', endpointType ?? '') === true &&
+    //   !isAgentsEndpoint(endpoint) &&
+    //   keyProvided
+    // ) {
+    //   links.push({
+    //     title: 'com_sidepanel_parameters',
+    //     label: '',
+    //     icon: Settings2,
+    //     id: 'parameters',
+    //     Component: Parameters,
+    //   });
+    // }
 
     links.push({
       title: 'com_sidepanel_attach_files',
