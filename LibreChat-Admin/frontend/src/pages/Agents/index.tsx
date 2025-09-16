@@ -37,7 +37,8 @@ import {
   Badge,
   Stack,
   Checkbox,
-  FormGroup
+  FormGroup,
+  Fade
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -54,6 +55,7 @@ import {
   Build as BuildIcon
 } from '@mui/icons-material';
 import api from '../../utils/axios';
+import PageContainer from '../../components/Layout/PageContainer';
 
 interface Agent {
   _id: string;
@@ -276,11 +278,9 @@ const Agents: React.FC = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Agent Management
-        </Typography>
+    <PageContainer
+      title="Agent Management"
+      headerAction={
         <Box>
           <Button
             variant="outlined"
@@ -298,7 +298,8 @@ const Agents: React.FC = () => {
             Create Agent
           </Button>
         </Box>
-      </Box>
+      }
+    >
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
@@ -309,8 +310,7 @@ const Agents: React.FC = () => {
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <AgentIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
                 <Box>
@@ -322,12 +322,10 @@ const Agents: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <SpeedIcon sx={{ fontSize: 40, color: 'success.main', mr: 2 }} />
                 <Box>
@@ -339,12 +337,10 @@ const Agents: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <BuildIcon sx={{ fontSize: 40, color: 'warning.main', mr: 2 }} />
                 <Box>
@@ -356,12 +352,10 @@ const Agents: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <MemoryIcon sx={{ fontSize: 40, color: 'info.main', mr: 2 }} />
                 <Box>
@@ -373,22 +367,49 @@ const Agents: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
       </Grid>
 
       {/* Tabs */}
-      <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} sx={{ mb: 2 }}>
-        <Tab label="All Agents" />
-        <Tab label="Active" />
-        <Tab label="Public" />
-        <Tab label="With Tools" />
-      </Tabs>
+      <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
+        <Tabs
+          value={tabValue}
+          onChange={(e, v) => setTabValue(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 2,
+            '& .MuiTab-root': {
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              minHeight: 64,
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            },
+            '& .Mui-selected': {
+              fontWeight: 600,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }
+          }}
+        >
+          <Tab label="All Agents" />
+          <Tab label="Active" />
+          <Tab label="Public" />
+          <Tab label="With Tools" />
+        </Tabs>
 
-      {/* Agents Table */}
-      <TableContainer component={Paper}>
-        <Table>
+        {/* Agents Table */}
+        <Box sx={{ p: { xs: 2, sm: 3 }, position: 'relative', minHeight: 400 }}>
+          <Fade in={true} timeout={500}>
+              <TableContainer>
+                <Table>
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
@@ -488,18 +509,19 @@ const Agents: React.FC = () => {
                 </TableCell>
               </TableRow>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Fade>
+        </Box>
+      </Paper>
 
       {/* Test Result */}
       {testResult && (
-        <Card sx={{ mt: 2 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>Test Result</Typography>
-            <pre>{JSON.stringify(testResult, null, 2)}</pre>
-          </CardContent>
-        </Card>
+        <Paper sx={{ mt: 2, p: 2, borderRadius: 2, boxShadow: 1 }}>
+          <Typography variant="h6" gutterBottom>Test Result</Typography>
+          <pre>{JSON.stringify(testResult, null, 2)}</pre>
+        </Paper>
       )}
 
       {/* Create/Edit Dialog */}
@@ -762,7 +784,7 @@ const Agents: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 };
 

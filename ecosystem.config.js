@@ -157,20 +157,15 @@ module.exports = {
     // ===== LibreChat-Admin Frontend (Production) =====
     {
       name: 'admin-frontend',
-      script: 'serve',
-      args: '-s dist -l 3091',
+      script: './static-server.js',
       cwd: './LibreChat-Admin/frontend',
       instances: 1,
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '512M',
-      interpreter: 'none',
       env: {
         NODE_ENV: 'production',
-        PM2_SERVE_PATH: './dist',
-        PM2_SERVE_PORT: 3091,
-        PM2_SERVE_SPA: 'true',
-        PM2_SERVE_HOMEPAGE: '/index.html'
+        PORT: 3091
       },
       error_file: './logs/pm2/admin-frontend-err.log',
       out_file: './logs/pm2/admin-frontend-out.log',

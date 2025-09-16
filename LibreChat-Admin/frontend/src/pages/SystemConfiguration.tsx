@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PageContainer from '../components/Layout/PageContainer';
 import {
   Box,
   Paper,
@@ -23,6 +24,7 @@ import {
   Fade,
   Slide
 } from '@mui/material';
+import api from '../utils/axios';
 import {
   Save,
   Refresh,
@@ -147,8 +149,6 @@ const SystemConfiguration: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState(0);
 
-  const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001/api';
-
   useEffect(() => {
     fetchConfig();
   }, []);
@@ -156,13 +156,10 @@ const SystemConfiguration: React.FC = () => {
   const fetchConfig = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${apiUrl}/system-config`, {
-        credentials: 'include'
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setConfig(data);
+      const response = await api.get('/api/system-config');
+
+      if (response.data) {
+        setConfig(response.data);
       }
       setError(null);
     } catch (err: any) {
@@ -176,22 +173,13 @@ const SystemConfiguration: React.FC = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${apiUrl}/system-config`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config)
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to save configuration');
-      }
-      
+      await api.put('/api/system-config', config);
+
       setSuccess('Configuration saved successfully');
       setTimeout(() => setSuccess(null), 3000);
     } catch (err: any) {
       console.error('Error saving config:', err);
-      setError(err.message);
+      setError(err.message || 'Failed to save configuration');
     } finally {
       setLoading(false);
     }
@@ -669,11 +657,9 @@ const SystemConfiguration: React.FC = () => {
   );
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          System Configuration
-        </Typography>
+    <PageContainer
+      title="System Configuration"
+      headerAction={
         <Box>
           <Button
             variant="outlined"
@@ -693,7 +679,8 @@ const SystemConfiguration: React.FC = () => {
             Save Configuration
           </Button>
         </Box>
-      </Box>
+      }
+    >
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
@@ -707,21 +694,21 @@ const SystemConfiguration: React.FC = () => {
         </Alert>
       )}
 
-      <Paper sx={{ mb: 3 }}>
+      <Paper sx={{ borderRadius: 2, boxShadow: 1, mb: 3 }}>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
           sx={{ 
-            borderBottom: 1, 
+            borderBottom: 1,
             borderColor: 'divider',
+            px: 2,
             '& .MuiTab-root': {
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               minHeight: 64,
               '&:hover': {
                 backgroundColor: 'action.hover',
-                transform: 'translateY(-2px)',
               },
             },
             '& .Mui-selected': {
@@ -781,7 +768,7 @@ const SystemConfiguration: React.FC = () => {
           </Fade>
         </Box>
       </Paper>
-    </Box>
+    </PageContainer>
   );
 };
 

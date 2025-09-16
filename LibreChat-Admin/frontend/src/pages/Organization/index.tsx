@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PageContainer from '../../components/Layout/PageContainer';
 import {
   Box,
   Paper,
@@ -20,28 +21,22 @@ const Organization: React.FC = () => {
   };
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Organization Management
-        </Typography>
-      </Box>
-      
-      <Paper sx={{ mb: 3 }}>
+    <PageContainer title="Organization Management">
+      <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
           sx={{ 
-            borderBottom: 1, 
+            borderBottom: 1,
             borderColor: 'divider',
+            px: 2,
             '& .MuiTab-root': {
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
               minHeight: 64,
               '&:hover': {
                 backgroundColor: 'action.hover',
-                transform: 'translateY(-2px)',
               },
             },
             '& .Mui-selected': {
@@ -65,7 +60,7 @@ const Organization: React.FC = () => {
           <Tab icon={<Business />} label="Departments & Teams" />
         </Tabs>
         
-        <Box sx={{ p: 3, position: 'relative', minHeight: 400 }}>
+        <Box sx={{ p: { xs: 2, sm: 3 }, position: 'relative', minHeight: 400 }}>
           <Fade in={activeTab === 0} timeout={500}>
             <Box sx={{ display: activeTab === 0 ? 'block' : 'none' }}>
               <Users />
@@ -83,7 +78,7 @@ const Organization: React.FC = () => {
           </Fade>
         </Box>
       </Paper>
-    </Box>
+    </PageContainer>
   );
 };
 

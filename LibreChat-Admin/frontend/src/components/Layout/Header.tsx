@@ -47,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         color: muiTheme.palette.text.primary
       }}
     >
-      <Toolbar>
+      <Toolbar sx={{ px: { xs: 2, sm: 3 } }}>
         <IconButton
           size="large"
           edge="start"

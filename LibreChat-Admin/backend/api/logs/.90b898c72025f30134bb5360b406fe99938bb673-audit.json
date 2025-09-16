@@ -14,6 +14,11 @@
             "date": 1757606592436,
             "name": "/home/jonghooy/work/llmdash-claude/LibreChat-Admin/backend/api/logs/error-2025-09-12.log",
             "hash": "6b73eae6f73cefc8403cd6a61ad6ba4a6507f2c9f4935d9929ec0a20a24de83c"
+        },
+        {
+            "date": 1757985540803,
+            "name": "/home/jonghooy/work/llmdash-claude/LibreChat-Admin/backend/api/logs/error-2025-09-16.log",
+            "hash": "a250c352626c449fc422592c1eef9809a46649a68f7a5118061044dc1d44470a"
         }
     ],
     "hashType": "sha256"

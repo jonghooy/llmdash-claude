@@ -24,6 +24,7 @@ import {
   CardContent,
   Tooltip
 } from '@mui/material';
+import api from '../../utils/axios';
 import {
   Add,
   Edit,
@@ -68,7 +69,6 @@ const DepartmentManagement: React.FC = () => {
     description: ''
   });
 
-  const apiUrl = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5001/api';
 
   useEffect(() => {
     fetchDepartments();
@@ -77,25 +77,18 @@ const DepartmentManagement: React.FC = () => {
   const fetchDepartments = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${apiUrl}/departments`, {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        if (response.status === 404) {
-          // No departments yet, initialize
-          await initializeDepartments();
-          return;
-        }
-        throw new Error('Failed to fetch departments');
-      }
-      
-      const data = await response.json();
-      setDepartments(data);
+      const response = await api.get('/api/departments');
+
+      setDepartments(response.data || []);
       setError(null);
     } catch (err: any) {
       console.error('Error fetching departments:', err);
-      setError(err.message);
+      if (err.response?.status === 404) {
+        // No departments yet, initialize
+        await initializeDepartments();
+        return;
+      }
+      setError(err.response?.data?.error || err.message || 'Failed to fetch departments');
     } finally {
       setLoading(false);
     }
@@ -103,26 +96,18 @@ const DepartmentManagement: React.FC = () => {
 
   const initializeDepartments = async () => {
     try {
-      const response = await fetch(`${apiUrl}/departments/initialize`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.error === 'Departments already initialized') {
-          // Already initialized, just fetch them
-          await fetchDepartments();
-          return;
-        }
-        throw new Error(errorData.error || 'Failed to initialize departments');
-      }
+      await api.post('/api/departments/initialize');
+
       
       await fetchDepartments();
     } catch (err: any) {
       console.error('Error initializing departments:', err);
-      setError(err.message);
+      if (err.response?.data?.error === 'Departments already initialized') {
+        // Already initialized, just fetch them
+        await fetchDepartments();
+        return;
+      }
+      setError(err.response?.data?.error || err.message || 'Failed to initialize departments');
     }
   };
 
@@ -172,65 +157,25 @@ const DepartmentManagement: React.FC = () => {
   const handleSave = async () => {
     try {
       if (dialogMode === 'add-dept') {
-        const response = await fetch(`${apiUrl}/departments`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: formData.deptName, teams: [] })
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to add department');
-        }
+        await api.post('/api/departments', { name: formData.deptName, teams: [] });
       } else if (dialogMode === 'edit-dept' && selectedDept) {
-        const response = await fetch(`${apiUrl}/departments/${selectedDept._id}`, {
-          method: 'PUT',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: formData.deptName })
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update department');
-        }
+        await api.put(`/api/departments/${selectedDept._id}`, { name: formData.deptName });
       } else if (dialogMode === 'add-team' && selectedDept) {
-        const response = await fetch(`${apiUrl}/departments/${selectedDept._id}/teams`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        await api.post(`/api/departments/${selectedDept._id}/teams`, {
+          name: formData.teamName,
+          manager: formData.manager,
+          description: formData.description
+        });
+      } else if (dialogMode === 'edit-team' && selectedDept && selectedTeam) {
+        await api.put(
+          `/api/departments/${selectedDept._id}/teams/${encodeURIComponent(selectedTeam.name)}`,
+          {
             name: formData.teamName,
             manager: formData.manager,
-            description: formData.description
-          })
-        });
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to add team');
-        }
-      } else if (dialogMode === 'edit-team' && selectedDept && selectedTeam) {
-        const response = await fetch(
-          `${apiUrl}/departments/${selectedDept._id}/teams/${encodeURIComponent(selectedTeam.name)}`,
-          {
-            method: 'PUT',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: formData.teamName,
-              manager: formData.manager,
-              description: formData.description,
-              memberCount: selectedTeam.memberCount
-            })
+            description: formData.description,
+            memberCount: selectedTeam.memberCount
           }
         );
-        
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to update team');
-        }
       }
       
       setOpenDialog(false);
@@ -245,20 +190,9 @@ const DepartmentManagement: React.FC = () => {
     if (!confirm(`Are you sure you want to delete team "${teamName}"?`)) {
       return;
     }
-    
+
     try {
-      const response = await fetch(
-        `${apiUrl}/departments/${dept._id}/teams/${encodeURIComponent(teamName)}`,
-        {
-          method: 'DELETE',
-          credentials: 'include'
-        }
-      );
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete team');
-      }
+      await api.delete(`/api/departments/${dept._id}/teams/${encodeURIComponent(teamName)}`);
       
       await fetchDepartments();
     } catch (err: any) {
@@ -271,17 +205,9 @@ const DepartmentManagement: React.FC = () => {
     if (!confirm('Are you sure you want to delete this department?')) {
       return;
     }
-    
+
     try {
-      const response = await fetch(`${apiUrl}/departments/${deptId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to delete department');
-      }
+      await api.delete(`/api/departments/${deptId}`);
       
       await fetchDepartments();
     } catch (err: any) {

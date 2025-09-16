@@ -201,7 +201,7 @@ const ModelManagementPage: React.FC = () => {
     toggleModelMutation.mutate({ id, enabled });
   };
 
-  const groupedModels = modelsData?.models?.reduce((acc: any, model: Model) => {
+  const groupedModels = modelsData?.data?.reduce((acc: any, model: Model) => {
     if (!acc[model.provider]) {
       acc[model.provider] = [];
     }
@@ -233,7 +233,7 @@ const ModelManagementPage: React.FC = () => {
                 Total Models
               </Typography>
               <Typography variant="h4">
-                {modelsData?.models?.length || 0}
+                {modelsData?.data?.length || 0}
               </Typography>
             </CardContent>
           </Card>
@@ -245,7 +245,7 @@ const ModelManagementPage: React.FC = () => {
                 Enabled Models
               </Typography>
               <Typography variant="h4">
-                {modelsData?.models?.filter((m: Model) => m.enabled).length || 0}
+                {modelsData?.data?.filter((m: Model) => m.enabled).length || 0}
               </Typography>
             </CardContent>
           </Card>
@@ -269,7 +269,7 @@ const ModelManagementPage: React.FC = () => {
                 Default Models
               </Typography>
               <Typography variant="h4">
-                {modelsData?.models?.filter((m: Model) => m.defaultEnabled).length || 0}
+                {modelsData?.data?.filter((m: Model) => m.defaultEnabled).length || 0}
               </Typography>
             </CardContent>
           </Card>

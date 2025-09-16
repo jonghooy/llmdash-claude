@@ -56,7 +56,7 @@ const SimpleModelPricing: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('admin_token');
-      const response = await fetch('/api/model-pricing', {
+      const response = await fetch('/admin/api/model-pricing', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -116,7 +116,7 @@ const SimpleModelPricing: React.FC = () => {
       const token = localStorage.getItem('admin_token');
       const model = pricingData.find(m => m.modelId === modelId);
       
-      const response = await fetch('/api/model-pricing', {
+      const response = await fetch('/admin/api/model-pricing', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

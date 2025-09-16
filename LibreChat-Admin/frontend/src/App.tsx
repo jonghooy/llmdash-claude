@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { Box } from '@mui/material';
+import { Box, ThemeProvider, CssBaseline } from '@mui/material';
+import { adminTheme } from './theme/adminTheme';
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
@@ -33,11 +34,23 @@ function App() {
   }
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
-      <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-        <Box sx={{ flexGrow: 1, p: 3, overflow: 'auto', bgcolor: 'background.default' }}>
+    <ThemeProvider theme={adminTheme}>
+      <CssBaseline />
+      <Box sx={{ display: 'flex', height: '100vh' }}>
+        <Sidebar open={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+          <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+          <Box sx={{
+            flexGrow: 1,
+            overflow: 'auto',
+            bgcolor: 'background.default',
+            p: { xs: 2, sm: 3, md: 4 },
+            '& > *': {
+              maxWidth: '1600px',
+              margin: '0 auto',
+              width: '100%'
+            }
+          }}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/cost-usage" element={<CostUsage />} />
@@ -50,9 +63,10 @@ function App() {
             <Route path="/system-config" element={<SystemConfiguration />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 }
 

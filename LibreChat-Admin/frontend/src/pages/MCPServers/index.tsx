@@ -31,6 +31,7 @@ import {
   Card,
   CardContent,
   LinearProgress,
+  Fade,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -47,12 +48,10 @@ import {
   Public as PublicIcon,
   Lock as PrivateIcon,
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../utils/axios';
+import PageContainer from '../../components/Layout/PageContainer';
 
-// Create axios instance with baseURL
-const api = axios.create({
-  baseURL: 'http://localhost:5001',
-});
+// Using the configured axios instance from utils
 
 interface MCPServer {
   _id: string;
@@ -82,21 +81,6 @@ interface MCPServer {
   resourceCount?: number;
   createdAt: string;
   updatedAt: string;
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  );
 }
 
 const MCPServers: React.FC = () => {
@@ -249,9 +233,9 @@ const MCPServers: React.FC = () => {
   const inactiveServers = servers.filter(s => !s.isActive);
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Typography variant="h4">MCP Server Management</Typography>
+    <PageContainer
+      title="MCP Server Management"
+      headerAction={
         <Box>
           <Button
             startIcon={<RefreshIcon />}
@@ -268,97 +252,123 @@ const MCPServers: React.FC = () => {
             Add MCP Server
           </Button>
         </Box>
-      </Box>
+      }
+    >
 
       {/* Statistics Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Typography color="textSecondary" gutterBottom>
                 Total Servers
               </Typography>
               <Typography variant="h4">{servers.length}</Typography>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Typography color="textSecondary" gutterBottom>
                 Active Servers
               </Typography>
               <Typography variant="h4" color="success.main">
                 {activeServers.length}
               </Typography>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Typography color="textSecondary" gutterBottom>
                 Healthy Servers
               </Typography>
               <Typography variant="h4" color="success.main">
                 {servers.filter(s => s.healthCheck.status === 'healthy').length}
               </Typography>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card>
-            <CardContent>
+          <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
               <Typography color="textSecondary" gutterBottom>
                 Total Tools
               </Typography>
               <Typography variant="h4">
                 {servers.reduce((sum, s) => sum + (s.toolCount || 0), 0)}
               </Typography>
-            </CardContent>
-          </Card>
+          </Paper>
         </Grid>
       </Grid>
 
-      <Paper>
-        <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
+      <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
+        <Tabs
+          value={tabValue}
+          onChange={(_, v) => setTabValue(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 2,
+            '& .MuiTab-root': {
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              minHeight: 64,
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            },
+            '& .Mui-selected': {
+              fontWeight: 600,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }
+          }}
+        >
           <Tab label={`Active (${activeServers.length})`} />
           <Tab label={`Inactive (${inactiveServers.length})`} />
           <Tab label="All Servers" />
         </Tabs>
 
-        <TabPanel value={tabValue} index={0}>
-          <ServerTable
+        <Box sx={{ p: { xs: 2, sm: 3 }, position: 'relative', minHeight: 400 }}>
+          <Fade in={tabValue === 0} timeout={500}>
+            <Box sx={{ display: tabValue === 0 ? 'block' : 'none' }}>
+              <ServerTable
             servers={activeServers}
             onEdit={handleEditServer}
             onDelete={handleDeleteServer}
             onTest={handleTestServer}
             testResults={testResults}
-            getHealthIcon={getHealthIcon}
-          />
-        </TabPanel>
+                getHealthIcon={getHealthIcon}
+              />
+            </Box>
+          </Fade>
 
-        <TabPanel value={tabValue} index={1}>
-          <ServerTable
+          <Fade in={tabValue === 1} timeout={500}>
+            <Box sx={{ display: tabValue === 1 ? 'block' : 'none' }}>
+              <ServerTable
             servers={inactiveServers}
             onEdit={handleEditServer}
             onDelete={handleDeleteServer}
             onTest={handleTestServer}
             testResults={testResults}
-            getHealthIcon={getHealthIcon}
-          />
-        </TabPanel>
+                getHealthIcon={getHealthIcon}
+              />
+            </Box>
+          </Fade>
 
-        <TabPanel value={tabValue} index={2}>
-          <ServerTable
+          <Fade in={tabValue === 2} timeout={500}>
+            <Box sx={{ display: tabValue === 2 ? 'block' : 'none' }}>
+              <ServerTable
             servers={servers}
             onEdit={handleEditServer}
             onDelete={handleDeleteServer}
             onTest={handleTestServer}
             testResults={testResults}
-            getHealthIcon={getHealthIcon}
-          />
-        </TabPanel>
+                getHealthIcon={getHealthIcon}
+              />
+            </Box>
+          </Fade>
+        </Box>
       </Paper>
 
       {/* Add/Edit Dialog */}
@@ -495,7 +505,7 @@ const MCPServers: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 };
 

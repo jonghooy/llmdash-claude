@@ -496,6 +496,93 @@ INTERNAL_API_KEY=sk-internal-api-key-for-service-communication-2025
    - **팀 미팅**: 매주 월요일 오전 10시
    - **기타**: API 엔드포인트, 모델 설정, 시스템 프롬프트 등
 
+---
+
+## 2025-09-16 Admin Dashboard UI 개선 및 Cost Analysis 수정
+
+### Admin UI 통일 작업 완료
+모든 Admin Dashboard 페이지에 일관된 UI 패턴 적용:
+
+#### 1. PageContainer 패턴 적용
+모든 페이지를 PageContainer 컴포넌트로 감싸 일관된 레이아웃 제공:
+- **통일된 여백**: `padding: 4` (32px)
+- **일관된 간격**: `gap: 3` (24px)
+- **반응형 크기**: 모든 페이지 동일 적용
+
+#### 2. 탭 UI 스타일 통일
+모든 탭 기반 페이지에 동일한 스타일 적용:
+- Dashboard, Cost & Usage, Organization, System Config, Model Settings
+- 탭 호버 시 `transform` 애니메이션 제거 (커서 변경 이슈 해결)
+- Paper 컴포넌트와 borderRadius, boxShadow 통일
+
+#### 3. 적용 페이지
+- `/pages/Dashboard/DynamicDashboard.tsx`
+- `/pages/CostUsage/index.tsx`
+- `/pages/Organization/index.tsx`
+- `/pages/SystemConfiguration.tsx`
+- `/pages/Settings.tsx`
+- `/pages/Prompts/index.tsx`
+- `/pages/Memory/index.tsx`
+- `/pages/MCPServers/index.tsx`
+- `/pages/Agents/index.tsx`
+
+### Cost Analysis 버그 수정
+
+#### 1. Invalid Time Value 에러 해결
+**문제**: Date 포맷팅 시 "RangeError: Invalid time value" 발생
+**해결**: 날짜 유효성 검증 추가
+```typescript
+const date = new Date(tx.date);
+return isNaN(date.getTime()) ? 'Invalid date' : format(date, 'MMM dd, HH:mm');
+```
+
+#### 2. MongoDB 스키마 매핑 수정
+**문제**: 실제 MongoDB 필드명과 코드의 불일치
+**원인**: transactions 컬렉션의 실제 구조
+- `rawAmount`: 토큰 수 (이전: promptTokens, completionTokens)
+- `rate`: 백만 토큰당 가격
+- `tokenType`: 'prompt' 또는 'completion'
+
+#### 3. 비용 계산 공식 수정
+**문제**: 비용이 1000배 과다 계산 ($2277 대신 $2.28)
+**해결**: 올바른 계산 공식 적용
+```javascript
+const tokens = Math.abs(transaction.rawAmount || 0);
+const rate = transaction.rate || 0; // 백만 토큰당 가격
+const cost = (tokens / 1000000) * rate;
+```
+
+#### 4. 차트 데이터 필드 수정
+**문제**: Daily Cost Trend와 Cost by Model 차트 미표시
+**원인**: dataKey 불일치
+**해결**:
+- AreaChart: `dataKey="cost"` (이전: "totalCost")
+- BarChart: `dataKey="cost"` (이전: "totalCost")
+
+#### 5. $NaN 표시 문제 해결
+**문제**: 파이 차트와 테이블에서 $NaN 값 표시
+**해결**: 올바른 필드명 매핑
+- Pie chart: `dataKey="cost"` (이전: "totalCost")
+- Model Cost Breakdown: `conversationCount` (이전: "transactions")
+- 비용 포맷팅 함수 안전성 강화
+
+### 수정된 파일
+Backend:
+- `/LibreChat-Admin/backend/src/routes/costAnalysisSimple.js`
+
+Frontend:
+- `/LibreChat-Admin/frontend/src/pages/CostAnalysis.tsx`
+- `/LibreChat-Admin/frontend/src/pages/CostUsage/index.tsx`
+- 기타 모든 Admin Dashboard 페이지 파일
+
+### 테스트 완료
+- [x] 모든 페이지 UI 일관성 확인
+- [x] 탭 호버 커서 이슈 해결
+- [x] Cost Analysis 날짜 포맷팅 정상 동작
+- [x] 비용 계산 정확도 검증
+- [x] 모든 차트 정상 표시
+- [x] $NaN 이슈 해결
+
 ## 참고 사항
 - 각 Step은 독립적으로 동작 가능하도록 설계
 - 점진적 개선 방식으로 즉시 사용 가능

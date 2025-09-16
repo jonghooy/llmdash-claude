@@ -30,7 +30,8 @@ import {
   Tab,
   FormControlLabel,
   Switch,
-  TextareaAutosize
+  TextareaAutosize,
+  Fade
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -44,12 +45,10 @@ import {
   AccessTime as AccessTimeIcon,
   Numbers as NumbersIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../utils/axios';
+import PageContainer from '../../components/Layout/PageContainer';
 
-// Set base URL for admin API
-const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-  ? 'http://localhost:5001/api' 
-  : '/admin/api';
+// API calls will use the configured axios instance which handles base URL automatically
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface Memory {
@@ -74,21 +73,6 @@ interface Memory {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div role="tabpanel" hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
 }
 
 export default function Memory() {
@@ -141,15 +125,12 @@ export default function Memory() {
   const fetchMemories = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('admin_token');
       const params = new URLSearchParams();
       if (categoryFilter) params.append('category', categoryFilter);
       if (search) params.append('search', search);
 
-      const response = await axios.get(`${API_BASE}/memory?${params}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setMemories(response.data.memories);
+      const response = await api.get(`/api/memory?${params}`);
+      setMemories(response.data.memories || []);
     } catch (error) {
       console.error('Error fetching memories:', error);
     } finally {
@@ -159,11 +140,8 @@ export default function Memory() {
 
   const fetchCategories = async () => {
     try {
-      const token = localStorage.getItem('admin_token');
-      const response = await axios.get(`${API_BASE}/memory/meta/categories`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setCategories(response.data);
+      const response = await api.get('/api/memory/meta/categories');
+      setCategories(response.data.categories || response.data || []);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
@@ -171,11 +149,8 @@ export default function Memory() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('admin_token');
-      const response = await axios.get(`${API_BASE}/memory/meta/stats`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setStats(response.data);
+      const response = await api.get('/api/memory/meta/stats');
+      setStats(response.data.stats || response.data);
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
@@ -183,7 +158,6 @@ export default function Memory() {
 
   const handleSubmit = async () => {
     try {
-      const token = localStorage.getItem('admin_token');
       
       // Parse value based on type
       let parsedValue: any = formData.value;
@@ -210,13 +184,9 @@ export default function Memory() {
       };
 
       if (editingMemory) {
-        await axios.put(`/api/memory/${editingMemory._id}`, memoryData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.put(`/api/memory/${editingMemory._id}`, memoryData);
       } else {
-        await axios.post(`${API_BASE}/memory`, memoryData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        await api.post('/api/memory', memoryData);
       }
 
       setDialogOpen(false);
@@ -232,7 +202,6 @@ export default function Memory() {
 
   const handleBulkImport = async () => {
     try {
-      const token = localStorage.getItem('admin_token');
       const memories = JSON.parse(bulkData);
       
       if (!Array.isArray(memories)) {
@@ -240,9 +209,7 @@ export default function Memory() {
         return;
       }
 
-      const response = await axios.post(`${API_BASE}/memory/bulk`, { memories }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.post('/api/memory/bulk', { memories });
 
       alert(`Successfully imported: ${response.data.upserted} new, ${response.data.modified} updated`);
       setBulkImportDialog(false);
@@ -277,10 +244,7 @@ export default function Memory() {
     if (!confirm('Are you sure you want to delete this memory?')) return;
     
     try {
-      const token = localStorage.getItem('admin_token');
-      await axios.delete(`${API_BASE}/memory/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.delete(`/api/memory/${id}`);
       fetchMemories();
       fetchStats();
     } catch (error) {
@@ -310,9 +274,9 @@ export default function Memory() {
   };
 
   return (
-    <Box>
-      <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h4">Memory Management</Typography>
+    <PageContainer
+      title="Memory Management"
+      headerAction={
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
             variant="outlined"
@@ -342,74 +306,94 @@ export default function Memory() {
             Add Memory
           </Button>
         </Box>
-      </Box>
+      }
+    >
 
       {stats && (
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
+            <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <StorageIcon color="primary" />
                   <Box>
-                    <Typography variant="h6">{stats.overall.total}</Typography>
+                    <Typography variant="h6">{stats?.overall?.total || 0}</Typography>
                     <Typography variant="body2" color="text.secondary">Total Memories</Typography>
                   </Box>
                 </Box>
-              </CardContent>
-            </Card>
+            </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
+            <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <AccessTimeIcon color="primary" />
                   <Box>
-                    <Typography variant="h6">{stats.overall.totalAccess}</Typography>
+                    <Typography variant="h6">{stats?.overall?.totalAccess || 0}</Typography>
                     <Typography variant="body2" color="text.secondary">Total Accesses</Typography>
                   </Box>
                 </Box>
-              </CardContent>
-            </Card>
+            </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
+            <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <NumbersIcon color="primary" />
                   <Box>
-                    <Typography variant="h6">{stats.overall.avgAccess?.toFixed(1) || 0}</Typography>
+                    <Typography variant="h6">{stats?.overall?.avgAccess?.toFixed(1) || 0}</Typography>
                     <Typography variant="body2" color="text.secondary">Avg Access/Memory</Typography>
                   </Box>
                 </Box>
-              </CardContent>
-            </Card>
+            </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Card>
-              <CardContent>
+            <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <CategoryIcon color="primary" />
                   <Box>
-                    <Typography variant="h6">{stats.overall.categories?.length || 0}</Typography>
+                    <Typography variant="h6">{stats?.overall?.categories?.length || 0}</Typography>
                     <Typography variant="body2" color="text.secondary">Categories</Typography>
                   </Box>
                 </Box>
-              </CardContent>
-            </Card>
+            </Paper>
           </Grid>
         </Grid>
       )}
 
-      <Paper sx={{ p: 2, mb: 3 }}>
-        <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
+      <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
+        <Tabs
+          value={tabValue}
+          onChange={(e, v) => setTabValue(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 2,
+            '& .MuiTab-root': {
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              minHeight: 64,
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            },
+            '& .Mui-selected': {
+              fontWeight: 600,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }
+          }}
+        >
           <Tab label="All Memories" />
           <Tab label="By Category" />
         </Tabs>
 
-        <TabPanel value={tabValue} index={0}>
-          <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
-            <TextField
+        <Box sx={{ p: { xs: 2, sm: 3 }, position: 'relative', minHeight: 400 }}>
+          <Fade in={tabValue === 0} timeout={500}>
+            <Box sx={{ display: tabValue === 0 ? 'block' : 'none' }}>
+              <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
+                <TextField
               size="small"
               placeholder="Search memories..."
               value={search}
@@ -427,15 +411,15 @@ export default function Memory() {
                 label="Category"
               >
                 <MenuItem value="">All</MenuItem>
-                {categories.map(cat => (
+                {(categories || []).map(cat => (
                   <MenuItem key={cat} value={cat}>{cat}</MenuItem>
                 ))}
               </Select>
-            </FormControl>
-          </Box>
+              </FormControl>
+            </Box>
 
-          <TableContainer>
-            <Table>
+              <TableContainer>
+                <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Key</TableCell>
@@ -502,29 +486,31 @@ export default function Memory() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
-          </TableContainer>
-        </TabPanel>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Fade>
 
-        <TabPanel value={tabValue} index={1}>
-          <Grid container spacing={2}>
+          <Fade in={tabValue === 1} timeout={500}>
+            <Box sx={{ display: tabValue === 1 ? 'block' : 'none' }}>
+              <Grid container spacing={2}>
             {stats?.byCategory?.map((cat: any) => (
               <Grid item xs={12} sm={6} md={4} key={cat._id}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6">{cat._id || 'Uncategorized'}</Typography>
+                <Paper sx={{ p: 2, borderRadius: 2, boxShadow: 1 }}>
+                        <Typography variant="h6">{cat._id || 'Uncategorized'}</Typography>
                     <Typography variant="body2" color="text.secondary">
                       {cat.count} memories
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {cat.totalAccess} total accesses
                     </Typography>
-                  </CardContent>
-                </Card>
+                    </Paper>
               </Grid>
             ))}
-          </Grid>
-        </TabPanel>
+              </Grid>
+            </Box>
+          </Fade>
+        </Box>
       </Paper>
 
       {/* Add/Edit Dialog */}
@@ -683,6 +669,6 @@ export default function Memory() {
           <Button onClick={handleBulkImport} variant="contained">Import</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 }

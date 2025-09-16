@@ -32,7 +32,8 @@ import {
   Tabs,
   Tab,
   Stack,
-  Badge
+  Badge,
+  Fade
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -47,7 +48,8 @@ import {
   Code as CodeIcon,
   Description as DescriptionIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../utils/axios';
+import PageContainer from '../../components/Layout/PageContainer';
 
 interface Variable {
   name: string;
@@ -124,7 +126,7 @@ const PromptsPage: React.FC = () => {
       if (selectedCategory !== 'all') params.category = selectedCategory;
       if (searchTerm) params.search = searchTerm;
 
-      const response = await axios.get(`${API_BASE}/prompts`, {
+      const response = await api.get(`${API_BASE}/prompts`, {
         params,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('admin_token')}`
@@ -184,7 +186,7 @@ const PromptsPage: React.FC = () => {
       delete (dataToSave as any).tagInput;
 
       if (editingPrompt) {
-        await axios.put(
+        await api.put(
           `${API_BASE}/prompts/${editingPrompt._id}`,
           dataToSave,
           {
@@ -195,7 +197,7 @@ const PromptsPage: React.FC = () => {
         );
         setSuccess('Prompt updated successfully');
       } else {
-        await axios.post(
+        await api.post(
           `${API_BASE}/prompts`,
           dataToSave,
           {
@@ -218,7 +220,7 @@ const PromptsPage: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this prompt?')) return;
     
     try {
-      await axios.delete(`${API_BASE}/prompts/${id}`, {
+      await api.delete(`${API_BASE}/prompts/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('admin_token')}`
         }
@@ -233,7 +235,7 @@ const PromptsPage: React.FC = () => {
 
   const handleDuplicatePrompt = async (id: string) => {
     try {
-      await axios.post(
+      await api.post(
         `${API_BASE}/prompts/${id}/duplicate`,
         {},
         {
@@ -311,11 +313,9 @@ const PromptsPage: React.FC = () => {
     : prompts.filter(p => !p.isPublic && !p.organization);
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Prompt Library
-        </Typography>
+    <PageContainer
+      title="Prompt Library"
+      headerAction={
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -323,14 +323,14 @@ const PromptsPage: React.FC = () => {
         >
           New Prompt
         </Button>
-      </Box>
+      }
+    >
 
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccess('')}>{success}</Alert>}
 
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Grid container spacing={2} alignItems="center">
+      <Paper sx={{ p: { xs: 2, sm: 3 }, mb: 3, borderRadius: 2, boxShadow: 1 }}>
+        <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
@@ -372,19 +372,45 @@ const PromptsPage: React.FC = () => {
                 Refresh
               </Button>
             </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+        </Grid>
+      </Paper>
 
-      <Card>
-        <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
+        <Tabs
+          value={tabValue}
+          onChange={(_, v) => setTabValue(v)}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            px: 2,
+            '& .MuiTab-root': {
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              minHeight: 64,
+              '&:hover': {
+                backgroundColor: 'action.hover',
+              },
+            },
+            '& .Mui-selected': {
+              fontWeight: 600,
+            },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: '3px 3px 0 0',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            }
+          }}
+        >
           <Tab label={`Public (${prompts.filter(p => p.isPublic).length})`} />
           <Tab label={`Organization (${prompts.filter(p => !p.isPublic && p.organization).length})`} />
           <Tab label={`Private (${prompts.filter(p => !p.isPublic && !p.organization).length})`} />
         </Tabs>
 
-        <TableContainer component={Paper}>
-          <Table>
+        <Box sx={{ p: { xs: 2, sm: 3 }, position: 'relative', minHeight: 400 }}>
+          <Fade in={true} timeout={500}>
+              <TableContainer>
+                <Table>
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
@@ -479,9 +505,11 @@ const PromptsPage: React.FC = () => {
                 ))
               )}
             </TableBody>
-          </Table>
-        </TableContainer>
-      </Card>
+              </Table>
+            </TableContainer>
+          </Fade>
+      </Box>
+    </Paper>
 
       {/* Create/Edit Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
@@ -716,7 +744,7 @@ const PromptsPage: React.FC = () => {
           <Button onClick={() => setOpenPreviewDialog(false)}>Close</Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </PageContainer>
   );
 };
 

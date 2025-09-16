@@ -71,8 +71,11 @@ interface ModelCost {
   model: string;
   inputTokens: number;
   outputTokens: number;
-  totalCost: number;
-  transactions: number;
+  cost: number;
+  conversationCount: number;
+  // Legacy fields for backward compatibility
+  totalCost?: number;
+  transactions?: number;
 }
 
 interface UserCost {
@@ -153,11 +156,19 @@ function CostAnalysis() {
       
       const data = await response.json();
       console.log('Received data:', data);
-      
-      setSummary(data.summary);
-      setModelCosts(data.byModel || []);
-      setUserCosts(data.byUser || []);
-      setDailyCosts(data.byDay || []);
+
+      // Transform API response to match expected structure
+      setSummary({
+        totalCost: data.totalCost?.toFixed(2) || '0.00',
+        totalInputTokens: data.modelUsage?.reduce((sum: number, m: any) => sum + (m.inputTokens || 0), 0) || 0,
+        totalOutputTokens: data.modelUsage?.reduce((sum: number, m: any) => sum + (m.outputTokens || 0), 0) || 0,
+        totalTokens: data.totalTokens || 0,
+        totalTransactions: data.totalConversations || 0,
+        averageCostPerTransaction: (data.averageCostPerConversation || 0).toFixed(2)
+      });
+      setModelCosts(data.modelUsage || []);
+      setUserCosts(data.topUsers || []);
+      setDailyCosts(data.dailyUsage || []);
     } catch (err: any) {
       console.error('Error fetching cost overview:', err);
       setError(err.message || 'Failed to fetch cost overview');
@@ -185,15 +196,25 @@ function CostAnalysis() {
 
   const fetchModelUsage = async () => {
     try {
+      // Use the same overview endpoint for model usage data
       const response = await fetch(
-        `${apiUrl}/cost-analysis/models-usage?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`,
+        `${apiUrl}/cost-analysis/overview?startDate=${dateRange.startDate}&endDate=${dateRange.endDate}`,
         { credentials: 'include' }
       );
       
       if (!response.ok) throw new Error('Failed to fetch model usage');
       
       const data = await response.json();
-      setModelUsage(data);
+      // Transform model usage data for chart display
+      const transformedData = data.modelUsage?.map((model: any) => ({
+        model: model.model,
+        inputTokens: model.inputTokens || 0,
+        outputTokens: model.outputTokens || 0,
+        totalTokens: (model.inputTokens || 0) + (model.outputTokens || 0),
+        cost: model.cost || 0,
+        conversationCount: model.conversationCount || 0
+      })) || [];
+      setModelUsage(transformedData);
     } catch (err: any) {
       console.error('Error fetching model usage:', err);
     }
@@ -236,7 +257,7 @@ function CostAnalysis() {
   useEffect(() => {
     if (activeTab === 1) fetchDetailedTransactions();
     if (activeTab === 2) fetchModelUsage();
-  }, [activeTab, page]);
+  }, [activeTab, page, dateRange]);
 
   const formatCurrency = (value: string | number) => {
     const num = typeof value === 'string' ? parseFloat(value) : value;
@@ -427,18 +448,32 @@ function CostAnalysis() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis 
                       dataKey="date" 
-                      tickFormatter={(date) => format(new Date(date), 'MMM dd')}
+                      tickFormatter={(date) => {
+                        try {
+                          const d = new Date(date);
+                          return isNaN(d.getTime()) ? '' : format(d, 'MMM dd');
+                        } catch {
+                          return '';
+                        }
+                      }}
                     />
                     <YAxis tickFormatter={(value) => `$${value.toFixed(2)}`} />
                     <ChartTooltip 
                       formatter={(value: any) => formatCurrency(value)}
-                      labelFormatter={(date) => format(new Date(date), 'MMM dd, yyyy')}
+                      labelFormatter={(date) => {
+                        try {
+                          const d = new Date(date);
+                          return isNaN(d.getTime()) ? 'Invalid date' : format(d, 'MMM dd, yyyy');
+                        } catch {
+                          return 'Invalid date';
+                        }
+                      }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="totalCost" 
-                      stroke="#8884d8" 
-                      fill="#8884d8" 
+                    <Area
+                      type="monotone"
+                      dataKey="cost"
+                      stroke="#8884d8"
+                      fill="#8884d8"
                       fillOpacity={0.6}
                     />
                   </AreaChart>
@@ -458,12 +493,12 @@ function CostAnalysis() {
                   <PieChart>
                     <Pie
                       data={modelCosts}
-                      dataKey="totalCost"
+                      dataKey="cost"
                       nameKey="model"
                       cx="50%"
                       cy="50%"
                       outerRadius={100}
-                      label={(entry) => `${entry.model}: ${formatCurrency(entry.totalCost)}`}
+                      label={(entry) => `${entry.model}: ${formatCurrency(entry.cost)}`}
                     >
                       {modelCosts.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -486,7 +521,7 @@ function CostAnalysis() {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={userCosts.slice(0, 5)}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="userName" />
+                    <XAxis dataKey="name" />
                     <YAxis tickFormatter={(value) => `$${value.toFixed(2)}`} />
                     <ChartTooltip formatter={(value: any) => formatCurrency(value)} />
                     <Bar dataKey="totalCost" fill="#82ca9d" />
@@ -522,10 +557,10 @@ function CostAnalysis() {
                           </TableCell>
                           <TableCell align="right">{formatNumber(model.inputTokens)}</TableCell>
                           <TableCell align="right">{formatNumber(model.outputTokens)}</TableCell>
-                          <TableCell align="right">{formatNumber(model.transactions)}</TableCell>
+                          <TableCell align="right">{formatNumber(model.conversationCount)}</TableCell>
                           <TableCell align="right">
                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                              {formatCurrency(model.totalCost)}
+                              {formatCurrency(model.cost)}
                             </Typography>
                           </TableCell>
                         </TableRow>
@@ -562,7 +597,14 @@ function CostAnalysis() {
                   {transactions.map((tx) => (
                     <TableRow key={tx.id}>
                       <TableCell>
-                        {format(new Date(tx.date), 'MMM dd, HH:mm')}
+                        {tx.date ? (() => {
+                          try {
+                            const date = new Date(tx.date);
+                            return isNaN(date.getTime()) ? 'Invalid date' : format(date, 'MMM dd, HH:mm');
+                          } catch {
+                            return 'Invalid date';
+                          }
+                        })() : '-'}
                       </TableCell>
                       <TableCell>{tx.user}</TableCell>
                       <TableCell>
@@ -622,14 +664,10 @@ function CostAnalysis() {
                 <TableHead>
                   <TableRow>
                     <TableCell>Model</TableCell>
-                    <TableCell>Provider</TableCell>
                     <TableCell align="right">Total Tokens</TableCell>
-                    <TableCell align="right">Prompt Tokens</TableCell>
-                    <TableCell align="right">Completion Tokens</TableCell>
-                    <TableCell align="right">Transactions</TableCell>
-                    <TableCell align="right">Unique Users</TableCell>
-                    <TableCell align="right">Input Price</TableCell>
-                    <TableCell align="right">Output Price</TableCell>
+                    <TableCell align="right">Input Tokens</TableCell>
+                    <TableCell align="right">Output Tokens</TableCell>
+                    <TableCell align="right">Conversations</TableCell>
                     <TableCell align="right">Total Cost</TableCell>
                   </TableRow>
                 </TableHead>
@@ -639,17 +677,13 @@ function CostAnalysis() {
                       <TableCell>
                         <Chip label={usage.model} size="small" />
                       </TableCell>
-                      <TableCell>{usage.provider}</TableCell>
                       <TableCell align="right">{formatNumber(usage.totalTokens)}</TableCell>
-                      <TableCell align="right">{formatNumber(usage.promptTokens)}</TableCell>
-                      <TableCell align="right">{formatNumber(usage.completionTokens)}</TableCell>
-                      <TableCell align="right">{formatNumber(usage.transactions)}</TableCell>
-                      <TableCell align="right">{usage.uniqueUsers}</TableCell>
-                      <TableCell align="right">${usage.inputPrice}/M</TableCell>
-                      <TableCell align="right">${usage.outputPrice}/M</TableCell>
+                      <TableCell align="right">{formatNumber(usage.inputTokens)}</TableCell>
+                      <TableCell align="right">{formatNumber(usage.outputTokens)}</TableCell>
+                      <TableCell align="right">{formatNumber(usage.conversationCount)}</TableCell>
                       <TableCell align="right">
                         <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                          {formatCurrency(usage.totalCost)}
+                          {formatCurrency(usage.cost)}
                         </Typography>
                       </TableCell>
                     </TableRow>

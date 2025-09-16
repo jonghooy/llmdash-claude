@@ -1,1 +1,1 @@
-🛠️ Admin Agent 페이지 axios 설정 수정 - 중앙화된 axios 인스턴스 사용으로 인증 오류 해결
+📝 Admin Dashboard UI 통일 및 Cost Analysis 버그 수정 완료 - llmdash_upgrade.md 업데이트

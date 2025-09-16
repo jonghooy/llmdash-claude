@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Transaction = require('../../../../LibreChat/api/models/Transaction');
-const User = require('../../../../LibreChat/api/models/User');
+const { Transaction, User } = require('../../../../LibreChat/api/db/models');
 const ModelPricing = require('../models/ModelPricing');
 
 // Helper function to calculate cost based on tokens and pricing
