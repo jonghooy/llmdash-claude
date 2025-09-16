@@ -29,11 +29,13 @@ const user = require('./user');
 const mcp = require('./mcp');
 const organizationAuth = require('./organizationAuth');
 const adminPrompts = require('./adminPrompts');
+const adminAgents = require('./adminAgents');
 
 module.exports = {
   mcp,
   organizationAuth,
   adminPrompts,
+  adminAgents,
   edit,
   auth,
   keys,

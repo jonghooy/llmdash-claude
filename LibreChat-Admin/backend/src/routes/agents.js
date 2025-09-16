@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const Agent = require('../models/Agent');
 const Prompt = require('../models/Prompt');
 const MCPServer = require('../models/MCPServer');
 
-// Simple auth middleware
+// Proper auth middleware with JWT verification
 const authMiddleware = (req, res, next) => {
   // Check for Internal API Key first
   const internalApiKey = req.headers['x-api-key'];
@@ -19,9 +20,19 @@ const authMiddleware = (req, res, next) => {
     return res.status(401).json({ error: 'Authentication required' });
   }
 
-  // For now, just pass through if token exists
-  // In production, verify JWT properly
-  next();
+  try {
+    // Verify JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = {
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role
+    };
+    next();
+  } catch (error) {
+    console.error('JWT verification failed:', error.message);
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
 };
 
 // Get all agents

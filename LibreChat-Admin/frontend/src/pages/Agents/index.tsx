@@ -53,7 +53,7 @@ import {
   Memory as MemoryIcon,
   Build as BuildIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import api from '../../utils/axios';
 
 interface Agent {
   _id: string;
@@ -131,12 +131,8 @@ const Agents: React.FC = () => {
   const fetchAgents = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/agents', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      setAgents(response.data.agents);
+      const response = await api.get('/api/agents');
+      setAgents(response.data.agents || []);
     } catch (err) {
       setError('Failed to fetch agents');
       console.error(err);
@@ -147,12 +143,8 @@ const Agents: React.FC = () => {
 
   const fetchPrompts = async () => {
     try {
-      const response = await axios.get('/api/prompts', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      setPrompts(response.data.prompts);
+      const response = await api.get('/api/prompts');
+      setPrompts(response.data.prompts || []);
     } catch (err) {
       console.error('Failed to fetch prompts:', err);
     }
@@ -160,13 +152,10 @@ const Agents: React.FC = () => {
 
   const fetchMCPServers = async () => {
     try {
-      const response = await axios.get('/api/mcp-servers', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
+      const response = await api.get('/api/mcp-servers', {
         params: { isActive: true }
       });
-      setMcpServers(response.data.servers);
+      setMcpServers(response.data.servers || []);
     } catch (err) {
       console.error('Failed to fetch MCP servers:', err);
     }
@@ -215,17 +204,9 @@ const Agents: React.FC = () => {
   const handleSave = async () => {
     try {
       if (selectedAgent) {
-        await axios.put(`/api/agents/${selectedAgent._id}`, formData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        await api.put(`/api/agents/${selectedAgent._id}`, formData);
       } else {
-        await axios.post('/api/agents', formData, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        await api.post('/api/agents', formData);
       }
       fetchAgents();
       handleCloseDialog();
@@ -239,11 +220,7 @@ const Agents: React.FC = () => {
     if (!confirm('Are you sure you want to deactivate this agent?')) return;
 
     try {
-      await axios.delete(`/api/agents/${id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      await api.delete(`/api/agents/${id}`);
       fetchAgents();
     } catch (err) {
       setError('Failed to delete agent');
@@ -253,14 +230,7 @@ const Agents: React.FC = () => {
 
   const handleDuplicate = async (agent: Agent) => {
     try {
-      await axios.post(`/api/agents/${agent._id}/duplicate`,
-        { name: `${agent.name} (Copy)` },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
+      await api.post(`/api/agents/${agent._id}/duplicate`, { name: `${agent.name} (Copy)` });
       fetchAgents();
     } catch (err) {
       setError('Failed to duplicate agent');
@@ -270,11 +240,7 @@ const Agents: React.FC = () => {
 
   const handleTest = async (agent: Agent) => {
     try {
-      const response = await axios.post(`/api/agents/${agent._id}/test`, {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const response = await api.post(`/api/agents/${agent._id}/test`, {});
       setTestResult(response.data);
     } catch (err) {
       setError('Failed to test agent');

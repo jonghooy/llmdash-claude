@@ -149,6 +149,7 @@ const startServer = async () => {
   app.use('/api/presets', routes.presets);
   app.use('/api/prompts', routes.prompts);
   app.use('/api/admin-prompts', routes.adminPrompts);
+  app.use('/api/admin-agents', routes.adminAgents);
   app.use('/api/categories', routes.categories);
   app.use('/api/tokenizer', routes.tokenizer);
   app.use('/api/endpoints', routes.endpoints);

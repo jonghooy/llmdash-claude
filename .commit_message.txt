@@ -1,1 +1,1 @@
-🚀 MCP 서버 관리 시스템 구현 및 LibreChat 통합 시작
+🛠️ Admin Agent 페이지 axios 설정 수정 - 중앙화된 axios 인스턴스 사용으로 인증 오류 해결

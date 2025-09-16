@@ -258,6 +258,72 @@ INTERNAL_API_KEY=sk-internal-api-key-for-service-communication-2025
 
 ### ✅ Step 4: 에이전트 관리 시스템 (2025-09-16 완료)
 
+#### 4.5: Admin-LibreChat Agent 통합 (2025-09-16 완료)
+
+##### 구현 내용
+1. **AdminAgentIntegration 서비스 생성** ✅
+   - `/LibreChat/api/server/services/AdminAgentIntegration.js`
+   - Admin Dashboard 에이전트를 LibreChat 형식으로 변환
+   - Internal API Key를 통한 서비스 간 통신
+   - 캐싱 메커니즘으로 성능 최적화
+
+2. **LibreChat API 라우트 추가** ✅
+   - `/LibreChat/api/server/routes/adminAgents.js`
+   - `/api/admin-agents` 엔드포인트로 Admin 에이전트 노출
+   - JWT 인증 적용
+   - LibreChat 사용자가 Admin 에이전트 접근 가능
+
+3. **에이전트 통합 테스트** ✅
+   - `/LibreChat/test-admin-agent-integration.js`
+   - 2개 Admin 에이전트가 LibreChat에서 사용 가능 확인
+   - MCP 도구 자동 매핑 확인
+   - 카테고리, 모델, 프롬프트 등 모든 설정 변환 확인
+
+4. **통합 결과** ✅
+   - Admin Dashboard에서 생성한 에이전트가 LibreChat Agents 엔드포인트에서 사용 가능
+   - MCP 도구 (File System, GitHub) 자동 연결
+   - 코드 실행, 파일 접근, 웹 검색 등 능력 매핑 완료
+
+##### 인증 문제 해결 (2025-09-16)
+
+**문제 상황:**
+- Admin Dashboard Agent 페이지에서 지속적인 401 Unauthorized 오류
+- `/api/agents`, `/api/prompts`, `/api/mcp-servers` 엔드포인트 접근 실패
+
+**원인 분석:**
+1. JWT 토큰 검증 누락 - agents 라우트에서 토큰을 검증하지 않고 통과시킴
+2. axios 인스턴스 미사용 - 각 페이지에서 plain axios 사용으로 인터셉터 미적용
+3. 토큰 이름 불일치 - `admin_token` vs `adminToken` 혼용
+
+**해결 방법:**
+1. **JWT 검증 추가** ✅
+   ```javascript
+   // /LibreChat-Admin/backend/src/routes/agents.js
+   const jwt = require('jsonwebtoken');
+   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+   ```
+
+2. **axios 인스턴스 사용** ✅
+   ```typescript
+   // /LibreChat-Admin/frontend/src/pages/Agents/index.tsx
+   import api from '../../utils/axios';  // plain axios 대신
+   await api.get('/api/agents');  // 자동 토큰 포함
+   ```
+
+3. **토큰 이름 통일** ✅
+   ```typescript
+   // /LibreChat-Admin/frontend/src/utils/axios.ts
+   const token = localStorage.getItem('admin_token') ||
+                localStorage.getItem('adminToken');
+   ```
+
+**결과:**
+- ✅ 모든 API 호출 정상 작동
+- ✅ 인증 토큰 자동 포함
+- ✅ 401 오류 해결
+
+### ✅ Step 4: 에이전트 관리 시스템 (2025-09-16 완료)
+
 #### 구현 완료 내역
 
 ##### 1. Agent 모델 생성 ✅

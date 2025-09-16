@@ -33,8 +33,8 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Get token from localStorage or wherever it's stored
-    const token = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
-    
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -73,6 +73,7 @@ api.interceptors.response.use(
         case 401:
           // Unauthorized - redirect to login or refresh token
           console.warn('Unauthorized access - clearing auth tokens');
+          localStorage.removeItem('admin_token');
           localStorage.removeItem('adminToken');
           sessionStorage.removeItem('adminToken');
           

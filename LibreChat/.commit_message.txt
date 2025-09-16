@@ -1,1 +1,1 @@
-🤖 Step 4 완료: 에이전트 관리 시스템 구현 - MCP 도구 및 프롬프트 통합
+🔗 Admin Agent와 LibreChat 통합 완료 - 2개 에이전트가 MCP 도구와 함께 사용 가능
