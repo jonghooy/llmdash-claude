@@ -1,5 +1,5 @@
 import debounce from 'lodash/debounce';
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import { isAgentsEndpoint, isAssistantsEndpoint } from 'librechat-data-provider';
 import type * as t from 'librechat-data-provider';
 import type { Endpoint, SelectedValues } from '~/common';
@@ -14,6 +14,8 @@ import { useGetEndpointsQuery, useListAgentsQuery } from '~/data-provider';
 import { useModelSelectorChatContext } from './ModelSelectorChatContext';
 import useSelectMention from '~/hooks/Input/useSelectMention';
 import { filterItems } from './utils';
+import { useRecoilState } from 'recoil';
+import store from '~/store';
 
 type ModelSelectorContextType = {
   // State
@@ -68,6 +70,9 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
     },
   );
 
+  // Add state for last selected model
+  const [lastSelectedModel, setLastSelectedModel] = useRecoilState(store.lastSelectedModel);
+
   const { mappedEndpoints, endpointRequiresUserKey } = useEndpoints({
     agents,
     assistantsMap,
@@ -84,12 +89,45 @@ export function ModelSelectorProvider({ children, startupConfig }: ModelSelector
     returnHandlers: true,
   });
 
-  // State
-  const [selectedValues, setSelectedValues] = useState<SelectedValues>({
-    endpoint: endpoint || '',
-    model: model || '',
-    modelSpec: spec || '',
+  // State - Initialize with saved model selection if available and no current conversation
+  const [selectedValues, setSelectedValues] = useState<SelectedValues>(() => {
+    // If we have an active conversation, use its settings
+    if (endpoint || model || spec) {
+      return {
+        endpoint: endpoint || '',
+        model: model || '',
+        modelSpec: spec || '',
+      };
+    }
+
+    // Otherwise, use saved selection or default to first available OpenAI model (gpt-4.1)
+    if (lastSelectedModel) {
+      return {
+        endpoint: lastSelectedModel.endpoint,
+        model: lastSelectedModel.model,
+        modelSpec: lastSelectedModel.modelSpec,
+      };
+    }
+
+    // Default to OpenAI endpoint with gpt-4.1 model
+    return {
+      endpoint: 'openAI',
+      model: 'gpt-4.1',
+      modelSpec: '',
+    };
   });
+
+  // Save selected model to localStorage whenever it changes (but not for empty selections)
+  useEffect(() => {
+    if (selectedValues.endpoint && selectedValues.model && selectedValues.endpoint !== '') {
+      setLastSelectedModel({
+        endpoint: selectedValues.endpoint,
+        model: selectedValues.model,
+        modelSpec: selectedValues.modelSpec,
+      });
+    }
+  }, [selectedValues, setLastSelectedModel]);
+
   useSelectorEffects({
     agentsMap,
     conversation: endpoint

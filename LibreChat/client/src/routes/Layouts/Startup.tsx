@@ -49,7 +49,7 @@ export default function StartupLayout({ isAuthenticated }: { isAuthenticated?: b
   }, [isAuthenticated, navigate, data, location.pathname]);
 
   useEffect(() => {
-    document.title = startupConfig?.appTitle || 'LLMDash';
+    document.title = startupConfig?.appTitle || 'llmDash';
   }, [startupConfig?.appTitle]);
 
   useEffect(() => {

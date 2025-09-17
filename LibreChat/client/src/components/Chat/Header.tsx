@@ -57,9 +57,9 @@ export default function Header() {
             } ${!navVisible ? 'translate-x-0' : 'translate-x-[-100px]'}`}
           >
             <ModelSelector startupConfig={startupConfig} />
-            {interfaceConfig.presets === true && interfaceConfig.modelSelect && <PresetsMenu />}
+            {/* {interfaceConfig.presets === true && interfaceConfig.modelSelect && <PresetsMenu />} */}
             {hasAccessToBookmarks === true && <BookmarkMenu />}
-            {hasAccessToMultiConvo === true && <AddMultiConvo />}
+            {/* {hasAccessToMultiConvo === true && <AddMultiConvo />} */}
             {isSmallScreen && (
               <>
                 <ExportAndShareMenu

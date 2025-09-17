@@ -15,6 +15,48 @@ const { getLogStores } = require('~/cache');
 const router = Router();
 
 /**
+ * Get connection status for MCP servers
+ * @route GET /api/mcp/connection/status
+ */
+router.get('/connection/status', requireJwtAuth, async (req, res) => {
+  // Return empty object for now to prevent 404 errors
+  res.json({
+    success: true,
+    connectionStatus: {}
+  });
+});
+
+/**
+ * Get list of active MCP servers from Admin
+ * @route GET /api/mcp/servers
+ */
+router.get('/servers', requireJwtAuth, async (req, res) => {
+  try {
+    // Import the MCPServer model from Admin backend
+    const MCPServer = require('../../../../LibreChat-Admin/backend/src/models/MCPServer');
+    const servers = await MCPServer.find({ isActive: true }, 'name description command args').lean();
+
+    const serverList = {};
+    servers.forEach(server => {
+      serverList[server.name] = {
+        name: server.name,
+        description: server.description,
+        command: server.command,
+        args: server.args,
+        chatMenu: true,
+        startup: true
+      };
+    });
+
+    res.json(serverList);
+  } catch (error) {
+    logger.error('[MCP] Error fetching servers:', error);
+    // Return empty object on error
+    res.json({});
+  }
+});
+
+/**
  * Initiate OAuth flow
  * This endpoint is called when the user clicks the auth link in the UI
  */

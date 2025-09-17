@@ -184,7 +184,26 @@ export function EndpointItem({ endpoint }: EndpointItemProps) {
 }
 
 export function renderEndpoints(mappedEndpoints: Endpoint[]) {
-  return mappedEndpoints.map((endpoint) => (
-    <EndpointItem endpoint={endpoint} key={`endpoint-${endpoint.value}-item`} />
-  ));
+  // Separate My Agents from other endpoints
+  const myAgents = mappedEndpoints.find((endpoint) => endpoint.value === 'agents');
+  const otherEndpoints = mappedEndpoints.filter(
+    (endpoint) => endpoint.value !== 'gptPlugins' && endpoint.value !== 'agents'
+  );
+
+  return (
+    <>
+      {/* Render other endpoints first */}
+      {otherEndpoints.map((endpoint) => (
+        <EndpointItem endpoint={endpoint} key={`endpoint-${endpoint.value}-item`} />
+      ))}
+
+      {/* Add separator and My Agents at the bottom if it exists */}
+      {myAgents && (
+        <>
+          <div className="mx-2 my-1 border-t border-gray-300 dark:border-gray-600" />
+          <EndpointItem endpoint={myAgents} key={`endpoint-${myAgents.value}-item`} />
+        </>
+      )}
+    </>
+  );
 }

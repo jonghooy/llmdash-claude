@@ -100,7 +100,7 @@ const AuthContextProvider = ({
         token: undefined,
         isAuthenticated: false,
         user: undefined,
-        redirect: data.redirect ?? '/login',
+        redirect: data.redirect ?? 'https://www.llmdash.com/chat/login',
       });
     },
     onError: (error) => {
@@ -109,7 +109,7 @@ const AuthContextProvider = ({
         token: undefined,
         isAuthenticated: false,
         user: undefined,
-        redirect: '/login',
+        redirect: 'https://www.llmdash.com/chat/login',
       });
     },
   });

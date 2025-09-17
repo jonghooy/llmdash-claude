@@ -1,7 +1,6 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 import { useForm } from 'react-hook-form';
-import { Spinner } from '@librechat/client';
 import { useParams } from 'react-router-dom';
 import { Constants, buildTree } from 'librechat-data-provider';
 import type { TMessage } from 'librechat-data-provider';
@@ -10,6 +9,8 @@ import { ChatContext, AddedChatContext, useFileMapContext, ChatFormProvider } fr
 import { useChatHelpers, useAddedResponse, useSSE } from '~/hooks';
 import ConversationStarters from './Input/ConversationStarters';
 import { useGetMessagesByConvoId } from '~/data-provider';
+import EnhancedLoadingSpinner from './EnhancedLoadingSpinner';
+import VirtualizedMessages from './VirtualizedMessages';
 import MessagesView from './Messages/MessagesView';
 import Presentation from './Presentation';
 import ChatForm from './Input/ChatForm';
@@ -20,13 +21,7 @@ import { cn } from '~/utils';
 import store from '~/store';
 
 function LoadingSpinner() {
-  return (
-    <div className="relative flex-1 overflow-hidden overflow-y-auto">
-      <div className="relative flex h-full items-center justify-center">
-        <Spinner className="text-text-primary" />
-      </div>
-    </div>
-  );
+  return <EnhancedLoadingSpinner showProgress={true} />;
 }
 
 function ChatView({ index = 0 }: { index?: number }) {

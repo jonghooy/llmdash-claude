@@ -27,10 +27,27 @@ const chatBadges = atomWithLocalStorage<Pick<BadgeItem, 'id'>[]>('chatBadges', [
   // { id: '2' },
 ]);
 
+const showKeyboardShortcuts = atom({
+  key: 'showKeyboardShortcuts',
+  default: false,
+});
+
+
+// Store user's last selected model settings
+interface LastSelectedModel {
+  endpoint: string;
+  model: string;
+  modelSpec: string;
+}
+
+const lastSelectedModel = atomWithLocalStorage<LastSelectedModel | null>('lastSelectedModel', null);
+
 export default {
   hideBannerHint,
   messageAttachmentsMap,
   queriesEnabled,
   isEditingBadges,
   chatBadges,
+  showKeyboardShortcuts,
+  lastSelectedModel,
 };

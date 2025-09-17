@@ -37,11 +37,8 @@ export default function Footer({ className }: { className?: string }) {
   const mainContentParts = (
     typeof config?.customFooter === 'string'
       ? config.customFooter
-      : '[LLMDash ' +
-        Constants.VERSION +
-        '](https://www.llmdash.com) - ' +
-        'Enterprise AI Chat Platform'
-  ).split('|');
+      : '' // Remove default LLMDash link
+  ).split('|').filter(part => part.trim() !== '');
 
   useEffect(() => {
     if (config?.analyticsGtmId != null && typeof window.google_tag_manager === 'undefined') {

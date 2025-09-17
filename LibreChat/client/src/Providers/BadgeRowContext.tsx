@@ -9,6 +9,7 @@ import {
   useGetMCPTools,
   useToolToggle,
 } from '~/hooks';
+import { useGetStartupConfig } from '~/data-provider';
 import { ephemeralAgentByConvoId } from '~/store';
 
 interface BadgeRowContextType {
@@ -48,6 +49,7 @@ export default function BadgeRowProvider({
   const hasInitializedRef = useRef(false);
   const { mcpToolDetails } = useGetMCPTools();
   const { agentsConfig } = useGetAgentsConfig();
+  const { data: startupConfig } = useGetStartupConfig();
   const key = conversationId ?? Constants.NEW_CONVO;
 
   const setEphemeralAgent = useSetRecoilState(ephemeralAgentByConvoId(key));
@@ -166,8 +168,13 @@ export default function BadgeRowProvider({
   });
 
   const mcpServerNames = useMemo(() => {
+    // First try to get from startup config
+    if (startupConfig?.mcpServers) {
+      return Object.keys(startupConfig.mcpServers);
+    }
+    // Fallback to mcpToolDetails if available
     return (mcpToolDetails ?? []).map((tool) => tool.name);
-  }, [mcpToolDetails]);
+  }, [mcpToolDetails, startupConfig?.mcpServers]);
 
   const value: BadgeRowContextType = {
     webSearch,

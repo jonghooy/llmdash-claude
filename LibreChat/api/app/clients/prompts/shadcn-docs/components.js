@@ -2,7 +2,7 @@
 const essentialComponents = {
   avatar: {
     componentName: 'Avatar',
-    importDocs: 'import { Avatar, AvatarFallback, AvatarImage } from "/components/ui/avatar"',
+    importDocs: 'import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"',
     usageDocs: `
 <Avatar>
   <AvatarImage src="https://github.com/shadcn.png" />
@@ -11,7 +11,7 @@ const essentialComponents = {
   },
   button: {
     componentName: 'Button',
-    importDocs: 'import { Button } from "/components/ui/button"',
+    importDocs: 'import { Button } from "@/components/ui/button"',
     usageDocs: `
 <Button variant="outline">Button</Button>`,
   },
@@ -25,7 +25,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "/components/ui/card"`,
+} from "@/components/ui/card"`,
     usageDocs: `
 <Card>
   <CardHeader>
@@ -42,24 +42,24 @@ import {
   },
   checkbox: {
     componentName: 'Checkbox',
-    importDocs: 'import { Checkbox } from "/components/ui/checkbox"',
+    importDocs: 'import { Checkbox } from "@/components/ui/checkbox"',
     usageDocs: '<Checkbox />',
   },
   input: {
     componentName: 'Input',
-    importDocs: 'import { Input } from "/components/ui/input"',
+    importDocs: 'import { Input } from "@/components/ui/input"',
     usageDocs: '<Input />',
   },
   label: {
     componentName: 'Label',
-    importDocs: 'import { Label } from "/components/ui/label"',
+    importDocs: 'import { Label } from "@/components/ui/label"',
     usageDocs: '<Label htmlFor="email">Your email address</Label>',
   },
   radioGroup: {
     componentName: 'RadioGroup',
     importDocs: `
-import { Label } from "/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "/components/ui/radio-group"`,
+import { Label } from "@/components/ui/label"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"`,
     usageDocs: `
 <RadioGroup defaultValue="option-one">
   <div className="flex items-center space-x-2">
@@ -81,7 +81,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "/components/ui/select"`,
+} from "@/components/ui/select"`,
     usageDocs: `
 <Select>
   <SelectTrigger className="w-[180px]">
@@ -96,7 +96,7 @@ import {
   },
   textarea: {
     componentName: 'Textarea',
-    importDocs: 'import { Textarea } from "/components/ui/textarea"',
+    importDocs: 'import { Textarea } from "@/components/ui/textarea"',
     usageDocs: '<Textarea />',
   },
 };
@@ -111,7 +111,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "/components/ui/accordion"`,
+} from "@/components/ui/accordion"`,
     usageDocs: `
 <Accordion type="single" collapsible>
   <AccordionItem value="item-1">
@@ -135,7 +135,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "/components/ui/alert-dialog"`,
+} from "@/components/ui/alert-dialog"`,
     usageDocs: `
 <AlertDialog>
   <AlertDialogTrigger>Open</AlertDialogTrigger>
@@ -160,7 +160,7 @@ import {
   Alert,
   AlertDescription,
   AlertTitle,
-} from "/components/ui/alert"`,
+} from "@/components/ui/alert"`,
     usageDocs: `
 <Alert>
   <AlertTitle>Heads up!</AlertTitle>
@@ -171,7 +171,7 @@ import {
   },
   aspectRatio: {
     componentName: 'AspectRatio',
-    importDocs: 'import { AspectRatio } from "/components/ui/aspect-ratio"',
+    importDocs: 'import { AspectRatio } from "@/components/ui/aspect-ratio"',
     usageDocs: `
 <AspectRatio ratio={16 / 9}>
   <Image src="..." alt="Image" className="rounded-md object-cover" />
@@ -179,12 +179,12 @@ import {
   },
   badge: {
     componentName: 'Badge',
-    importDocs: 'import { Badge } from "/components/ui/badge"',
+    importDocs: 'import { Badge } from "@/components/ui/badge"',
     usageDocs: '<Badge>Badge</Badge>',
   },
   calendar: {
     componentName: 'Calendar',
-    importDocs: 'import { Calendar } from "/components/ui/calendar"',
+    importDocs: 'import { Calendar } from "@/components/ui/calendar"',
     usageDocs: '<Calendar />',
   },
   carousel: {
@@ -196,7 +196,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "/components/ui/carousel"`,
+} from "@/components/ui/carousel"`,
     usageDocs: `
 <Carousel>
   <CarouselContent>
@@ -215,7 +215,7 @@ import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "/components/ui/collapsible"`,
+} from "@/components/ui/collapsible"`,
     usageDocs: `
 <Collapsible>
   <CollapsibleTrigger>Can I use this in my project?</CollapsibleTrigger>
@@ -234,7 +234,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "/components/ui/dialog"`,
+} from "@/components/ui/dialog"`,
     usageDocs: `
 <Dialog>
   <DialogTrigger>Open</DialogTrigger>
@@ -258,7 +258,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "/components/ui/dropdown-menu"`,
+} from "@/components/ui/dropdown-menu"`,
     usageDocs: `
 <DropdownMenu>
   <DropdownMenuTrigger>Open</DropdownMenuTrigger>
@@ -283,7 +283,7 @@ import {
   MenubarSeparator,
   MenubarShortcut,
   MenubarTrigger,
-} from "/components/ui/menubar"`,
+} from "@/components/ui/menubar"`,
     usageDocs: `
 <Menubar>
   <MenubarMenu>
@@ -312,7 +312,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "/components/ui/navigation-menu"`,
+} from "@/components/ui/navigation-menu"`,
     usageDocs: `
 <NavigationMenu>
   <NavigationMenuList>
@@ -332,7 +332,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "/components/ui/popover"`,
+} from "@/components/ui/popover"`,
     usageDocs: `
 <Popover>
   <PopoverTrigger>Open</PopoverTrigger>
@@ -341,12 +341,12 @@ import {
   },
   progress: {
     componentName: 'Progress',
-    importDocs: 'import { Progress } from "/components/ui/progress"',
+    importDocs: 'import { Progress } from "@/components/ui/progress"',
     usageDocs: '<Progress value={33} />',
   },
   separator: {
     componentName: 'Separator',
-    importDocs: 'import { Separator } from "/components/ui/separator"',
+    importDocs: 'import { Separator } from "@/components/ui/separator"',
     usageDocs: '<Separator />',
   },
   sheet: {
@@ -359,7 +359,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "/components/ui/sheet"`,
+} from "@/components/ui/sheet"`,
     usageDocs: `
 <Sheet>
   <SheetTrigger>Open</SheetTrigger>
@@ -375,17 +375,17 @@ import {
   },
   skeleton: {
     componentName: 'Skeleton',
-    importDocs: 'import { Skeleton } from "/components/ui/skeleton"',
+    importDocs: 'import { Skeleton } from "@/components/ui/skeleton"',
     usageDocs: '<Skeleton className="w-[100px] h-[20px] rounded-full" />',
   },
   slider: {
     componentName: 'Slider',
-    importDocs: 'import { Slider } from "/components/ui/slider"',
+    importDocs: 'import { Slider } from "@/components/ui/slider"',
     usageDocs: '<Slider defaultValue={[33]} max={100} step={1} />',
   },
   switch: {
     componentName: 'Switch',
-    importDocs: 'import { Switch } from "/components/ui/switch"',
+    importDocs: 'import { Switch } from "@/components/ui/switch"',
     usageDocs: '<Switch />',
   },
   table: {
@@ -399,7 +399,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "/components/ui/table"`,
+} from "@/components/ui/table"`,
     usageDocs: `
 <Table>
   <TableCaption>A list of your recent invoices.</TableCaption>
@@ -429,7 +429,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "/components/ui/tabs"`,
+} from "@/components/ui/tabs"`,
     usageDocs: `
 <Tabs defaultValue="account" className="w-[400px]">
   <TabsList>
@@ -443,8 +443,8 @@ import {
   toast: {
     componentName: 'Toast',
     importDocs: `
-import { useToast } from "/components/ui/use-toast"
-import { Button } from "/components/ui/button"`,
+import { useToast } from "@/components/ui/use-toast"
+import { Button } from "@/components/ui/button"`,
     usageDocs: `
 export function ToastDemo() {
   const { toast } = useToast()
@@ -464,7 +464,7 @@ export function ToastDemo() {
   },
   toggle: {
     componentName: 'Toggle',
-    importDocs: 'import { Toggle } from "/components/ui/toggle"',
+    importDocs: 'import { Toggle } from "@/components/ui/toggle"',
     usageDocs: '<Toggle>Toggle</Toggle>',
   },
   tooltip: {
@@ -475,7 +475,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "/components/ui/tooltip"`,
+} from "@/components/ui/tooltip"`,
     usageDocs: `
 <TooltipProvider>
   <Tooltip>

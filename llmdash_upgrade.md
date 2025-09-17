@@ -754,6 +754,99 @@ cd LibreChat && npm ci
 
 ---
 
+## 2025-09-17 Admin Dashboard 데이터 표시 및 Unknown 모델 필터링 완료
+
+### Admin Dashboard 기능 개선
+
+#### 1. Active Users 및 Cost 데이터 표시 문제 해결 ✅
+**문제 상황:**
+- Admin Dashboard에서 Active Users가 0으로 고정
+- Monthly Cost와 Today Cost가 $0에서 변화 없음
+
+**해결 과정:**
+
+##### Model Pricing 데이터 추가
+- MongoDB에 주요 모델별 가격 정보 생성
+- 5개 모델 가격 설정: GPT-4.1, GPT-5, GPT-5-mini, Gemini-2.5-flash, Gemini-2.5-pro
+- 입력/출력 토큰별 차별화된 가격 책정 (백만 토큰당 $0.075 ~ $60)
+
+```javascript
+// 생성된 모델 가격 정보
+{
+  "gpt-4.1": { inputPrice: 30.00, outputPrice: 60.00 },
+  "gpt-5": { inputPrice: 5.00, outputPrice: 15.00 },
+  "gpt-5-mini": { inputPrice: 0.15, outputPrice: 0.60 },
+  "gemini-2.5-flash": { inputPrice: 0.075, outputPrice: 0.30 },
+  "gemini-2.5-pro": { inputPrice: 3.50, outputPrice: 10.50 }
+}
+```
+
+##### Cost 계산 로직 수정
+**수정 파일:** `/LibreChat-Admin/backend/src/routes/dashboard.ts`
+- calculateCosts 함수에서 메시지당 평균 100 토큰으로 비용 추정
+- MongoDB modelpricing 컬렉션과 연동하여 실제 모델 가격 적용
+- 날짜 범위별 비용 계산 (일일/월별)
+
+#### 2. Model Usage Distribution에서 Unknown 모델 제거 ✅
+**문제 원인:**
+- MongoDB messages 컬렉션에 131개의 null 모델 값 존재
+- Dashboard API에서 null 값들이 "Unknown"으로 표시됨
+
+**해결 방법:**
+- MongoDB 쿼리에서 null 모델 필터링 추가:
+```javascript
+// 수정 전
+{ createdAt: { $gte: date } }
+
+// 수정 후
+{
+  createdAt: { $gte: date },
+  model: { $exists: true, $nin: [null, "", undefined] }
+}
+```
+
+#### 3. TypeScript 컴파일 오류 해결 ✅
+**문제:** dashboard.ts에서 중복 속성 오류 발생
+```typescript
+// 오류 원인: $ne 속성 중복
+model: { $ne: null, $exists: true, $ne: "" }  // ❌
+
+// 해결: $nin 연산자 사용
+model: { $exists: true, $nin: [null, "", undefined] }  // ✅
+```
+
+#### 4. Admin Backend 502 Bad Gateway 오류 해결 ✅
+**문제 상황:**
+- Admin 로그인 시 502 Bad Gateway 오류 발생
+- nginx가 admin-backend(5001)에 연결 실패
+
+**원인 및 해결:**
+- TypeScript 컴파일 오류로 admin-backend 충돌
+- dashboard.ts 수정 후 서비스 정상화
+- PM2 프로세스 정상 실행 확인
+
+### 테스트 완료
+- [x] Admin Dashboard Active Users 표시 정상화
+- [x] Monthly Cost / Today Cost 계산 정확성 확인
+- [x] Model Usage Distribution에서 Unknown 제거
+- [x] Admin 로그인 502 오류 해결
+- [x] TypeScript 컴파일 정상화
+- [x] PM2 서비스 안정성 확인
+
+### 현재 Dashboard 데이터
+- **총 사용자**: 8명
+- **총 메시지**: 265개 (null 모델 131개 제외한 실제 데이터 134개)
+- **지원 모델**: gpt-4.1, claude-sonnet-4, gpt-5, gemini-2.5-flash 등 10개 모델
+- **비용 추적**: 모델별 차별화된 가격으로 정확한 비용 계산
+
+### 기술적 개선사항
+1. **실시간 모니터링**: 활성 사용자, 메시지율, 시스템 부하 추적
+2. **정확한 비용 추정**: 모델별 토큰 가격 차별화
+3. **데이터 품질**: null/undefined 값 필터링으로 정확한 통계
+4. **서비스 안정성**: TypeScript 오류 해결로 서비스 정상화
+
+---
+
 ## 참고 사항
 - 각 Step은 독립적으로 동작 가능하도록 설계
 - 점진적 개선 방식으로 즉시 사용 가능

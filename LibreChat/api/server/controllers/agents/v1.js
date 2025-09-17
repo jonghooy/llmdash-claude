@@ -39,6 +39,7 @@ const { updateAction, getActions } = require('~/models/Action');
 const { getCachedTools } = require('~/server/services/Config');
 const { deleteFileByFilter } = require('~/models/File');
 const { getCategoriesWithCounts } = require('~/models');
+const { getAdminAgentIntegration } = require('~/server/services/AdminAgentIntegration');
 
 const systemTools = {
   [Tools.execute_code]: true,
@@ -459,15 +460,54 @@ const getListAgentsHandler = async (req, res) => {
       limit,
       after: cursor,
     });
-    if (data?.data?.length) {
-      data.data = data.data.map((agent) => {
-        if (publiclyAccessibleIds.some((id) => id.equals(agent._id))) {
+
+    // Get agents from Admin Dashboard
+    const adminAgentIntegration = getAdminAgentIntegration();
+    const adminAgents = await adminAgentIntegration.getAgentsForLibreChat(userId);
+
+    // Combine agents
+    let combinedAgents = data?.data || [];
+
+    // Add Admin agents (convert and filter)
+    if (adminAgents && adminAgents.length > 0) {
+      const filteredAdminAgents = adminAgents.filter(agent => {
+        // Apply category filter
+        if (category !== undefined && category.trim() !== '' && agent.category !== category) {
+          return false;
+        }
+        // Apply search filter
+        if (search && search.trim() !== '') {
+          const searchTerm = search.trim().toLowerCase();
+          return (
+            agent.name?.toLowerCase().includes(searchTerm) ||
+            agent.description?.toLowerCase().includes(searchTerm)
+          );
+        }
+        return true;
+      });
+
+      // Mark admin agents
+      filteredAdminAgents.forEach(agent => {
+        agent.isFromAdmin = true;
+        agent.isPublic = true;
+      });
+
+      combinedAgents = [...combinedAgents, ...filteredAdminAgents];
+    }
+
+    if (combinedAgents.length > 0) {
+      combinedAgents = combinedAgents.map((agent) => {
+        if (!agent.isFromAdmin && publiclyAccessibleIds.some((id) => id.equals(agent._id))) {
           agent.isPublic = true;
         }
         return agent;
       });
     }
-    return res.json(data);
+
+    return res.json({
+      ...data,
+      data: combinedAgents
+    });
   } catch (error) {
     logger.error('[/Agents] Error listing Agents', error);
     res.status(500).json({ error: error.message });

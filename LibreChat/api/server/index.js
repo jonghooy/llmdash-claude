@@ -13,6 +13,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const { isEnabled, ErrorController } = require('@librechat/api');
 const { connectDb, indexSync } = require('~/db');
 const validateImageRequest = require('./middleware/validateImageRequest');
+const { responseTimeMiddleware, sseResponseTimeMiddleware } = require('./middleware/responseTime');
 const { jwtLogin, ldapLogin, passportLogin } = require('~/strategies');
 const { updateInterfacePermissions } = require('~/models/interface');
 const { checkMigrations } = require('./services/start/migration');
@@ -91,6 +92,9 @@ const startServer = async () => {
   app.use(mongoSanitize());
   app.use(cors());
   app.use(cookieParser());
+
+  // Add response time monitoring
+  app.use(responseTimeMiddleware);
 
   if (!isEnabled(DISABLE_COMPRESSION)) {
     app.use(compression({

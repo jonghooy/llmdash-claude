@@ -74,9 +74,16 @@ const getAvailableTools = async (req, res) => {
     const cachedToolsArray = await cache.get(CacheKeys.TOOLS);
     const cachedUserTools = await getCachedTools({ userId });
 
-    const mcpManager = getMCPManager();
+    let mcpManager;
+    try {
+      mcpManager = getMCPManager();
+    } catch (error) {
+      logger.debug('[getAvailableTools] MCPManager not initialized yet');
+      mcpManager = null;
+    }
+
     const userPlugins =
-      cachedUserTools != null
+      cachedUserTools != null && mcpManager
         ? convertMCPToolsToPlugins({ functionTools: cachedUserTools, mcpManager })
         : undefined;
 
@@ -94,7 +101,7 @@ const getAvailableTools = async (req, res) => {
     let pluginManifest = availableTools;
 
     const appConfig = req.config ?? (await getAppConfig({ role: req.user?.role }));
-    if (appConfig?.mcpConfig != null) {
+    if (appConfig?.mcpConfig != null && mcpManager) {
       try {
         const mcpTools = await mcpManager.getAllToolFunctions(userId);
         prelimCachedTools = prelimCachedTools ?? {};
@@ -179,7 +186,8 @@ const getAvailableTools = async (req, res) => {
     res.status(200).json(dedupedTools);
   } catch (error) {
     logger.error('[getAvailableTools]', error);
-    res.status(500).json({ message: error.message });
+    // Return empty array on error instead of 500 to prevent frontend errors
+    res.status(200).json([]);
   }
 };
 

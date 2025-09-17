@@ -12,6 +12,7 @@ const { getAppConfig } = require('~/server/services/Config/app');
 const { getProjectByName } = require('~/models/Project');
 const { getMCPManager } = require('~/config');
 const { getLogStores } = require('~/cache');
+const { getAdminMCPIntegration } = require('~/server/services/AdminMCPIntegration');
 
 const router = express.Router();
 const emailLoginEnabled =
@@ -66,7 +67,7 @@ router.get('/', async function (req, res) {
 
     /** @type {TStartupConfig} */
     const payload = {
-      appTitle: process.env.APP_TITLE || 'LibreChat',
+      appTitle: process.env.APP_TITLE || 'llmDash',
       socialLogins: appConfig?.registration?.socialLogins ?? defaultSocialLogins,
       discordLoginEnabled: !!process.env.DISCORD_CLIENT_ID && !!process.env.DISCORD_CLIENT_SECRET,
       facebookLoginEnabled:
@@ -123,8 +124,34 @@ router.get('/', async function (req, res) {
     }
 
     payload.mcpServers = {};
-    const getMCPServers = () => {
+    const getMCPServers = async () => {
       try {
+        // First try to get from Admin backend via API
+        const adminMCPIntegration = getAdminMCPIntegration();
+        const adminServers = await adminMCPIntegration.fetchAdminMCPServers();
+
+        if (adminServers && adminServers.length > 0) {
+          logger.info(`[/api/config] Loaded ${adminServers.length} MCP servers from Admin`);
+          adminServers.forEach(server => {
+            const serverKey = server.name
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '_')
+              .replace(/^_+|_+$/g, '');
+
+            payload.mcpServers[serverKey] = {
+              name: server.name,
+              description: server.description,
+              startup: true,
+              chatMenu: true
+            };
+          });
+
+          if (Object.keys(payload.mcpServers).length > 0) {
+            return;
+          }
+        }
+
+        // Fallback to MCPManager if available
         const mcpManager = getMCPManager();
         if (!mcpManager) {
           return;
@@ -146,7 +173,7 @@ router.get('/', async function (req, res) {
       }
     };
 
-    getMCPServers();
+    await getMCPServers();
     const webSearchConfig = appConfig?.webSearch;
     if (
       webSearchConfig != null &&

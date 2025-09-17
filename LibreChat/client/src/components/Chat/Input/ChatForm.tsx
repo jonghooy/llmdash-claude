@@ -24,8 +24,7 @@ import FileFormChat from './Files/FileFormChat';
 import { cn, removeFocusRings } from '~/utils';
 import TextareaHeader from './TextareaHeader';
 import PromptsCommand from './PromptsCommand';
-// Removed PromptSelector - prompts are now managed in Admin Dashboard
-// import PromptSelector from '../PromptSelector';
+import PromptSelector from '../PromptSelector';
 import AudioRecorder from './AudioRecorder';
 import CollapseChat from './CollapseChat';
 import StreamAudio from './StreamAudio';
@@ -184,11 +183,10 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
     setBackupBadges([]);
   }, [setIsEditingBadges, setBackupBadges]);
   
-  // Removed handleSelectPrompt - prompts are now managed in Admin Dashboard
-  // const handleSelectPrompt = useCallback((prompt: string) => {
-  //   methods.setValue('text', prompt, { shouldValidate: true });
-  //   textAreaRef.current?.focus();
-  // }, [methods]);
+  const handleSelectPrompt = useCallback((prompt: string) => {
+    methods.setValue('text', prompt, { shouldValidate: true });
+    textAreaRef.current?.focus();
+  }, [methods]);
 
   const handleCancelBadges = useCallback(() => {
     if (backupBadges.length > 0) {
@@ -310,8 +308,7 @@ const ChatForm = memo(({ index = 0 }: { index?: number }) => {
             >
               <div className={`${isRTL ? 'mr-2' : 'ml-2'} flex gap-1`}>
                 <AttachFileChat conversation={conversation} disableInputs={disableInputs} />
-                {/* Removed PromptSelector - prompts are now managed in Admin Dashboard */}
-                {/* <PromptSelector onSelectPrompt={handleSelectPrompt} /> */}
+                <PromptSelector onSelectPrompt={handleSelectPrompt} />
               </div>
               <BadgeRow
                 showEphemeralBadges={!isAgentsEndpoint(endpoint) && !isAssistantsEndpoint(endpoint)}

@@ -13,14 +13,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="assets/apple-touch-icon-180x180.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content" />
-    <style>
-      html,
-      body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-      }
-    </style>
     <script>
       const theme = localStorage.getItem('color-theme');
       const loadingContainerStyle = document.createElement('style');
@@ -37,15 +29,7 @@
         backgroundColor = '#ffffff';
       }
 
-      loadingContainerStyle.innerHTML = `
-        #loading-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-          background-color: ${backgroundColor};
-        }
-      `;
+      loadingContainerStyle.innerHTML = 'html, body { margin: 0; padding: 0; height: 100%; } #loading-container { display: flex; align-items: center; justify-content: center; height: 100vh; background-color: ' + backgroundColor + '; }';
       document.head.appendChild(loadingContainerStyle);
     </script>
     <script defer type="module" src="/src/main.jsx"></script>
