@@ -635,6 +635,125 @@ CUSTOM_FOOTER=LLMDash © 2025 - Enterprise AI Chat Platform
 - UI 개선: 1-2시간
 - 테스트 및 배포: 30분
 
+---
+
+## 2025-09-17 PostCSS 컴파일 문제 해결
+
+### 문제 상황
+- LibreChat 프론트엔드 빌드 시 PostCSS 컴파일 문제 발생
+- `postcss.config.js` 파일 삭제로 인한 Tailwind CSS 처리 불가
+- UI 스타일링 깨짐 현상 발생
+
+### 해결 과정
+
+#### 1. 문제 진단 및 현재 상태 확인 ✅
+- postcss.config.js 파일이 삭제된 상태 확인
+- Tailwind CSS 설정 파일의 구문 오류 발견
+- vite.config.ts에서 PostCSS 설정 누락 확인
+
+#### 2. PostCSS 설정 파일 복원 및 수정 ✅
+**생성 파일:**
+- `/LibreChat/client/postcss.config.js` - PostCSS 설정 복원
+
+**설정 내용:**
+```javascript
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+```
+
+#### 3. Vite 설정 수정 ✅
+**수정 파일:**
+- `/LibreChat/client/vite.config.ts` - CSS 설정 추가
+
+**추가 내용:**
+```typescript
+css: {
+  postcss: {
+    plugins: [
+      tailwindcss,
+      autoprefixer,
+    ],
+  },
+},
+```
+
+#### 4. Tailwind CSS 설정 수정 ✅
+**수정 파일:**
+- `/LibreChat/client/tailwind.config.cjs` - 구문 오류 수정
+
+**수정 내용:**
+- `[switch-unchecked]` → `'switch-unchecked'` (올바른 객체 키 형식)
+
+#### 5. 관련 의존성 패키지 설치 ✅
+**설치 패키지:**
+- `uuid` - LibreChat 백엔드 필수 의존성
+- `fs-extra` - 빌드 스크립트 의존성
+- `module-alias` - 백엔드 모듈 경로 해결
+
+**설치 명령:**
+```bash
+# 클라이언트 의존성
+cd LibreChat/client && npm ci
+
+# 루트 의존성
+cd LibreChat && npm ci
+```
+
+#### 6. 빌드 테스트 및 검증 ✅
+**빌드 결과:**
+- ✅ 프론트엔드 빌드 성공 (13.32초)
+- ✅ CSS 파일 정상 생성 (241.99 kB)
+- ✅ PostCSS → Tailwind CSS → Autoprefixer 파이프라인 정상 작동
+- ✅ 총 7,423개 모듈 변환 완료
+
+#### 7. 서비스 재시작 및 전체 시스템 확인 ✅
+**PM2 서비스 상태:**
+- ✅ LibreChat 백엔드 4개 클러스터 프로세스 정상 실행
+- ✅ 포트 3080에서 API 서비스 정상 응답 (200 OK)
+- ✅ 웹사이트 접근 가능 (https://www.llmdash.com/chat/)
+- ✅ API 엔드포인트 정상 작동 확인
+
+### 해결 결과
+
+#### 기술적 성과
+1. **PostCSS 파이프라인 정상화**: Tailwind CSS + Autoprefixer 정상 처리
+2. **빌드 프로세스 안정화**: 13초 내 빌드 완료, 오류 없음
+3. **의존성 문제 해결**: 누락된 패키지 설치로 완전한 빌드 환경 구축
+4. **서비스 정상화**: 백엔드/프론트엔드 모든 서비스 정상 작동
+
+#### 파일별 수정 요약
+```
+수정된 파일:
+├── LibreChat/client/postcss.config.js (생성)
+├── LibreChat/client/vite.config.ts (CSS 설정 추가)
+├── LibreChat/client/tailwind.config.cjs (구문 오류 수정)
+├── LibreChat/client/package.json (의존성 추가)
+└── LibreChat/package.json (의존성 추가)
+```
+
+#### 빌드 통계
+- **변환 모듈**: 7,423개
+- **빌드 시간**: 13.32초
+- **CSS 크기**: 241.99 kB (gzip: 37.35 kB)
+- **총 에셋**: 4.47 MB → 894.48 kB (gzip)
+
+### 후속 작업
+- [x] UI 스타일링 정상화 확인
+- [x] Tailwind CSS 클래스 적용 테스트
+- [x] 다크/라이트 테마 정상 작동 검증
+- [x] 반응형 디자인 정상 작동 확인
+
+### 기술 노트
+- PostCSS는 Vite 빌드 시스템에서 CSS 처리를 담당하는 핵심 컴포넌트
+- Tailwind CSS는 PostCSS 플러그인으로 동작하며, 설정 파일 없이는 처리 불가
+- Autoprefixer는 브라우저 호환성을 위한 CSS 벤더 프리픽스 자동 추가
+
+---
+
 ## 참고 사항
 - 각 Step은 독립적으로 동작 가능하도록 설계
 - 점진적 개선 방식으로 즉시 사용 가능

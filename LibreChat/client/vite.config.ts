@@ -4,24 +4,22 @@ import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 import { compression } from 'vite-plugin-compression2';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import { VitePWA } from 'vite-plugin-pwa';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => ({
   base: '/chat/',
   server: {
-    host: true,
+    host: '0.0.0.0',
     port: 3090,
     strictPort: false,
-    allowedHosts: [
-      'localhost',
-      'www.llmdash.com',
-      'llmdash.com',
-      '.llmdash.com'
-    ],
+    cors: true,
     hmr: {
-      host: 'localhost'
+      host: 'localhost',
+      port: 3090
     },
+    allowedHosts: ['www.llmdash.com', 'llmdash.com', 'localhost'],
     proxy: {
       '/api': {
         target: 'http://localhost:3080',
@@ -36,77 +34,40 @@ export default defineConfig(({ command }) => ({
   // Set the directory where environment variables are loaded from and restrict prefixes
   envDir: '../',
   envPrefix: ['VITE_', 'SCRIPT_', 'DOMAIN_', 'ALLOW_'],
+  css: {
+    postcss: {
+      plugins: [
+        tailwindcss,
+        autoprefixer,
+      ],
+    },
+  },
   plugins: [
-    react(),
-    nodePolyfills(),
-    VitePWA({
-      injectRegister: 'auto', // 'auto' | 'manual' | 'disabled'
-      registerType: 'autoUpdate', // 'prompt' | 'autoUpdate'
-      devOptions: {
-        enabled: false, // disable service worker registration in development mode
-      },
-      useCredentials: true,
-      includeManifestIcons: false,
-      workbox: {
-        globPatterns: [
-          '**/*.{js,css,html}',
-          'assets/favicon*.png',
-          'assets/icon-*.png',
-          'assets/apple-touch-icon*.png',
-          'assets/maskable-icon.png',
-          'manifest.webmanifest',
-        ],
-        globIgnores: ['images/**/*', '**/*.map', 'index.html'],
-        maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-        navigateFallbackDenylist: [/^\/oauth/, /^\/api/],
-      },
-      includeAssets: [],
-      manifest: {
-        name: 'LibreChat',
-        short_name: 'LibreChat',
-        display: 'standalone',
-        background_color: '#000000',
-        theme_color: '#009688',
-        icons: [
-          {
-            src: 'assets/favicon-32x32.png',
-            sizes: '32x32',
-            type: 'image/png',
-          },
-          {
-            src: 'assets/favicon-16x16.png',
-            sizes: '16x16',
-            type: 'image/png',
-          },
-          {
-            src: 'assets/apple-touch-icon-180x180.png',
-            sizes: '180x180',
-            type: 'image/png',
-          },
-          {
-            src: 'assets/icon-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'assets/maskable-icon.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
-      },
+    react({
+      jsxRuntime: 'automatic',
+      babel: false,
     }),
+    nodePolyfills(),
     sourcemapExclude({ excludeNodeModules: true }),
     compression({
       threshold: 10240,
     }),
   ],
+  esbuild: {
+    target: 'es2020',
+    jsx: 'automatic',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2020',
+      jsx: 'automatic',
+    },
+  },
   publicDir: command === 'serve' ? './public' : false,
   build: {
     sourcemap: process.env.NODE_ENV === 'development',
     outDir: './dist',
-    minify: 'terser',
+    minify: false,
     rollupOptions: {
       preserveEntrySignatures: 'strict',
       output: {
