@@ -2,7 +2,6 @@ require('events').EventEmitter.defaultMaxListeners = 100;
 const { logger } = require('@librechat/data-schemas');
 const { DynamicStructuredTool } = require('@langchain/core/tools');
 const { getBufferString, HumanMessage } = require('@langchain/core/messages');
-const { getOrgMemoryContext } = require('~/server/services/OrgMemory');
 const { getMCPService } = require('~/server/services/MCPService');
 const {
   sendEvent,
@@ -254,17 +253,6 @@ class AgentClient extends BaseClient {
     if (this.options.req && orderedMessages && orderedMessages.length > 0) {
       const lastUserMessage = orderedMessages[orderedMessages.length - 1];
       logger.info('[AgentClient] Last user message:', lastUserMessage?.text?.substring(0, 100));
-
-      const orgMemoryContext = await getOrgMemoryContext(this.options.req);
-      if (orgMemoryContext) {
-        logger.info('[AgentClient] Adding org memory context to system prompt');
-        logger.info('[AgentClient] Memory context length:', orgMemoryContext.length);
-        systemContent = systemContent + '\n\n' + orgMemoryContext;
-      } else {
-        logger.info('[AgentClient] No org memory context available');
-      }
-    } else {
-      logger.info('[AgentClient] No request or messages available for org memory');
     }
 
     // Add MCP tools context if available

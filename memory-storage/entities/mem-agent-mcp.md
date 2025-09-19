@@ -1,0 +1,11 @@
+# Mem-Agent MCP
+- relationship: Memory System
+- type: MCP Server
+- description: Model Context Protocol server for memory management
+- features:
+  - Obsidian-style markdown storage
+  - Entity relationship management
+  - Tool integration for memory operations
+  - Claude Desktop integration
+  - FastMCP-based architecture
+- status: Setting up and testing

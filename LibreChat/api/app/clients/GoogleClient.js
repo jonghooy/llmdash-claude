@@ -486,16 +486,6 @@ class GoogleClient extends BaseClient {
 
     let promptPrefix = (this.systemMessage ?? '').trim();
 
-    // Add organization memory context
-    try {
-      const { getOrgMemoryContext } = require('~/server/services/OrgMemory');
-      const orgMemoryContext = await getOrgMemoryContext(this.options?.req);
-      if (orgMemoryContext) {
-        promptPrefix = `${orgMemoryContext}\n${promptPrefix}`.trim();
-      }
-    } catch (error) {
-      logger.debug('[GoogleClient] Error adding org memory context:', error.message);
-    }
 
     if (identityPrefix) {
       promptPrefix = `${identityPrefix}${promptPrefix}`;

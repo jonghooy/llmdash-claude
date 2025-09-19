@@ -204,17 +204,13 @@ router.put('/:id', authMiddleware, async (req, res) => {
 // Delete agent
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
-    const agent = await Agent.findByIdAndUpdate(
-      req.params.id,
-      { isActive: false },
-      { new: true }
-    );
+    const agent = await Agent.findByIdAndDelete(req.params.id);
 
     if (!agent) {
       return res.status(404).json({ error: 'Agent not found' });
     }
 
-    res.json({ message: 'Agent deactivated successfully' });
+    res.json({ message: 'Agent deleted successfully' });
   } catch (error) {
     console.error('Error deleting agent:', error);
     res.status(500).json({ error: 'Failed to delete agent' });

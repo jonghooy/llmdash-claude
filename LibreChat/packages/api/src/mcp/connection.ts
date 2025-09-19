@@ -220,7 +220,16 @@ export class MCPConnection extends EventEmitter {
             throw new Error('Invalid options for sse transport.');
           }
           this.url = options.url;
-          const url = new URL(options.url);
+
+          // Add session ID for Memory Enterprise JSON-RPC over SSE
+          let url = new URL(options.url);
+          if (url.pathname.includes('/jsonrpc-sse')) {
+            // Generate a unique session ID for this connection
+            const sessionId = `librechat-${this.serverName}-${Date.now()}`;
+            url = new URL(`${options.url}/stream/${sessionId}`);
+            logger.info(`${this.getLogPrefix()} Using session ID: ${sessionId}`);
+          }
+
           logger.info(`${this.getLogPrefix()} Creating SSE transport: ${url.toString()}`);
           const abortController = new AbortController();
 

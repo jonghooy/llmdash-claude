@@ -20,6 +20,8 @@ const {
   createYouTubeTools,
   TavilySearchResults,
   createOpenAIImageTools,
+  // Custom Tools
+  MemoryUpdate,
 } = require('../');
 const { primeFiles: primeCodeFiles } = require('~/server/services/Files/Code/process');
 const { createFileSearchTool, primeFiles: primeSearchFiles } = require('./fileSearch');
@@ -163,6 +165,7 @@ const loadTools = async ({
     'azure-ai-search': StructuredACS,
     traversaal_search: TraversaalSearch,
     tavily_search_results_json: TavilySearchResults,
+    memory_update: MemoryUpdate,
   };
 
   const customConstructors = {
@@ -238,6 +241,7 @@ const loadTools = async ({
     dalle: imageGenOptions,
     'stable-diffusion': imageGenOptions,
     serpapi: { location: 'Austin,Texas,United States', hl: 'en', gl: 'us' },
+    memory_update: { res: options.res }, // Pass response object for SSE notifications
   };
 
   /** @type {Record<string, string>} */

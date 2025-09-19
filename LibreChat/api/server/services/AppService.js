@@ -5,6 +5,7 @@ const {
   loadWebSearchConfig,
   loadDefaultInterface,
 } = require('@librechat/api');
+const { logger } = require('@librechat/data-schemas');
 const {
   FileSources,
   loadOCRConfig,
@@ -71,7 +72,54 @@ const AppService = async () => {
     directory: paths.structuredTools,
   });
 
-  const mcpConfig = config.mcpServers || null;
+  // Get MCP servers from librechat.yaml
+  let mcpConfig = config.mcpServers || {};
+
+  // Try to merge Admin Dashboard MCP servers if enabled
+  if (process.env.ENABLE_ADMIN_MCP_INTEGRATION === 'true') {
+    try {
+      const MCPServer = require('../../../../LibreChat-Admin/backend/src/models/MCPServer');
+      const activeMCPServers = await MCPServer.find({ isActive: true }).lean();
+
+      if (activeMCPServers && activeMCPServers.length > 0) {
+        logger.info(`[AppService] Loading ${activeMCPServers.length} active MCP servers from Admin Dashboard`);
+
+        activeMCPServers.forEach(server => {
+          // Convert Admin MCP format to LibreChat MCP format
+          const serverConfig = {
+            type: server.connectionType || 'stdio',
+            startup: true,
+            chatMenu: true
+          };
+
+          // Handle different connection types
+          if (server.connectionType === 'stdio') {
+            serverConfig.command = server.command;
+            serverConfig.args = server.args;
+            if (server.env && server.env instanceof Map) {
+              serverConfig.env = Object.fromEntries(server.env);
+            }
+          } else if (server.connectionType === 'sse' || server.connectionType === 'websocket') {
+            serverConfig.url = server.url;
+            if (server.headers && server.headers instanceof Map) {
+              serverConfig.headers = Object.fromEntries(server.headers);
+            }
+          }
+
+          // Use underscore format for server name (e.g., memory_enterprise)
+          const serverName = server.name.toLowerCase().replace(/[\s-]+/g, '_');
+          mcpConfig[serverName] = serverConfig;
+
+          logger.debug(`[AppService] Added MCP server: ${serverName} (${server.connectionType})`);
+        });
+      }
+    } catch (error) {
+      logger.warn('[AppService] Could not load MCP servers from Admin Dashboard:', error.message);
+    }
+  }
+
+  // Ensure mcpConfig is not null
+  mcpConfig = Object.keys(mcpConfig).length > 0 ? mcpConfig : null;
   const registration = config.registration ?? configDefaults.registration;
   const interfaceConfig = await loadDefaultInterface({ config, configDefaults });
   const turnstileConfig = loadTurnstileConfig(config, configDefaults);

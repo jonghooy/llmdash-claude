@@ -149,6 +149,7 @@ const startServer = async () => {
   app.use('/api/search', routes.search);
   app.use('/api/edit', routes.edit);
   app.use('/api/messages', routes.messages);
+  app.use('/api/memory', routes.memory); // MCP Memory API
   app.use('/api/convos', routes.convos);
   app.use('/api/presets', routes.presets);
   app.use('/api/prompts', routes.prompts);

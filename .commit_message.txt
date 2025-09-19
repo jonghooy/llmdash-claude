@@ -1,1 +1,1 @@
-🐛 Admin Dashboard 502 Bad Gateway 오류 수정 - TypeScript 컴파일 에러 해결로 Admin Backend 정상화
+✅ Memory Enterprise MCP 통합 완료 - stdio 프로토콜로 memory_search, memory_create, memory_list 도구 추가

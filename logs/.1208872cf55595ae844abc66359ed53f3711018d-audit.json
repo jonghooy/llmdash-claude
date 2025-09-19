@@ -9,6 +9,11 @@
             "date": 1757951336214,
             "name": "/home/jonghooy/work/llmdash-claude/logs/error-2025-09-16.log",
             "hash": "4e334a826e3fc75a0921e13e4edeb423d3732d163907ed7903dd387d3d6ee813"
+        },
+        {
+            "date": 1758127823848,
+            "name": "/home/jonghooy/work/llmdash-claude/logs/error-2025-09-18.log",
+            "hash": "73304e1b5e07c9e6686f847afcc03d7eb93daf165e72aad55cc5cf3c47e13b13"
         }
     ],
     "hashType": "sha256"

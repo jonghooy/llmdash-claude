@@ -186,12 +186,53 @@ router.post('/:id/test', checkAuth, async (req, res) => {
         success = true;
       } else if (server.connectionType === 'sse' || server.connectionType === 'websocket') {
         // Test HTTP/WebSocket connection
-        const response = await axios.get(server.url, {
-          headers: Object.fromEntries(server.headers || new Map()),
-          timeout: 5000
-        });
-        
-        success = response.status < 400;
+        // For SSE MCP servers, we need to send a proper MCP request
+        if (server.url && server.url.includes('/mcp')) {
+          // Memory Enterprise style MCP server - check if it has a /tools endpoint
+          const baseUrl = server.url.replace('/request', '');
+
+          try {
+            // First try GET /mcp/tools endpoint (Memory Enterprise style)
+            const toolsUrl = baseUrl + '/tools';
+            const response = await axios.get(toolsUrl, {
+              headers: Object.fromEntries(server.headers || new Map()),
+              timeout: 5000
+            });
+
+            // Check if we got tools back
+            success = response.status < 400 && response.data &&
+                     (response.data.tools || response.data.result);
+          } catch (err) {
+            // If that fails, try the JSON-RPC style request
+            const testRequest = {
+              jsonrpc: '2.0',
+              method: 'tools/list',
+              params: {},
+              id: 'test-' + Date.now()
+            };
+
+            const response = await axios.post(server.url, testRequest, {
+              headers: {
+                'Content-Type': 'application/json',
+                ...Object.fromEntries(server.headers || new Map())
+              },
+              timeout: 5000
+            });
+
+            // Check if we got a valid MCP response
+            success = response.status < 400 &&
+                      response.data &&
+                      (response.data.result || response.data.error === null);
+          }
+        } else {
+          // Regular HTTP endpoint test
+          const response = await axios.get(server.url, {
+            headers: Object.fromEntries(server.headers || new Map()),
+            timeout: 5000
+          });
+
+          success = response.status < 400;
+        }
       }
     } catch (err) {
       error = err.message;

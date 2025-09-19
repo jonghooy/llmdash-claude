@@ -55,8 +55,14 @@ export function useMCPSelect({ conversationId }: { conversationId?: string | nul
 
   /** Create a stable memoized setter to avoid re-creating it on every render and causing an infinite render loop */
   const setMCPValues = useCallback((value: string[]) => {
+    console.log('🎯 [MCP Tool Selection Changed]', {
+      selectedTools: value,
+      count: value.length,
+      conversationId: conversationId || 'new',
+      timestamp: new Date().toISOString()
+    });
     setMCPValuesRawRef.current(value);
-  }, []);
+  }, [conversationId]);
 
   const [isPinned, setIsPinned] = useLocalStorage<boolean>(
     `${LocalStorageKeys.PIN_MCP_}${key}`,

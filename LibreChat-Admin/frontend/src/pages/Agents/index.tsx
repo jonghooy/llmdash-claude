@@ -32,7 +32,6 @@ import {
   Slider,
   Autocomplete,
   Avatar,
-  Rating,
   Tooltip,
   Badge,
   Stack,
@@ -52,7 +51,14 @@ import {
   Psychology as PsychologyIcon,
   Speed as SpeedIcon,
   Memory as MemoryIcon,
-  Build as BuildIcon
+  Build as BuildIcon,
+  Groups as GroupsIcon,
+  Science as ScienceIcon,
+  AccountBalance as AccountBalanceIcon,
+  Computer as ComputerIcon,
+  Store as StoreIcon,
+  SupportAgent as SupportAgentIcon,
+  Category as CategoryIcon
 } from '@mui/icons-material';
 import api from '../../utils/axios';
 import PageContainer from '../../components/Layout/PageContainer';
@@ -81,7 +87,6 @@ interface Agent {
   isPublic: boolean;
   isActive: boolean;
   usageCount: number;
-  rating: number;
   tags: string[];
   createdAt: string;
   updatedAt: string;
@@ -219,14 +224,21 @@ const Agents: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to deactivate this agent?')) return;
+    console.log('Delete button clicked for agent:', id);
+    if (!window.confirm('Are you sure you want to delete this agent?')) {
+      console.log('Delete cancelled');
+      return;
+    }
 
     try {
-      await api.delete(`/api/agents/${id}`);
+      console.log('Sending delete request for agent:', id);
+      const response = await api.delete(`/api/agents/${id}`);
+      console.log('Delete response:', response);
       fetchAgents();
-    } catch (err) {
-      setError('Failed to delete agent');
-      console.error(err);
+    } catch (err: any) {
+      console.error('Delete error:', err);
+      console.error('Error response:', err.response);
+      setError(`Failed to delete agent: ${err.response?.data?.error || err.message}`);
     }
   };
 
@@ -266,15 +278,34 @@ const Agents: React.FC = () => {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       general: 'default',
-      coding: 'primary',
-      writing: 'secondary',
-      analysis: 'info',
-      creative: 'warning',
-      research: 'success',
-      support: 'error',
-      automation: 'primary'
+      human_resources: 'primary',
+      research_development: 'secondary',
+      finance: 'info',
+      it: 'success',
+      sales: 'warning',
+      after_sales: 'error'
     };
     return colors[category] || 'default';
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'human_resources':
+        return <GroupsIcon />;
+      case 'research_development':
+        return <ScienceIcon />;
+      case 'finance':
+        return <AccountBalanceIcon />;
+      case 'it':
+        return <ComputerIcon />;
+      case 'sales':
+        return <StoreIcon />;
+      case 'after_sales':
+        return <SupportAgentIcon />;
+      case 'general':
+      default:
+        return <CategoryIcon />;
+    }
   };
 
   return (
@@ -416,9 +447,7 @@ const Agents: React.FC = () => {
               <TableCell>Type</TableCell>
               <TableCell>Category</TableCell>
               <TableCell>Model</TableCell>
-              <TableCell>Tools</TableCell>
               <TableCell>Usage</TableCell>
-              <TableCell>Rating</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -436,7 +465,7 @@ const Agents: React.FC = () => {
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                      {getTypeIcon(agent.type)}
+                      {getCategoryIcon(agent.category)}
                     </Avatar>
                     <Box>
                       <Typography variant="subtitle2">{agent.name}</Typography>
@@ -455,34 +484,14 @@ const Agents: React.FC = () => {
                 </TableCell>
                 <TableCell>
                   <Chip
-                    label={agent.category}
+                    icon={getCategoryIcon(agent.category)}
+                    label={agent.category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     size="small"
                     color={getCategoryColor(agent.category) as any}
                   />
                 </TableCell>
                 <TableCell>{agent.model}</TableCell>
-                <TableCell>
-                  <Stack direction="row" spacing={1}>
-                    {agent.mcpServers?.length > 0 && (
-                      <Tooltip title="MCP Servers">
-                        <Badge badgeContent={agent.mcpServers.length} color="primary">
-                          <BuildIcon fontSize="small" />
-                        </Badge>
-                      </Tooltip>
-                    )}
-                    {agent.prompts?.length > 0 && (
-                      <Tooltip title="Prompts">
-                        <Badge badgeContent={agent.prompts.length} color="secondary">
-                          <PsychologyIcon fontSize="small" />
-                        </Badge>
-                      </Tooltip>
-                    )}
-                  </Stack>
-                </TableCell>
                 <TableCell>{agent.usageCount}</TableCell>
-                <TableCell>
-                  <Rating value={agent.rating} readOnly size="small" />
-                </TableCell>
                 <TableCell>
                   <Stack direction="row" spacing={1}>
                     {agent.isActive && (
@@ -503,7 +512,15 @@ const Agents: React.FC = () => {
                   <IconButton onClick={() => handleTest(agent)} size="small">
                     <TestIcon />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(agent._id)} size="small">
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log('Delete button clicked!', agent._id);
+                      handleDelete(agent._id);
+                    }}
+                    size="small"
+                    title="Delete Agent"
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
@@ -573,13 +590,12 @@ const Agents: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 >
                   <MenuItem value="general">General</MenuItem>
-                  <MenuItem value="coding">Coding</MenuItem>
-                  <MenuItem value="writing">Writing</MenuItem>
-                  <MenuItem value="analysis">Analysis</MenuItem>
-                  <MenuItem value="creative">Creative</MenuItem>
-                  <MenuItem value="research">Research</MenuItem>
-                  <MenuItem value="support">Support</MenuItem>
-                  <MenuItem value="automation">Automation</MenuItem>
+                  <MenuItem value="human_resources">Human Resources</MenuItem>
+                  <MenuItem value="research_development">Research & Development</MenuItem>
+                  <MenuItem value="finance">Finance</MenuItem>
+                  <MenuItem value="it">IT</MenuItem>
+                  <MenuItem value="sales">Sales</MenuItem>
+                  <MenuItem value="after_sales">After Sales</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

@@ -131,6 +131,13 @@
     "authConfig": []
   },
   {
+    "name": "Memory Update",
+    "pluginKey": "memory_update",
+    "description": "Update or add information to the organization memory storage. Use this to save important information for future reference.",
+    "icon": "https://i.imgur.com/7K2qGkv.png",
+    "authConfig": []
+  },
+  {
     "name": "Stable Diffusion",
     "pluginKey": "stable-diffusion",
     "description": "Generate photo-realistic images given any text input.",

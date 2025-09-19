@@ -1,56 +1,42 @@
-const axios = require('axios');
+#!/usr/bin/env node
+
+/**
+ * Test OrgMemory service directly
+ */
+
+// Set environment variables
+process.env.ENABLE_MEMORY_SERVICE = 'true';
+process.env.MEMORY_MCP_URL = 'http://localhost:8001';
+
+const { getOrgMemoryContext } = require('./LibreChat/api/server/services/OrgMemory');
 
 async function testOrgMemory() {
+  console.log('Testing OrgMemory service...\n');
+
+  // Simulate a request with text
+  const mockReq = {
+    body: {
+      text: 'Tell me about LLMDash project and its features'
+    }
+  };
+
   try {
-    // Set environment variables for testing
-    process.env.ADMIN_API_URL = 'http://localhost:5001';
-    process.env.ENABLE_ORG_MEMORY = 'true';
-    process.env.INTERNAL_API_KEY = 'sk-internal-api-key-for-service-communication-2025';
-
-    // First, let's check if the admin backend is running and has memory data
-    const adminResponse = await axios.get('http://localhost:5001/api/memory', {
-      headers: {
-        'X-API-Key': process.env.INTERNAL_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      params: {
-        accessLevel: 'public'
-      }
-    });
-
-    console.log('Admin Backend Memory Response:');
-    console.log('Status:', adminResponse.status);
-    console.log('Memories count:', adminResponse.data.memories?.length || 0);
-
-    if (adminResponse.data.memories && adminResponse.data.memories.length > 0) {
-      console.log('\nMemory items:');
-      adminResponse.data.memories.forEach(memory => {
-        const valueStr = typeof memory.value === 'string' ? memory.value : JSON.stringify(memory.value);
-      console.log(`- [${memory.key}]: ${valueStr.substring(0, 50)}...`);
-      });
-    }
-
-    // Test the OrgMemory service
-    const { getOrgMemoryContext } = require('./LibreChat/api/server/services/OrgMemory');
-
-    // Mock request object (no token needed now)
-    const mockReq = {
-      body: {
-        text: '팀 개발 규칙이 뭐야'
-      }
-    };
-
+    console.log('Calling getOrgMemoryContext with text:', mockReq.body.text);
     const context = await getOrgMemoryContext(mockReq);
-    console.log('\n\nOrganization Memory Context:');
-    console.log(context);
-    
-  } catch (error) {
-    console.error('Error testing org memory:', error.message);
-    if (error.response) {
-      console.error('Response status:', error.response.status);
-      console.error('Response data:', error.response.data);
+
+    if (context) {
+      console.log('\n✅ Memory context retrieved successfully!');
+      console.log('Context length:', context.length);
+      console.log('\n--- Memory Context ---');
+      console.log(context);
+      console.log('--- End Context ---\n');
+    } else {
+      console.log('❌ No memory context returned');
     }
+  } catch (error) {
+    console.error('❌ Error:', error.message);
+    console.error(error.stack);
   }
 }
 
-testOrgMemory();
+testOrgMemory().catch(console.error);

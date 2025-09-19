@@ -94,7 +94,7 @@ interface SystemConfig {
 const SystemConfiguration: React.FC = () => {
   const [config, setConfig] = useState<SystemConfig>({
     general: {
-      siteName: 'LibreChat Admin',
+      siteName: 'LLMDash Admin',
       siteUrl: 'https://www.llmdash.com',
       adminEmail: 'admin@librechat.local',
       supportEmail: 'support@librechat.local',

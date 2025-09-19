@@ -13,6 +13,9 @@ const TraversaalSearch = require('./structured/TraversaalSearch');
 const createOpenAIImageTools = require('./structured/OpenAIImageTools');
 const TavilySearchResults = require('./structured/TavilySearchResults');
 
+// Custom Tools
+const MemoryUpdate = require('./MemoryUpdate');
+
 module.exports = {
   ...manifest,
   // Structured Tools
@@ -27,4 +30,6 @@ module.exports = {
   createYouTubeTools,
   TavilySearchResults,
   createOpenAIImageTools,
+  // Custom Tools
+  MemoryUpdate,
 };

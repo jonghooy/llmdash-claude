@@ -2,6 +2,135 @@ const { spawn } = require('child_process');
 const axios = require('axios');
 const { Client } = require('@modelcontextprotocol/sdk/client/index.js');
 const { StdioClientTransport } = require('@modelcontextprotocol/sdk/client/stdio.js');
+const EventSource = require('eventsource');
+
+// Custom SSE Transport for MCP
+class SSEClientTransport {
+  constructor(config) {
+    this.streamUrl = config.streamUrl;
+    this.messageUrl = config.messageUrl;
+    this.env = config.env || {};
+    this.eventSource = null;
+    this.messageHandlers = new Map();
+    this.messageId = 0;
+  }
+
+  async start() {
+    console.log(`[SSEClientTransport] Connecting to ${this.streamUrl}`);
+
+    // Create EventSource connection
+    this.eventSource = new EventSource(this.streamUrl, {
+      headers: {
+        'Accept': 'text/event-stream',
+        'Cache-Control': 'no-cache'
+      }
+    });
+
+    // Set up event handlers
+    this.eventSource.onopen = () => {
+      console.log('[SSEClientTransport] SSE connection opened');
+    };
+
+    this.eventSource.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        console.log('[SSEClientTransport] Received:', JSON.stringify(message));
+
+        // Handle response messages
+        if (message.id && this.messageHandlers.has(message.id)) {
+          const handler = this.messageHandlers.get(message.id);
+          this.messageHandlers.delete(message.id);
+
+          if (message.error) {
+            handler.reject(new Error(message.error.message || 'Unknown error'));
+          } else {
+            handler.resolve(message.result);
+          }
+        }
+
+        // Handle server notifications
+        if (message.method && this.onmessage) {
+          this.onmessage(message);
+        }
+      } catch (error) {
+        console.error('[SSEClientTransport] Error parsing message:', error);
+      }
+    };
+
+    this.eventSource.onerror = (error) => {
+      console.error('[SSEClientTransport] SSE error:', error);
+      if (this.onerror) {
+        this.onerror(error);
+      }
+    };
+
+    // Initialize the connection
+    await this.send({
+      jsonrpc: '2.0',
+      method: 'initialize',
+      params: {
+        protocolVersion: '0.1.0',
+        capabilities: {},
+        clientInfo: {
+          name: 'librechat-client',
+          version: '1.0.0'
+        },
+        env: this.env
+      },
+      id: this.messageId++
+    });
+  }
+
+  async send(message) {
+    return new Promise((resolve, reject) => {
+      const messageId = message.id || this.messageId++;
+      message.id = messageId;
+
+      // Store the handler for this message
+      if (message.method !== 'notifications/initialized') {
+        this.messageHandlers.set(messageId, { resolve, reject });
+
+        // Set timeout
+        setTimeout(() => {
+          if (this.messageHandlers.has(messageId)) {
+            this.messageHandlers.delete(messageId);
+            reject(new Error('Request timeout'));
+          }
+        }, 30000); // 30 second timeout
+      }
+
+      console.log(`[SSEClientTransport] Sending to ${this.messageUrl}:`, JSON.stringify(message));
+
+      // Send message via POST to message endpoint
+      axios.post(this.messageUrl, message, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (message.method === 'notifications/initialized') {
+          resolve(response.data);
+        }
+        // For other messages, wait for SSE response
+      })
+      .catch(error => {
+        console.error('[SSEClientTransport] Error sending message:', error.message);
+        if (this.messageHandlers.has(messageId)) {
+          this.messageHandlers.delete(messageId);
+        }
+        reject(error);
+      });
+    });
+  }
+
+  async close() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+    }
+    this.messageHandlers.clear();
+  }
+}
 
 class MCPService {
   constructor() {
@@ -61,7 +190,7 @@ class MCPService {
         const transport = new StdioClientTransport({
           command: server.command,
           args: server.args || [],
-          env: Object.fromEntries(server.env || new Map())
+          env: server.env instanceof Map ? Object.fromEntries(server.env) : (server.env || {})
         });
 
         // Create and connect client
@@ -83,8 +212,40 @@ class MCPService {
 
         console.log(`[MCPService] Connected to ${server.name}`);
         return this.clients.get(serverId);
+      } else if (server.connectionType === 'sse') {
+        // Create SSE transport
+        console.log(`[MCPService] Creating SSE transport for ${server.name}`);
+
+        const transport = new SSEClientTransport({
+          streamUrl: server.config?.streamUrl || `${server.url}/stream`,
+          messageUrl: server.config?.messageUrl || `${server.url}/message`,
+          env: server.env || {}
+        });
+
+        // Start the transport
+        await transport.start();
+
+        // Create and connect client
+        const client = new Client({
+          name: 'librechat-client',
+          version: '1.0.0'
+        }, {
+          capabilities: {}
+        });
+
+        await client.connect(transport);
+
+        // Store client
+        this.clients.set(serverId, {
+          client,
+          server,
+          transport
+        });
+
+        console.log(`[MCPService] Connected to ${server.name} via SSE`);
+        return this.clients.get(serverId);
       } else {
-        // SSE/WebSocket not yet implemented
+        // Other types not yet implemented
         throw new Error(`Connection type ${server.connectionType} not yet supported`);
       }
     } catch (error) {

@@ -92,7 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
         }}
       >
         <Typography variant="h5" component="div" sx={{ fontWeight: 700 }}>
-          LibreChat Admin
+          LLMDash Admin
         </Typography>
         <Typography variant="caption" sx={{ opacity: 0.9 }}>
           Management Console

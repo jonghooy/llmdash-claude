@@ -95,6 +95,26 @@ export default function ToolCall({
   const progress = useProgress(initialProgress);
   const cancelled = (!isSubmitting && progress < 1) || error === true;
 
+  // Log MCP tool calls only once when they complete
+  useEffect(() => {
+    if (isMCPToolCall && name && !isSubmitting && progress >= 1) {
+      console.log('🔧 [MCP Tool Call]', {
+        tool: function_name,
+        server: domain,
+        fullName: name,
+        args: _args,
+        timestamp: new Date().toISOString()
+      });
+      console.log('✅ [MCP Tool Finished]', {
+        tool: function_name,
+        server: domain,
+        hasOutput: !!output,
+        outputLength: output?.length || 0,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }, [isMCPToolCall, name, isSubmitting, progress, function_name, domain, output, _args]);
+
   const getFinishedText = () => {
     if (cancelled) {
       return localize('com_ui_cancelled');

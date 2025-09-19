@@ -228,10 +228,21 @@ export function useMCPServerManager({ conversationId }: { conversationId?: strin
 
   const initializeServer = useCallback(
     async (serverName: string, autoOpenOAuth: boolean = true) => {
+      console.log('🚀 [MCP Server Initialize]', {
+        server: serverName,
+        autoOpenOAuth,
+        timestamp: new Date().toISOString()
+      });
       updateServerState(serverName, { isInitializing: true });
 
       try {
         const response = await reinitializeMutation.mutateAsync(serverName);
+        console.log('📦 [MCP Server Response]', {
+          server: serverName,
+          success: response.success,
+          oauthRequired: response.oauthRequired,
+          timestamp: new Date().toISOString()
+        });
 
         if (response.success) {
           if (response.oauthRequired && response.oauthUrl) {

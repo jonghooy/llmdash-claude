@@ -25,7 +25,7 @@ const agentSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['general', 'coding', 'writing', 'analysis', 'creative', 'research', 'support', 'automation'],
+    enum: ['general', 'human_resources', 'research_development', 'finance', 'it', 'sales', 'after_sales'],
     default: 'general'
   },
 
