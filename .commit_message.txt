@@ -1,1 +1,1 @@
-✅ 전체 서비스 빌드 및 PM2 재시작 완료
+🔧 Memory Enterprise MCP Bridge 경로 수정 및 재시작

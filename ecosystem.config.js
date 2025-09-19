@@ -245,6 +245,28 @@ module.exports = {
       error_file: './logs/pm2/relay-dev-err.log',
       out_file: './logs/pm2/relay-dev-out.log',
       time: true
+    },
+
+    // ===== Memory Enterprise MCP Bridge =====
+    {
+      name: 'memory-bridge',
+      script: './mcp-bridge.js',
+      cwd: './mem-enterprise-bridge',
+      instances: 1,
+      exec_mode: 'fork',
+      watch: false,
+      autorestart: true,
+      max_restarts: 10,
+      min_uptime: 5000,
+      env: {
+        NODE_ENV: 'production',
+        TENANT_ID: 'default',
+        USER_ID: 'system',
+        PROJECT_DIR: '/home/jonghooy/work/rag-mcp'
+      },
+      error_file: './logs/pm2/memory-bridge-err.log',
+      out_file: './logs/pm2/memory-bridge-out.log',
+      time: true
     }
   ],
 

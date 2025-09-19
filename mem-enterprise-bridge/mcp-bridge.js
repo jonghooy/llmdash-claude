@@ -17,8 +17,9 @@ const USER_ID = process.env.USER_ID || 'system';
 const PROJECT_DIR = process.env.PROJECT_DIR || '/home/jonghooy/work/rag-mcp';
 const STDIO_SERVER_PATH = 'src/mcp/stdio_server.py';
 
-// Spawn the stdio server process using Poetry
-const serverProcess = spawn('poetry', ['run', 'python', STDIO_SERVER_PATH], {
+// Spawn the stdio server process using Poetry virtualenv Python directly
+const PYTHON_PATH = '/root/.cache/pypoetry/virtualenvs/memory-agent-enterprise-zNJ23Lqb-py3.12/bin/python';
+const serverProcess = spawn(PYTHON_PATH, [STDIO_SERVER_PATH], {
   cwd: PROJECT_DIR,
   env: {
     ...process.env,
