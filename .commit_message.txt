@@ -1,1 +1,1 @@
-🔧 Memory Enterprise MCP Bridge 경로 수정 및 재시작
+🚀 Memory Enterprise MCP 로컬 복사 및 독립 실행 환경 구축

@@ -262,7 +262,7 @@ module.exports = {
         NODE_ENV: 'production',
         TENANT_ID: 'default',
         USER_ID: 'system',
-        PROJECT_DIR: '/home/jonghooy/work/rag-mcp'
+        PROJECT_DIR: '/home/jonghooy/work/llmdash-claude/memory-enterprise'
       },
       error_file: './logs/pm2/memory-bridge-err.log',
       out_file: './logs/pm2/memory-bridge-out.log',
