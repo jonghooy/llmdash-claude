@@ -1,1 +1,1 @@
-🗑️ 사용하지 않는 mem-agent-mcp 및 memory-storage 제거
+📝 PROJECT_STATUS.md 업데이트 - 현재까지 진행사항 정리
