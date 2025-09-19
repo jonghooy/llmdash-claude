@@ -1,1 +1,1 @@
-✅ Memory Enterprise MCP 통합 완료 - stdio 프로토콜로 memory_search, memory_create, memory_list 도구 추가
+🗑️ 사용하지 않는 mem-agent-mcp 및 memory-storage 제거
