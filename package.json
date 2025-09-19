@@ -1,9 +1,12 @@
 {
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
     "axios": "^1.12.2",
+    "colors": "^1.4.0",
     "eventsource": "^4.0.0",
     "express": "^5.1.0",
     "mongodb": "^6.19.0",
+    "node-fetch": "^2.7.0",
     "playwright": "^1.55.0",
     "uuid": "^13.0.0"
   }

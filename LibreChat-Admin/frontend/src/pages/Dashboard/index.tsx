@@ -1,8 +1,8 @@
 import React from 'react';
-import DynamicDashboard from './DynamicDashboard';
+import EnhancedDashboard from './EnhancedDashboard';
 
 const Dashboard: React.FC = () => {
-  return <DynamicDashboard />;
+  return <EnhancedDashboard />;
 };
 
 export default Dashboard;

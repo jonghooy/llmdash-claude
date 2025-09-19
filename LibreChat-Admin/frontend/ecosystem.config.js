@@ -4,19 +4,15 @@ module.exports = {
   apps: [
     {
       name: 'admin-frontend',
-      script: 'serve',
-      args: '-s dist -l 3091',
+      script: 'static-server.js',
+      cwd: '/home/jonghooy/work/llmdash-claude/LibreChat-Admin/frontend',
       instances: 1,
       exec_mode: 'fork',
       watch: false,
       max_memory_restart: '512M',
       env: {
         NODE_ENV: 'production',
-        PORT: 3091,
-        PM2_SERVE_PATH: './dist',
-        PM2_SERVE_PORT: 3091,
-        PM2_SERVE_SPA: 'true',
-        PM2_SERVE_HOMEPAGE: '/index.html'
+        PORT: 3091
       },
       env_development: {
         NODE_ENV: 'development',

@@ -25,7 +25,8 @@ import {
   Description,
   Storage,
   Extension,
-  SmartToy
+  SmartToy,
+  Mail
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -45,8 +46,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
     { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
     { text: 'Cost & Usage', icon: <AttachMoney />, path: '/cost-usage', queryKey: ['usage', 'costs'] },
     { text: 'Organization', icon: <Business />, path: '/organization', queryKey: ['users', 'pendingUsers', 'approvalStats'] },
+    { text: 'Invitations', icon: <Mail />, path: '/invitations', queryKey: ['invitations'] },
     { text: 'Prompts', icon: <Description />, path: '/prompts', queryKey: ['prompts'] },
-    { text: 'Memory', icon: <Storage />, path: '/memory', queryKey: ['memory'] },
     { text: 'MCP Servers', icon: <Extension />, path: '/mcp-servers', queryKey: ['mcpServers'] },
     { text: 'Agents', icon: <SmartToy />, path: '/agents', queryKey: ['agents'] },
     { text: 'Model Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },

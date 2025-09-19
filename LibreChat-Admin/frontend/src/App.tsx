@@ -5,16 +5,17 @@ import { adminTheme } from './theme/adminTheme';
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
-import Organization from './pages/Organization';
+import { OrganizationManagement } from './features/organization/pages/OrganizationManagement';
+import { InvitationPage } from './features/invitation/components';
 import CostUsage from './pages/CostUsage';
 import Settings from './pages/Settings';
 import SystemConfiguration from './pages/SystemConfiguration';
 import Prompts from './pages/Prompts';
-import Memory from './pages/Memory';
 import MCPServers from './pages/MCPServers';
 import Agents from './pages/Agents';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/authStore';
+import { supabase } from './lib/supabase/client';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -26,6 +27,15 @@ function App() {
     if (token && !isAuthenticated) {
       // Simple validation - in production, verify with backend
       login(token, { id: 'admin', email: 'admin@librechat.local', role: 'admin' });
+
+      // Also set up a Supabase session for admin user
+      supabase.auth.signInWithPassword({
+        email: 'admin@librechat.local',
+        password: 'admin123456'
+      }).catch(() => {
+        // If login fails, we can still use the admin dashboard
+        console.log('Supabase auth setup skipped');
+      });
     }
   }, []);
 
@@ -54,9 +64,9 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/cost-usage" element={<CostUsage />} />
-            <Route path="/organization" element={<Organization />} />
+            <Route path="/organization" element={<OrganizationManagement />} />
+            <Route path="/invitations" element={<InvitationPage />} />
             <Route path="/prompts" element={<Prompts />} />
-            <Route path="/memory" element={<Memory />} />
             <Route path="/mcp-servers" element={<MCPServers />} />
             <Route path="/agents" element={<Agents />} />
             <Route path="/settings" element={<Settings />} />

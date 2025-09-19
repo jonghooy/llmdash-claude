@@ -1,1 +1,1 @@
-🚀 Memory Enterprise MCP 로컬 복사 및 독립 실행 환경 구축
+📝 PROJECT_TODO_FOR_AUTH.md 업데이트 - Phase 2 Admin Dashboard 완료 작업 반영 및 주요 버그 수정 사항 문서화
