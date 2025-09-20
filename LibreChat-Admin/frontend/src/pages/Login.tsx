@@ -45,6 +45,8 @@ const Login: React.FC = () => {
           } : undefined
         };
         login(token, user);
+        // Save user data to localStorage for persistence
+        localStorage.setItem('admin_user', JSON.stringify(user));
         // Force a page reload to ensure App component re-renders
         window.location.href = '/admin';
       } else {

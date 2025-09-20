@@ -27,8 +27,22 @@ function App() {
     // Check for existing token on mount
     const token = localStorage.getItem('admin_token');
     if (token && !isAuthenticated) {
-      // Simple validation - in production, verify with backend
-      login(token, { id: 'admin', email: 'admin@librechat.local', role: 'admin' });
+      // Get saved user data or default to customer_admin for testing
+      const savedUser = localStorage.getItem('admin_user');
+      const user = savedUser ? JSON.parse(savedUser) : {
+        id: 'admin',
+        email: 'admin@librechat.local',
+        role: 'admin',
+        saasRole: 'customer_admin', // Default to customer_admin to see menus
+        tenantId: 'tenant123',
+        tenantName: 'Acme Corp',
+        subscription: {
+          plan: 'professional',
+          status: 'active'
+        }
+      };
+
+      login(token, user);
 
       // Also set up a Supabase session for admin user
       supabase.auth.signInWithPassword({
@@ -64,34 +78,74 @@ function App() {
             }
           }}>
           <Routes>
-            {/* Dashboard and Cost Usage */}
+            {/* Dashboard */}
             <Route path="/" element={<Dashboard />} />
-            <Route path="/cost-usage" element={<CostUsage />} />
 
-            {/* Organization routes */}
+            {/* Super Admin Routes */}
+            {/* Customer Management */}
+            <Route path="/customers" element={<OrganizationManagement />} />
+            <Route path="/customers/subscriptions" element={<CostUsage />} />
+            <Route path="/customers/support" element={<InvitationPage />} />
+
+            {/* Revenue & Analytics */}
+            <Route path="/revenue/dashboard" element={<CostUsage />} />
+            <Route path="/revenue/usage" element={<CostUsage />} />
+            <Route path="/revenue/churn" element={<Dashboard />} />
+            <Route path="/revenue/growth" element={<Dashboard />} />
+
+            {/* Platform Settings */}
+            <Route path="/platform/pricing" element={<Settings />} />
+            <Route path="/platform/models" element={<Settings />} />
+            <Route path="/platform/limits" element={<Settings />} />
+            <Route path="/platform/features" element={<Settings />} />
+            <Route path="/platform/api" element={<Settings />} />
+
+            {/* System Operations */}
+            <Route path="/operations/infrastructure" element={<SystemConfiguration />} />
+            <Route path="/operations/deployments" element={<SystemConfiguration />} />
+            <Route path="/operations/monitoring" element={<SystemConfiguration />} />
+            <Route path="/operations/security" element={<SystemConfiguration />} />
+            <Route path="/operations/backup" element={<SystemConfiguration />} />
+
+            {/* Customer Admin Routes */}
+            {/* Workspace */}
+            <Route path="/workspace/organization" element={<OrganizationManagement />} />
+            <Route path="/workspace/members" element={<OrganizationMembers />} />
+            <Route path="/workspace/teams" element={<OrganizationMembers />} />
+            <Route path="/workspace/invitations" element={<InvitationPage />} />
+            <Route path="/workspace/roles" element={<OrganizationSettings />} />
+
+            {/* Billing & Usage */}
+            <Route path="/billing/plan" element={<CostUsage />} />
+            <Route path="/billing/usage" element={<CostUsage />} />
+            <Route path="/billing/invoices" element={<CostUsage />} />
+            <Route path="/billing/payment" element={<CostUsage />} />
+            <Route path="/billing/alerts" element={<Settings />} />
+
+            {/* AI Configuration */}
+            <Route path="/ai-config/models" element={<Settings />} />
+            <Route path="/ai-config/prompts" element={<Prompts />} />
+            <Route path="/ai-config/mcp" element={<MCPServers />} />
+            <Route path="/ai-config/agents" element={<Agents />} />
+            <Route path="/ai-config/api-keys" element={<Settings />} />
+
+            {/* Workspace Settings */}
+            <Route path="/settings/general" element={<SystemConfiguration />} />
+            <Route path="/settings/security" element={<SystemConfiguration />} />
+            <Route path="/settings/integrations" element={<SystemConfiguration />} />
+            <Route path="/settings/notifications" element={<SystemConfiguration />} />
+            <Route path="/settings/privacy" element={<SystemConfiguration />} />
+
+            {/* Legacy routes for backward compatibility */}
             <Route path="/organization" element={<OrganizationManagement />} />
-            <Route path="/organization/structure" element={<Navigate to="/organization" />} />
             <Route path="/organization/members" element={<OrganizationMembers />} />
             <Route path="/organization/invitations" element={<InvitationPage />} />
             <Route path="/organization/settings" element={<OrganizationSettings />} />
-
-            {/* Legacy route for backward compatibility */}
-            <Route path="/invitations" element={<Navigate to="/organization/invitations" />} />
-
-            {/* AI Models routes (formerly Settings) */}
-            <Route path="/settings" element={<Navigate to="/ai-models/management" />} /> {/* Redirect to first tab */}
-            <Route path="/ai-models/management" element={<Settings />} />
-            <Route path="/ai-models/pricing" element={<Settings />} />
-            <Route path="/ai-models/permissions" element={<Settings />} />
-            <Route path="/ai-models/api-keys" element={<Settings />} />
-
-            {/* AI Tools routes */}
+            <Route path="/cost-usage" element={<CostUsage />} />
             <Route path="/prompts" element={<Prompts />} />
             <Route path="/mcp-servers" element={<MCPServers />} />
             <Route path="/agents" element={<Agents />} />
-
-            {/* System routes */}
-            <Route path="/system-config" element={<SystemConfiguration />} /> {/* Keep for backward compatibility */}
+            <Route path="/system-config" element={<SystemConfiguration />} />
             <Route path="/system/general" element={<SystemConfiguration />} />
             <Route path="/system/security" element={<SystemConfiguration />} />
             <Route path="/system/integrations" element={<SystemConfiguration />} />
