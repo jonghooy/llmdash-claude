@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -12,7 +12,8 @@ import {
   Box,
   Divider,
   alpha,
-  useTheme
+  useTheme,
+  Collapse
 } from '@mui/material';
 import {
   Dashboard,
@@ -26,7 +27,18 @@ import {
   Storage,
   Extension,
   SmartToy,
-  Mail
+  Mail,
+  ExpandLess,
+  ExpandMore,
+  AccountTree,
+  People,
+  ModelTraining,
+  Api,
+  Security,
+  VpnKey,
+  AttachMoney as PriceIcon,
+  Build,
+  IntegrationInstructions
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -42,16 +54,101 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   const logout = useAuthStore((state) => state.logout);
   const theme = useTheme();
 
+  // State for collapsible menus
+  const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
+    organization: false,
+    aiModels: false,
+    aiTools: false,
+    system: false
+  });
+
+  // Auto-open menu when navigating to its submenu items
+  useEffect(() => {
+    if (location.pathname.startsWith('/organization')) {
+      setOpenMenus(prev => ({ ...prev, organization: true }));
+    }
+    if (location.pathname.startsWith('/ai-models')) {
+      setOpenMenus(prev => ({ ...prev, aiModels: true }));
+    }
+    if (location.pathname.startsWith('/prompts') || location.pathname.startsWith('/mcp-servers') || location.pathname.startsWith('/agents')) {
+      setOpenMenus(prev => ({ ...prev, aiTools: true }));
+    }
+    if (location.pathname.startsWith('/system')) {
+      setOpenMenus(prev => ({ ...prev, system: true }));
+    }
+  }, [location.pathname]);
+
+  const handleMenuToggle = (menu: string) => {
+    setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+  };
+
+  // Check if any submenu item is active
+  const isSubmenuActive = (paths: string[]) => {
+    return paths.some(path => location.pathname.startsWith(path));
+  };
+
   const menuItems = [
     { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
-    { text: 'Cost & Usage', icon: <AttachMoney />, path: '/cost-usage', queryKey: ['usage', 'costs'] },
-    { text: 'Organization', icon: <Business />, path: '/organization', queryKey: ['users', 'pendingUsers', 'approvalStats'] },
-    { text: 'Invitations', icon: <Mail />, path: '/invitations', queryKey: ['invitations'] },
-    { text: 'Prompts', icon: <Description />, path: '/prompts', queryKey: ['prompts'] },
-    { text: 'MCP Servers', icon: <Extension />, path: '/mcp-servers', queryKey: ['mcpServers'] },
-    { text: 'Agents', icon: <SmartToy />, path: '/agents', queryKey: ['agents'] },
-    { text: 'Model Settings', icon: <Settings />, path: '/settings', queryKey: ['settings'] },
-    { text: 'System Config', icon: <SettingsApplications />, path: '/system-config', queryKey: ['systemConfig'] },
+
+    // Organization management
+    {
+      text: 'Organization',
+      icon: <Business />,
+      hasSubmenu: true,
+      submenuKey: 'organization',
+      isOpen: openMenus.organization,
+      submenu: [
+        { text: 'Structure', icon: <AccountTree />, path: '/organization', queryKey: ['orgStructure'] },
+        { text: 'Members', icon: <People />, path: '/organization/members', queryKey: ['orgMembers'] },
+        { text: 'Invitations', icon: <Mail />, path: '/organization/invitations', queryKey: ['invitations'] },
+        { text: 'Settings', icon: <Settings />, path: '/organization/settings', queryKey: ['orgSettings'] }
+      ]
+    },
+
+    { text: 'Cost & Usage', icon: <AttachMoney />, path: '/cost-usage', queryKey: ['costUsage'] },
+
+    // AI Models (formerly Settings)
+    {
+      text: 'AI Models',
+      icon: <ModelTraining />,
+      hasSubmenu: true,
+      submenuKey: 'aiModels',
+      isOpen: openMenus.aiModels,
+      submenu: [
+        { text: 'Management', icon: <Build />, path: '/ai-models/management', queryKey: ['modelManagement'] },
+        { text: 'Pricing', icon: <PriceIcon />, path: '/ai-models/pricing', queryKey: ['modelPricing'] },
+        { text: 'Permissions', icon: <Security />, path: '/ai-models/permissions', queryKey: ['modelPermissions'] },
+        { text: 'API Keys', icon: <VpnKey />, path: '/ai-models/api-keys', queryKey: ['apiKeys'] }
+      ]
+    },
+
+    // AI Tools group
+    {
+      text: 'AI Tools',
+      icon: <Extension />,
+      hasSubmenu: true,
+      submenuKey: 'aiTools',
+      isOpen: openMenus.aiTools,
+      submenu: [
+        { text: 'Prompts', icon: <Description />, path: '/prompts', queryKey: ['prompts'] },
+        { text: 'MCP Servers', icon: <Storage />, path: '/mcp-servers', queryKey: ['mcpServers'] },
+        { text: 'Agents', icon: <SmartToy />, path: '/agents', queryKey: ['agents'] }
+      ]
+    },
+
+    // System (formerly System Config)
+    {
+      text: 'System',
+      icon: <SettingsApplications />,
+      hasSubmenu: true,
+      submenuKey: 'system',
+      isOpen: openMenus.system,
+      submenu: [
+        { text: 'General', icon: <Settings />, path: '/system/general', queryKey: ['systemGeneral'] },
+        { text: 'Security', icon: <Security />, path: '/system/security', queryKey: ['systemSecurity'] },
+        { text: 'Integrations', icon: <IntegrationInstructions />, path: '/system/integrations', queryKey: ['systemIntegrations'] }
+      ]
+    }
   ];
 
   const handleNavigation = (path: string, queryKeys?: string[]) => {
@@ -101,40 +198,96 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
       </Box>
       <Divider />
       <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => handleNavigation(item.path, item.queryKey)}
-              sx={{
-                mx: 1,
-                my: 0.5,
-                borderRadius: 2,
-                '&.Mui-selected': {
-                  backgroundColor: alpha(theme.palette.primary.main, 0.12),
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.18),
-                  },
-                  '& .MuiListItemIcon-root': {
-                    color: theme.palette.primary.main,
-                  },
-                },
-                '&:hover': {
-                  backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                },
-                transition: 'all 0.2s',
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
-              <ListItemText 
-                primary={item.text} 
-                primaryTypographyProps={{ 
-                  fontSize: '0.875rem',
-                  fontWeight: location.pathname === item.path ? 600 : 400
+        {menuItems.map((item: any) => (
+          <React.Fragment key={item.text}>
+            {/* Main menu item */}
+            <ListItem disablePadding>
+              <ListItemButton
+                selected={!item.hasSubmenu && location.pathname === item.path}
+                onClick={() => {
+                  if (item.hasSubmenu) {
+                    handleMenuToggle(item.submenuKey);
+                  } else {
+                    handleNavigation(item.path, item.queryKey);
+                  }
                 }}
-              />
-            </ListItemButton>
-          </ListItem>
+                sx={{
+                  mx: 1,
+                  my: 0.5,
+                  borderRadius: 2,
+                  '&.Mui-selected': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.primary.main, 0.18),
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: theme.palette.primary.main,
+                    },
+                  },
+                  '&:hover': {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                  },
+                  transition: 'all 0.2s',
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 40 }}>{item.icon}</ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontSize: '0.875rem',
+                    fontWeight: (!item.hasSubmenu && location.pathname === item.path) || item.isOpen ? 600 : 400
+                  }}
+                />
+                {item.hasSubmenu && (item.isOpen ? <ExpandLess /> : <ExpandMore />)}
+              </ListItemButton>
+            </ListItem>
+
+            {/* Submenu items */}
+            {item.hasSubmenu && (
+              <Collapse in={item.isOpen} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {item.submenu.map((subItem: any) => (
+                    <ListItem key={subItem.text} disablePadding>
+                      <ListItemButton
+                        selected={location.pathname === subItem.path}
+                        onClick={() => handleNavigation(subItem.path, subItem.queryKey)}
+                        sx={{
+                          pl: 4,
+                          mx: 1,
+                          my: 0.25,
+                          borderRadius: 2,
+                          '&.Mui-selected': {
+                            backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                            '&:hover': {
+                              backgroundColor: alpha(theme.palette.primary.main, 0.18),
+                            },
+                            '& .MuiListItemIcon-root': {
+                              color: theme.palette.primary.main,
+                            },
+                          },
+                          '&:hover': {
+                            backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                          },
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <ListItemIcon sx={{ minWidth: 35 }}>
+                          {subItem.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={subItem.text}
+                          primaryTypographyProps={{
+                            fontSize: '0.8rem',
+                            fontWeight: location.pathname === subItem.path ? 600 : 400
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            )}
+          </React.Fragment>
         ))}
       </List>
       <Box sx={{ flexGrow: 1 }} />

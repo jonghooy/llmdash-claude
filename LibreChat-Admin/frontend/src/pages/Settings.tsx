@@ -1,19 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import PageContainer from '../components/Layout/PageContainer';
-import {
-  Box,
-  Paper,
-  Tabs,
-  Tab,
-  Typography,
-  Fade
-} from '@mui/material';
-import {
-  ModelTraining,
-  AttachMoney,
-  Security,
-  VpnKey
-} from '@mui/icons-material';
+import { Paper } from '@mui/material';
 import ModelManagement from './Settings/ModelManagement';
 import ModelPricing from './Settings/SimpleModelPricing';
 import ModelPermissions from './Settings/ModelPermissions';
@@ -22,75 +10,42 @@ import ApiKeys from './Settings/ApiKeys';
 
 
 const SettingsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const location = useLocation();
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
+  // Map URL paths to tab indices
+  const getTabFromPath = (path: string) => {
+    if (path.includes('/ai-models/management')) return 0;
+    if (path.includes('/ai-models/pricing')) return 1;
+    if (path.includes('/ai-models/permissions')) return 2;
+    if (path.includes('/ai-models/api-keys')) return 3;
+    return 0; // Default to first tab
+  };
+
+  const [activeTab, setActiveTab] = useState(getTabFromPath(location.pathname));
+
+  // Update tab when URL changes
+  useEffect(() => {
+    setActiveTab(getTabFromPath(location.pathname));
+  }, [location.pathname]);
+
+  // Get page title based on active tab
+  const getPageTitle = () => {
+    switch (activeTab) {
+      case 0: return 'Model Management';
+      case 1: return 'Model Pricing';
+      case 2: return 'Model Permissions';
+      case 3: return 'API Keys';
+      default: return 'AI Models';
+    }
   };
 
   return (
-    <PageContainer title="Model Settings">
-      <Paper sx={{ borderRadius: 2, boxShadow: 1 }}>
-        <Tabs
-          value={activeTab}
-          onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{ 
-            borderBottom: 1,
-            borderColor: 'divider',
-            px: 2,
-            '& .MuiTab-root': {
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              minHeight: 64,
-              '&:hover': {
-                backgroundColor: 'action.hover',
-              },
-            },
-            '& .Mui-selected': {
-              fontWeight: 600,
-            },
-            '& .MuiTabs-indicator': {
-              height: 3,
-              borderRadius: '3px 3px 0 0',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            },
-            '& .MuiSvgIcon-root': {
-              transition: 'transform 0.3s ease',
-            },
-            '& .MuiTab-root.Mui-selected .MuiSvgIcon-root': {
-              transform: 'scale(1.2)',
-            }
-          }}
-        >
-          <Tab icon={<ModelTraining />} label="Model Management" />
-          <Tab icon={<AttachMoney />} label="Model Pricing" />
-          <Tab icon={<Security />} label="Model Permissions" />
-          <Tab icon={<VpnKey />} label="API Keys" />
-        </Tabs>
-        
-        <Box sx={{ p: { xs: 2, sm: 3 }, position: 'relative', minHeight: 400 }}>
-          <Fade in={activeTab === 0} timeout={500}>
-            <Box sx={{ display: activeTab === 0 ? 'block' : 'none' }}>
-              <ModelManagement />
-            </Box>
-          </Fade>
-          <Fade in={activeTab === 1} timeout={500}>
-            <Box sx={{ display: activeTab === 1 ? 'block' : 'none' }}>
-              <ModelPricing />
-            </Box>
-          </Fade>
-          <Fade in={activeTab === 2} timeout={500}>
-            <Box sx={{ display: activeTab === 2 ? 'block' : 'none' }}>
-              <ModelPermissions />
-            </Box>
-          </Fade>
-          <Fade in={activeTab === 3} timeout={500}>
-            <Box sx={{ display: activeTab === 3 ? 'block' : 'none' }}>
-              <ApiKeys />
-            </Box>
-          </Fade>
-        </Box>
+    <PageContainer title={getPageTitle()}>
+      <Paper sx={{ borderRadius: 2, boxShadow: 1, p: { xs: 2, sm: 3 } }}>
+        {activeTab === 0 && <ModelManagement />}
+        {activeTab === 1 && <ModelPricing />}
+        {activeTab === 2 && <ModelPermissions />}
+        {activeTab === 3 && <ApiKeys />}
       </Paper>
     </PageContainer>
   );

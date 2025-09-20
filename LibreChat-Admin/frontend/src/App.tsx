@@ -6,6 +6,8 @@ import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
 import { OrganizationManagement } from './features/organization/pages/OrganizationManagement';
+import { OrganizationMembers } from './features/organization/pages/OrganizationMembers';
+import { OrganizationSettings } from './features/organization/pages/OrganizationSettings';
 import { InvitationPage } from './features/invitation/components';
 import CostUsage from './pages/CostUsage';
 import Settings from './pages/Settings';
@@ -62,15 +64,38 @@ function App() {
             }
           }}>
           <Routes>
+            {/* Dashboard and Cost Usage */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/cost-usage" element={<CostUsage />} />
+
+            {/* Organization routes */}
             <Route path="/organization" element={<OrganizationManagement />} />
-            <Route path="/invitations" element={<InvitationPage />} />
+            <Route path="/organization/structure" element={<Navigate to="/organization" />} />
+            <Route path="/organization/members" element={<OrganizationMembers />} />
+            <Route path="/organization/invitations" element={<InvitationPage />} />
+            <Route path="/organization/settings" element={<OrganizationSettings />} />
+
+            {/* Legacy route for backward compatibility */}
+            <Route path="/invitations" element={<Navigate to="/organization/invitations" />} />
+
+            {/* AI Models routes (formerly Settings) */}
+            <Route path="/settings" element={<Navigate to="/ai-models/management" />} /> {/* Redirect to first tab */}
+            <Route path="/ai-models/management" element={<Settings />} />
+            <Route path="/ai-models/pricing" element={<Settings />} />
+            <Route path="/ai-models/permissions" element={<Settings />} />
+            <Route path="/ai-models/api-keys" element={<Settings />} />
+
+            {/* AI Tools routes */}
             <Route path="/prompts" element={<Prompts />} />
             <Route path="/mcp-servers" element={<MCPServers />} />
             <Route path="/agents" element={<Agents />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/system-config" element={<SystemConfiguration />} />
+
+            {/* System routes */}
+            <Route path="/system-config" element={<SystemConfiguration />} /> {/* Keep for backward compatibility */}
+            <Route path="/system/general" element={<SystemConfiguration />} />
+            <Route path="/system/security" element={<SystemConfiguration />} />
+            <Route path="/system/integrations" element={<SystemConfiguration />} />
+
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           </Box>

@@ -14,7 +14,8 @@ import {
   Phone,
   Trash2,
   Edit2,
-  Search
+  Search,
+  X
 } from 'lucide-react';
 import { db } from '../../../lib/supabase/client';
 import type { Database } from '../../../lib/supabase/types/database';
@@ -36,6 +37,8 @@ export const MemberPanel: React.FC<MemberPanelProps> = ({
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddMember, setShowAddMember] = useState(false);
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [roleModalMember, setRoleModalMember] = useState<Profile | null>(null);
 
   useEffect(() => {
     if (unit) {
@@ -134,6 +137,21 @@ export const MemberPanel: React.FC<MemberPanelProps> = ({
     }
   };
 
+  const getRoleDisplayName = (role: Profile['role']) => {
+    switch (role) {
+      case 'super_admin':
+        return 'Super Admin';
+      case 'org_admin':
+        return 'Org Admin';
+      case 'member':
+        return 'Member';
+      default:
+        return role;
+    }
+  };
+
+  const roleOptions: Profile['role'][] = ['super_admin', 'org_admin', 'member'];
+
   const availableProfiles = allProfiles.filter(
     p => p.organizational_unit_id !== unit?.id
   );
@@ -142,6 +160,21 @@ export const MemberPanel: React.FC<MemberPanelProps> = ({
     p.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     p.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Handle click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.member-menu-container')) {
+        setActiveMenuId(null);
+      }
+    };
+
+    if (activeMenuId) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [activeMenuId]);
 
   if (!unit) {
     return (
@@ -273,31 +306,41 @@ export const MemberPanel: React.FC<MemberPanelProps> = ({
                     </div>
                   </div>
 
-                  <div className="relative group">
-                    <button className="p-2 hover:bg-gray-100 rounded">
+                  <div className="relative member-menu-container">
+                    <button
+                      className="p-2 hover:bg-gray-100 rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenuId(activeMenuId === member.id ? null : member.id);
+                      }}
+                    >
                       <MoreVertical size={16} />
                     </button>
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border hidden group-hover:block z-10">
-                      <button
-                        onClick={() => {
-                          const newRole = prompt('Select role: super_admin, org_admin, or member', member.role);
-                          if (newRole && ['super_admin', 'org_admin', 'member'].includes(newRole)) {
-                            handleChangeRole(member.id, newRole as Profile['role']);
-                          }
-                        }}
-                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-left"
-                      >
-                        <Shield size={16} />
-                        Change Role
-                      </button>
-                      <button
-                        onClick={() => handleRemoveMember(member.id)}
-                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-left text-red-600"
-                      >
-                        <Trash2 size={16} />
-                        Remove from Unit
-                      </button>
-                    </div>
+                    {activeMenuId === member.id && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+                        <button
+                          onClick={() => {
+                            setRoleModalMember(member);
+                            setActiveMenuId(null);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-left rounded-t-lg"
+                        >
+                          <Shield size={16} />
+                          <span className="flex-1">Change Role</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            handleRemoveMember(member.id);
+                            setActiveMenuId(null);
+                          }}
+                          className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 w-full text-left text-red-600 rounded-b-lg"
+                        >
+                          <Trash2 size={16} />
+                          Remove from Unit
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -311,6 +354,77 @@ export const MemberPanel: React.FC<MemberPanelProps> = ({
           </div>
         )}
       </div>
+
+      {/* Role Change Modal */}
+      {roleModalMember && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-96 max-w-[90%]">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">Change Role</h3>
+              <button
+                onClick={() => setRoleModalMember(null)}
+                className="p-1 hover:bg-gray-100 rounded"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-4">
+              <div className="mb-4">
+                <p className="text-sm text-gray-600 mb-2">
+                  Select a new role for <span className="font-semibold">{roleModalMember.full_name || roleModalMember.email}</span>
+                </p>
+                <p className="text-xs text-gray-500">
+                  Current role: <span className={`px-2 py-0.5 rounded-full ${getRoleBadgeColor(roleModalMember.role)}`}>
+                    {getRoleDisplayName(roleModalMember.role)}
+                  </span>
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                {roleOptions.map((role) => (
+                  <button
+                    key={role}
+                    onClick={() => {
+                      handleChangeRole(roleModalMember.id, role);
+                      setRoleModalMember(null);
+                    }}
+                    className={`w-full flex items-center justify-between p-3 rounded-lg border transition-colors ${
+                      roleModalMember.role === role
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Shield size={18} className={roleModalMember.role === role ? 'text-blue-500' : 'text-gray-400'} />
+                      <div className="text-left">
+                        <p className="font-medium">{getRoleDisplayName(role)}</p>
+                        <p className="text-xs text-gray-500">
+                          {role === 'super_admin' && 'Full system access and control'}
+                          {role === 'org_admin' && 'Organization management access'}
+                          {role === 'member' && 'Standard member access'}
+                        </p>
+                      </div>
+                    </div>
+                    {roleModalMember.role === role && (
+                      <span className="text-blue-500 text-xl">✓</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 p-4 border-t">
+              <button
+                onClick={() => setRoleModalMember(null)}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

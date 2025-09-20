@@ -1,6 +1,6 @@
 # LibreChat LLM Dashboard Project Status Report
-📅 Date: 2025-09-19
-⏰ Last Updated: 19:00 KST
+📅 Date: 2025-09-21
+⏰ Last Updated: 현재 시각
 
 ## 📋 Executive Summary
 LibreChat 기반 LLM 대시보드 프로젝트의 현재 상태 및 완료된 작업 내역을 정리한 문서입니다.
@@ -124,6 +124,57 @@ LibreChat 기반 LLM 대시보드 프로젝트의 현재 상태 및 완료된 �
   - memory-storage 관련 코드 제거
   - 중복 MCP 프로세스 정리
 
+### 9. Admin Dashboard 메뉴 구조 개선 🎨
+- ✅ **Organization 메뉴 버그 수정**
+  - 멤버 설정 툴팁 메뉴 사라짐 문제 해결
+  - Role 변경을 모달 방식으로 개선
+  - 메뉴 접힘/펼침 동작 정상화
+
+- ✅ **계층적 메뉴 구조 구현**
+  - Organization (Structure, Members, Invitations, Settings)
+  - AI Models (Management, Pricing, Permissions, API Keys)
+  - AI Tools (Prompts, MCP Servers, Agents)
+  - System (General, Security, Integrations)
+
+- ✅ **UI/UX 개선사항**
+  - 서브메뉴 자동 펼침 기능
+  - 중복 탭 네비게이션 제거
+  - 메뉴 선택 상태 표시 개선
+  - Invitations를 Organization 하위로 이동
+
+- ✅ **새로운 페이지 생성**
+  - Organization Members 페이지 (멤버 관리)
+  - Organization Settings 페이지 (조직 설정)
+  - 각 페이지별 탭 구조 구현
+
+### 10. SaaS 비즈니스 모델 메뉴 설계 📊
+- ✅ **사용자 역할 정의**
+  - Super Admin (플랫폼 운영자)
+  - Customer Admin (테넌트 관리자)
+  - Team Leader (팀 리더)
+  - Regular User (일반 사용자)
+
+- ✅ **Super Admin 메뉴 구조 설계**
+  - Platform Dashboard (플랫폼 통계)
+  - Customer Management (고객사 관리)
+  - Revenue & Analytics (수익 분석)
+  - Platform Settings (플랫폼 설정)
+  - System Operations (시스템 운영)
+  - Communications (공지사항)
+
+- ✅ **Customer Admin 메뉴 구조 설계**
+  - Dashboard (조직 대시보드)
+  - Workspace (조직 관리)
+  - Billing & Usage (요금 및 사용량)
+  - AI Configuration (AI 설정)
+  - Workspace Settings (워크스페이스 설정)
+
+- ✅ **구현 우선순위 정의**
+  - Phase 1: 기본 멀티테넌시
+  - Phase 2: 빌링 & 사용량
+  - Phase 3: 플랫폼 관리
+  - Phase 4: 고급 기능
+
 ## 📁 프로젝트 구조
 
 ```
@@ -200,24 +251,29 @@ pm2 startup
 
 ## 🎯 다음 작업 권장사항
 
-1. **성능 최적화**
+1. **SaaS 멀티테넌시 구현**
+   - 테넌트 격리 시스템 구현
+   - 역할 기반 메뉴 렌더링
+   - 테넌트별 데이터 분리
+
+2. **빌링 시스템 구축**
+   - 사용량 추적 시스템
+   - 요금제 관리 기능
+   - 청구서 생성 자동화
+
+3. **플랫폼 관리 도구**
+   - Customer Management 구현
+   - Revenue Analytics 대시보드
+   - System Operations 모니터링
+
+4. **성능 최적화**
    - Memory Agent 응답 속도 개선
    - 캐싱 전략 구현
    - 데이터베이스 인덱싱 최적화
 
-2. **기능 확장**
-   - Memory Agent 고급 기능 추가 (컨텍스트 관리, 장기 기억)
-   - 다중 언어 지원
-   - 파일 업로드 및 처리 개선
-
-3. **모니터링 강화**
-   - Prometheus/Grafana 통합
-   - 실시간 알림 시스템
-   - 성능 메트릭 대시보드
-
-4. **보안 강화**
+5. **보안 강화**
+   - 테넌트간 격리 강화
    - API Rate Limiting 세분화
-   - 데이터 암호화 강화
    - 감사 로그 시스템
 
 ## 📌 주의사항
@@ -225,8 +281,15 @@ pm2 startup
 1. **API 키 보안**: 현재 `.env` 파일에 실제 API 키가 포함되어 있으므로 Git에 커밋하지 않도록 주의
 2. **메모리 사용**: Memory Agent와 여러 서비스가 동시에 실행되므로 서버 메모리 모니터링 필요
 3. **MCP 프로세스**: stdio 프로토콜 기반이므로 프로세스 관리에 주의 필요
+4. **멀티테넌시**: SaaS 전환 시 데이터 격리 및 보안 검증 필수
 
 ## 🔄 업데이트 내역
+
+### 2025-09-21
+- Admin Dashboard 메뉴 구조 전면 개선
+- SaaS 비즈니스 모델 메뉴 설계 완료
+- Organization 메뉴 버그 수정 및 UI 개선
+- 계층적 메뉴 구조 구현
 
 ### 2025-09-19
 - 19:00 - 불필요한 mem-agent-mcp 및 memory-storage 제거
