@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { 
-  Container, 
-  Paper, 
-  TextField, 
-  Button, 
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
   Typography,
   Box,
-  Alert
+  Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { useAuthStore } from '../stores/authStore';
 import axios from 'axios';
@@ -17,6 +21,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [testRole, setTestRole] = useState('customer_admin'); // For testing only
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,15 +29,36 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('/admin/api/auth/login', {
-        email,
-        password
-      });
-
-      if (response.data.success) {
-        login(response.data.token, response.data.user);
+      // For testing: bypass backend and use local auth
+      if (email === 'admin@librechat.local' && password === 'Admin123!@#') {
+        const token = 'test_token_' + Date.now();
+        const user = {
+          id: 'test_admin',
+          email,
+          role: 'admin',
+          saasRole: testRole as any,
+          tenantId: testRole === 'customer_admin' ? 'tenant123' : undefined,
+          tenantName: testRole === 'customer_admin' ? 'Acme Corp' : undefined,
+          subscription: testRole === 'customer_admin' ? {
+            plan: 'professional',
+            status: 'active'
+          } : undefined
+        };
+        login(token, user);
         // Force a page reload to ensure App component re-renders
         window.location.href = '/admin';
+      } else {
+        // Try real backend
+        const response = await axios.post('/admin/api/auth/login', {
+          email,
+          password
+        });
+
+        if (response.data.success) {
+          login(response.data.token, response.data.user);
+          // Force a page reload to ensure App component re-renders
+          window.location.href = '/admin';
+        }
       }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
@@ -61,6 +87,21 @@ const Login: React.FC = () => {
                 {error}
               </Alert>
             )}
+            {/* Test Role Selector - Remove in production */}
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="test-role-label">Test Role (Dev Only)</InputLabel>
+              <Select
+                labelId="test-role-label"
+                value={testRole}
+                label="Test Role (Dev Only)"
+                onChange={(e) => setTestRole(e.target.value)}
+              >
+                <MenuItem value="super_admin">Super Admin (Platform)</MenuItem>
+                <MenuItem value="customer_admin">Customer Admin (Tenant)</MenuItem>
+                <MenuItem value="team_leader">Team Leader</MenuItem>
+                <MenuItem value="user">Regular User</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               margin="normal"
               required

@@ -23,6 +23,8 @@ const {
 const { getConvoTitle, getConvo, saveConvo, deleteConvos } = require('./Conversation');
 const { getPreset, getPresets, savePreset, deletePresets } = require('./Preset');
 const { File } = require('~/db/models');
+const Tenant = require('./Tenant');
+const Team = require('./Team');
 
 const seedDatabase = async () => {
   await methods.initializeRoles();
@@ -61,4 +63,6 @@ module.exports = {
   deletePresets,
 
   Files: File,
+  Tenant,
+  Team,
 };

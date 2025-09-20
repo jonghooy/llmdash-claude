@@ -38,7 +38,18 @@ import {
   VpnKey,
   AttachMoney as PriceIcon,
   Build,
-  IntegrationInstructions
+  IntegrationInstructions,
+  TrendingUp,
+  MonetizationOn,
+  AdminPanelSettings,
+  CloudQueue,
+  Notifications,
+  SupportAgent,
+  Groups,
+  Receipt,
+  CreditCard,
+  Assessment,
+  WorkspacePremium
 } from '@mui/icons-material';
 import { useAuthStore } from '../../stores/authStore';
 
@@ -52,29 +63,52 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
   const location = useLocation();
   const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
+  const user = useAuthStore((state) => state.user);
+  const isSuperAdmin = useAuthStore((state) => state.isSuperAdmin);
+  const isCustomerAdmin = useAuthStore((state) => state.isCustomerAdmin);
   const theme = useTheme();
 
   // State for collapsible menus
   const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({
-    organization: false,
-    aiModels: false,
-    aiTools: false,
-    system: false
+    // Super Admin menus
+    customers: false,
+    revenue: false,
+    platform: false,
+    operations: false,
+    // Customer Admin menus
+    workspace: false,
+    billing: false,
+    aiConfig: false,
+    settings: false
   });
 
   // Auto-open menu when navigating to its submenu items
   useEffect(() => {
-    if (location.pathname.startsWith('/organization')) {
-      setOpenMenus(prev => ({ ...prev, organization: true }));
+    // Super Admin paths
+    if (location.pathname.startsWith('/customers')) {
+      setOpenMenus(prev => ({ ...prev, customers: true }));
     }
-    if (location.pathname.startsWith('/ai-models')) {
-      setOpenMenus(prev => ({ ...prev, aiModels: true }));
+    if (location.pathname.startsWith('/revenue')) {
+      setOpenMenus(prev => ({ ...prev, revenue: true }));
     }
-    if (location.pathname.startsWith('/prompts') || location.pathname.startsWith('/mcp-servers') || location.pathname.startsWith('/agents')) {
-      setOpenMenus(prev => ({ ...prev, aiTools: true }));
+    if (location.pathname.startsWith('/platform')) {
+      setOpenMenus(prev => ({ ...prev, platform: true }));
     }
-    if (location.pathname.startsWith('/system')) {
-      setOpenMenus(prev => ({ ...prev, system: true }));
+    if (location.pathname.startsWith('/operations')) {
+      setOpenMenus(prev => ({ ...prev, operations: true }));
+    }
+    // Customer Admin paths
+    if (location.pathname.startsWith('/workspace')) {
+      setOpenMenus(prev => ({ ...prev, workspace: true }));
+    }
+    if (location.pathname.startsWith('/billing')) {
+      setOpenMenus(prev => ({ ...prev, billing: true }));
+    }
+    if (location.pathname.startsWith('/ai-config')) {
+      setOpenMenus(prev => ({ ...prev, aiConfig: true }));
+    }
+    if (location.pathname.startsWith('/settings')) {
+      setOpenMenus(prev => ({ ...prev, settings: true }));
     }
   }, [location.pathname]);
 
@@ -87,69 +121,147 @@ const Sidebar: React.FC<SidebarProps> = ({ open }) => {
     return paths.some(path => location.pathname.startsWith(path));
   };
 
-  const menuItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
+  // Build menu items based on user role
+  const getSuperAdminMenus = () => [
+    { text: 'Platform Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
 
-    // Organization management
+    // Customer Management
     {
-      text: 'Organization',
+      text: 'Customer Management',
       icon: <Business />,
       hasSubmenu: true,
-      submenuKey: 'organization',
-      isOpen: openMenus.organization,
+      submenuKey: 'customers',
+      isOpen: openMenus.customers,
       submenu: [
-        { text: 'Structure', icon: <AccountTree />, path: '/organization', queryKey: ['orgStructure'] },
-        { text: 'Members', icon: <People />, path: '/organization/members', queryKey: ['orgMembers'] },
-        { text: 'Invitations', icon: <Mail />, path: '/organization/invitations', queryKey: ['invitations'] },
-        { text: 'Settings', icon: <Settings />, path: '/organization/settings', queryKey: ['orgSettings'] }
+        { text: 'All Customers', icon: <Business />, path: '/customers', queryKey: ['customers'] },
+        { text: 'Subscriptions', icon: <AttachMoney />, path: '/customers/subscriptions', queryKey: ['subscriptions'] },
+        { text: 'Support Tickets', icon: <SupportAgent />, path: '/customers/support', queryKey: ['support'] }
       ]
     },
 
-    { text: 'Cost & Usage', icon: <AttachMoney />, path: '/cost-usage', queryKey: ['costUsage'] },
-
-    // AI Models (formerly Settings)
+    // Revenue & Analytics
     {
-      text: 'AI Models',
-      icon: <ModelTraining />,
+      text: 'Revenue & Analytics',
+      icon: <TrendingUp />,
       hasSubmenu: true,
-      submenuKey: 'aiModels',
-      isOpen: openMenus.aiModels,
+      submenuKey: 'revenue',
+      isOpen: openMenus.revenue,
       submenu: [
-        { text: 'Management', icon: <Build />, path: '/ai-models/management', queryKey: ['modelManagement'] },
-        { text: 'Pricing', icon: <PriceIcon />, path: '/ai-models/pricing', queryKey: ['modelPricing'] },
-        { text: 'Permissions', icon: <Security />, path: '/ai-models/permissions', queryKey: ['modelPermissions'] },
-        { text: 'API Keys', icon: <VpnKey />, path: '/ai-models/api-keys', queryKey: ['apiKeys'] }
+        { text: 'Revenue Dashboard', icon: <MonetizationOn />, path: '/revenue/dashboard', queryKey: ['revenue'] },
+        { text: 'Usage Analytics', icon: <Analytics />, path: '/revenue/usage', queryKey: ['usage'] },
+        { text: 'Churn Analysis', icon: <Assessment />, path: '/revenue/churn', queryKey: ['churn'] },
+        { text: 'Growth Metrics', icon: <TrendingUp />, path: '/revenue/growth', queryKey: ['growth'] }
       ]
     },
 
-    // AI Tools group
+    // Platform Settings
     {
-      text: 'AI Tools',
-      icon: <Extension />,
+      text: 'Platform Settings',
+      icon: <AdminPanelSettings />,
       hasSubmenu: true,
-      submenuKey: 'aiTools',
-      isOpen: openMenus.aiTools,
+      submenuKey: 'platform',
+      isOpen: openMenus.platform,
       submenu: [
-        { text: 'Prompts', icon: <Description />, path: '/prompts', queryKey: ['prompts'] },
-        { text: 'MCP Servers', icon: <Storage />, path: '/mcp-servers', queryKey: ['mcpServers'] },
-        { text: 'Agents', icon: <SmartToy />, path: '/agents', queryKey: ['agents'] }
+        { text: 'Pricing Plans', icon: <PriceIcon />, path: '/platform/pricing', queryKey: ['pricing'] },
+        { text: 'Model Registry', icon: <ModelTraining />, path: '/platform/models', queryKey: ['models'] },
+        { text: 'Rate Limits', icon: <Security />, path: '/platform/limits', queryKey: ['limits'] },
+        { text: 'Feature Flags', icon: <Build />, path: '/platform/features', queryKey: ['features'] },
+        { text: 'API Management', icon: <Api />, path: '/platform/api', queryKey: ['api'] }
       ]
     },
 
-    // System (formerly System Config)
+    // System Operations
     {
-      text: 'System',
-      icon: <SettingsApplications />,
+      text: 'System Operations',
+      icon: <CloudQueue />,
       hasSubmenu: true,
-      submenuKey: 'system',
-      isOpen: openMenus.system,
+      submenuKey: 'operations',
+      isOpen: openMenus.operations,
       submenu: [
-        { text: 'General', icon: <Settings />, path: '/system/general', queryKey: ['systemGeneral'] },
-        { text: 'Security', icon: <Security />, path: '/system/security', queryKey: ['systemSecurity'] },
-        { text: 'Integrations', icon: <IntegrationInstructions />, path: '/system/integrations', queryKey: ['systemIntegrations'] }
+        { text: 'Infrastructure', icon: <CloudQueue />, path: '/operations/infrastructure', queryKey: ['infrastructure'] },
+        { text: 'Deployments', icon: <Storage />, path: '/operations/deployments', queryKey: ['deployments'] },
+        { text: 'Logs & Monitoring', icon: <Assessment />, path: '/operations/monitoring', queryKey: ['monitoring'] },
+        { text: 'Security Center', icon: <Security />, path: '/operations/security', queryKey: ['security'] },
+        { text: 'Backup & Recovery', icon: <Storage />, path: '/operations/backup', queryKey: ['backup'] }
       ]
     }
   ];
+
+  const getCustomerAdminMenus = () => [
+    { text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] },
+
+    // Workspace
+    {
+      text: 'Workspace',
+      icon: <WorkspacePremium />,
+      hasSubmenu: true,
+      submenuKey: 'workspace',
+      isOpen: openMenus.workspace,
+      submenu: [
+        { text: 'Organization', icon: <AccountTree />, path: '/workspace/organization', queryKey: ['organization'] },
+        { text: 'Members', icon: <People />, path: '/workspace/members', queryKey: ['members'] },
+        { text: 'Teams', icon: <Groups />, path: '/workspace/teams', queryKey: ['teams'] },
+        { text: 'Invitations', icon: <Mail />, path: '/workspace/invitations', queryKey: ['invitations'] },
+        { text: 'Roles', icon: <Security />, path: '/workspace/roles', queryKey: ['roles'] }
+      ]
+    },
+
+    // Billing & Usage
+    {
+      text: 'Billing & Usage',
+      icon: <AttachMoney />,
+      hasSubmenu: true,
+      submenuKey: 'billing',
+      isOpen: openMenus.billing,
+      submenu: [
+        { text: 'Current Plan', icon: <CreditCard />, path: '/billing/plan', queryKey: ['plan'] },
+        { text: 'Usage Reports', icon: <Analytics />, path: '/billing/usage', queryKey: ['usage'] },
+        { text: 'Invoices', icon: <Receipt />, path: '/billing/invoices', queryKey: ['invoices'] },
+        { text: 'Payment Methods', icon: <CreditCard />, path: '/billing/payment', queryKey: ['payment'] },
+        { text: 'Usage Alerts', icon: <Notifications />, path: '/billing/alerts', queryKey: ['alerts'] }
+      ]
+    },
+
+    // AI Configuration
+    {
+      text: 'AI Configuration',
+      icon: <ModelTraining />,
+      hasSubmenu: true,
+      submenuKey: 'aiConfig',
+      isOpen: openMenus.aiConfig,
+      submenu: [
+        { text: 'Model Access', icon: <ModelTraining />, path: '/ai-config/models', queryKey: ['models'] },
+        { text: 'Prompts Library', icon: <Description />, path: '/ai-config/prompts', queryKey: ['prompts'] },
+        { text: 'MCP Servers', icon: <Storage />, path: '/ai-config/mcp', queryKey: ['mcp'] },
+        { text: 'Agents', icon: <SmartToy />, path: '/ai-config/agents', queryKey: ['agents'] },
+        { text: 'API Keys', icon: <VpnKey />, path: '/ai-config/api-keys', queryKey: ['apiKeys'] }
+      ]
+    },
+
+    // Workspace Settings
+    {
+      text: 'Workspace Settings',
+      icon: <Settings />,
+      hasSubmenu: true,
+      submenuKey: 'settings',
+      isOpen: openMenus.settings,
+      submenu: [
+        { text: 'General', icon: <Settings />, path: '/settings/general', queryKey: ['general'] },
+        { text: 'Security', icon: <Security />, path: '/settings/security', queryKey: ['security'] },
+        { text: 'Integrations', icon: <IntegrationInstructions />, path: '/settings/integrations', queryKey: ['integrations'] },
+        { text: 'Notifications', icon: <Notifications />, path: '/settings/notifications', queryKey: ['notifications'] },
+        { text: 'Data & Privacy', icon: <Security />, path: '/settings/privacy', queryKey: ['privacy'] }
+      ]
+    }
+  ];
+
+  // Select menu items based on user role
+  const menuItems = isSuperAdmin()
+    ? getSuperAdminMenus()
+    : isCustomerAdmin()
+      ? getCustomerAdminMenus()
+      : [{ text: 'Dashboard', icon: <Dashboard />, path: '/', queryKey: ['dashboard'] }];
+
 
   const handleNavigation = (path: string, queryKeys?: string[]) => {
     // Invalidate queries to force refresh
