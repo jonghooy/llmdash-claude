@@ -15,6 +15,8 @@ import SystemConfiguration from './pages/SystemConfiguration';
 import Prompts from './pages/Prompts';
 import MCPServers from './pages/MCPServers';
 import Agents from './pages/Agents';
+import Teams from './pages/Teams';
+import Roles from './pages/Roles';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/authStore';
 import { supabase } from './lib/supabase/client';
@@ -111,9 +113,9 @@ function App() {
             {/* Workspace */}
             <Route path="/workspace/organization" element={<OrganizationManagement />} />
             <Route path="/workspace/members" element={<OrganizationMembers />} />
-            <Route path="/workspace/teams" element={<OrganizationMembers />} />
+            <Route path="/workspace/teams" element={<Teams />} />
             <Route path="/workspace/invitations" element={<InvitationPage />} />
-            <Route path="/workspace/roles" element={<OrganizationSettings />} />
+            <Route path="/workspace/roles" element={<Roles />} />
 
             {/* Billing & Usage */}
             <Route path="/billing/plan" element={<CostUsage />} />
