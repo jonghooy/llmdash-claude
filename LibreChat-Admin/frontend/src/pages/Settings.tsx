@@ -14,10 +14,15 @@ const SettingsPage: React.FC = () => {
 
   // Map URL paths to tab indices
   const getTabFromPath = (path: string) => {
-    if (path.includes('/ai-models/management')) return 0;
+    // Handle both /ai-models/ and /ai-config/ paths
+    if (path.includes('/ai-models/management') || path.includes('/ai-config/models')) return 0;
     if (path.includes('/ai-models/pricing')) return 1;
     if (path.includes('/ai-models/permissions')) return 2;
-    if (path.includes('/ai-models/api-keys')) return 3;
+    if (path.includes('/ai-models/api-keys') || path.includes('/ai-config/api-keys')) return 3;
+
+    // For /ai-config/api-keys, show only API Keys
+    if (path.includes('/ai-config/api-keys')) return 3;
+
     return 0; // Default to first tab
   };
 

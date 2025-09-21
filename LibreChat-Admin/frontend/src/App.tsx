@@ -17,6 +17,12 @@ import MCPServers from './pages/MCPServers';
 import Agents from './pages/Agents';
 import Teams from './pages/Teams';
 import Roles from './pages/Roles';
+import BillingPlan from './pages/Billing/BillingPlan';
+import UsageAnalytics from './pages/Billing/UsageAnalytics';
+import Invoices from './pages/Billing/Invoices';
+import PaymentMethods from './pages/Billing/PaymentMethods';
+import UsageAlerts from './pages/Billing/UsageAlerts';
+import WorkspaceSettings from './pages/WorkspaceSettings';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/authStore';
 import { supabase } from './lib/supabase/client';
@@ -118,11 +124,11 @@ function App() {
             <Route path="/workspace/roles" element={<Roles />} />
 
             {/* Billing & Usage */}
-            <Route path="/billing/plan" element={<CostUsage />} />
-            <Route path="/billing/usage" element={<CostUsage />} />
-            <Route path="/billing/invoices" element={<CostUsage />} />
-            <Route path="/billing/payment" element={<CostUsage />} />
-            <Route path="/billing/alerts" element={<Settings />} />
+            <Route path="/billing/plan" element={<BillingPlan />} />
+            <Route path="/billing/usage" element={<UsageAnalytics />} />
+            <Route path="/billing/invoices" element={<Invoices />} />
+            <Route path="/billing/payment" element={<PaymentMethods />} />
+            <Route path="/billing/alerts" element={<UsageAlerts />} />
 
             {/* AI Configuration */}
             <Route path="/ai-config/models" element={<Settings />} />
@@ -132,11 +138,11 @@ function App() {
             <Route path="/ai-config/api-keys" element={<Settings />} />
 
             {/* Workspace Settings */}
-            <Route path="/settings/general" element={<SystemConfiguration />} />
-            <Route path="/settings/security" element={<SystemConfiguration />} />
-            <Route path="/settings/integrations" element={<SystemConfiguration />} />
-            <Route path="/settings/notifications" element={<SystemConfiguration />} />
-            <Route path="/settings/privacy" element={<SystemConfiguration />} />
+            <Route path="/settings/general" element={<WorkspaceSettings />} />
+            <Route path="/settings/security" element={<WorkspaceSettings />} />
+            <Route path="/settings/integrations" element={<WorkspaceSettings />} />
+            <Route path="/settings/notifications" element={<WorkspaceSettings />} />
+            <Route path="/settings/privacy" element={<WorkspaceSettings />} />
 
             {/* Legacy routes for backward compatibility */}
             <Route path="/organization" element={<OrganizationManagement />} />
