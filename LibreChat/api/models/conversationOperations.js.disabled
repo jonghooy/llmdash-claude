@@ -1,0 +1,149 @@
+/**
+ * Conversation Operations Abstraction Layer
+ * This module provides a unified interface for conversation operations
+ * that can switch between direct Mongoose models and dbGateway repositories
+ */
+
+const { logger } = require('@librechat/data-schemas');
+const { createTempChatExpirationDate } = require('@librechat/api');
+
+let cachedOperations = null;
+
+/**
+ * Get conversation operations based on configuration
+ * @returns {Object} Conversation operations interface
+ */
+function getConversationOperations() {
+  // Return cached operations if already initialized
+  if (cachedOperations) {
+    return cachedOperations;
+  }
+
+  const useDbGateway = process.env.USE_DB_GATEWAY === 'true';
+
+  if (useDbGateway) {
+    logger.info('[conversationOperations] Using dbGateway implementation');
+    // Use dbGateway repository with lazy loading
+
+    // Import Message operations that are always needed
+    const { getMessages, deleteMessages } = require('./Message');
+
+    cachedOperations = {
+      // Direct repository methods with lazy loading
+      searchConversation: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.searchConversation(...args);
+      },
+      getConvo: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.getConvo(...args);
+      },
+      getConvoTitle: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.getConvoTitle(...args);
+      },
+      deleteConvos: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.deleteConvos(...args);
+      },
+      deleteNullOrEmptyConversations: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.deleteNullOrEmptyConversations(...args);
+      },
+      getConvoFiles: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.getConvoFiles(...args);
+      },
+      getConvosByCursor: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.getConvosByCursor(...args);
+      },
+      getConvosQueried: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.getConvosQueried(...args);
+      },
+      bulkSaveConvos: (...args) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+        return convoRepo.bulkSaveConvos(...args);
+      },
+
+      // saveConvo needs special handling for compatibility
+      saveConvo: async (req, { conversationId, newConversationId, ...convo }, metadata) => {
+        const { getRepository } = require('~/db');
+        const convoRepo = getRepository('Conversation');
+
+        if (metadata?.context) {
+          logger.debug(`[saveConvo] ${metadata.context}`);
+        }
+
+        const messages = await getMessages({ conversationId }, '_id');
+        const update = { ...convo, messages, user: req.user.id };
+
+        if (newConversationId) {
+          update.conversationId = newConversationId;
+        }
+
+        if (req?.body?.isTemporary) {
+          try {
+            const appConfig = req.config;
+            update.expiredAt = createTempChatExpirationDate(appConfig?.interfaceConfig);
+          } catch (err) {
+            logger.error('Error creating temporary chat expiration date:', err);
+            update.expiredAt = null;
+          }
+        } else {
+          update.expiredAt = null;
+        }
+
+        // Use repository method
+        return await convoRepo.saveConvo(req, update, metadata);
+      }
+    };
+  } else {
+    // Use original Mongoose models
+    cachedOperations = getMongooseOperations();
+  }
+
+  return cachedOperations;
+}
+
+/**
+ * Get Mongoose-based operations
+ * @returns {Object} Mongoose operations
+ */
+function getMongooseOperations() {
+  logger.info('[conversationOperations] Using Mongoose implementation');
+
+  // Get the original Conversation functions
+  const originalConversation = require('./Conversation.original');
+
+  return {
+    searchConversation: originalConversation.searchConversation,
+    getConvo: originalConversation.getConvo,
+    getConvoTitle: originalConversation.getConvoTitle,
+    deleteConvos: originalConversation.deleteConvos,
+    deleteNullOrEmptyConversations: originalConversation.deleteNullOrEmptyConversations,
+    getConvoFiles: originalConversation.getConvoFiles,
+    getConvosByCursor: originalConversation.getConvosByCursor,
+    getConvosQueried: originalConversation.getConvosQueried,
+    saveConvo: originalConversation.saveConvo,
+    bulkSaveConvos: originalConversation.bulkSaveConvos,
+  };
+}
+
+// Export a proxy that lazily loads operations
+module.exports = new Proxy({}, {
+  get(target, prop) {
+    const ops = getConversationOperations();
+    return ops[prop];
+  }
+});

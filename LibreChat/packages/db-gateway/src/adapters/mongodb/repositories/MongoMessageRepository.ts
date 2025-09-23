@@ -44,6 +44,31 @@ export class MongoMessageRepository
   }
 
   /**
+   * Override update to use messageId instead of _id
+   */
+  async update(
+    messageId: string,
+    data: Partial<IMessage>,
+    transaction?: ITransaction
+  ): Promise<IMessage | null> {
+    const session = this.getSession(transaction);
+    const result = await this.model
+      .findOneAndUpdate({ messageId }, data, { new: true, session })
+      .lean()
+      .exec();
+    return result as IMessage | null;
+  }
+
+  /**
+   * Override delete to use messageId instead of _id
+   */
+  async delete(messageId: string, transaction?: ITransaction): Promise<boolean> {
+    const session = this.getSession(transaction);
+    const result = await this.model.findOneAndDelete({ messageId }, { session });
+    return !!result;
+  }
+
+  /**
    * Get conversation messages with pagination
    */
   async getConversationMessages(
@@ -72,6 +97,13 @@ export class MongoMessageRepository
     session?: ITransaction
   ): Promise<number> {
     return await this.deleteMany({ conversationId }, session);
+  }
+
+  /**
+   * Override findById to use messageId instead of MongoDB _id
+   */
+  async findById(messageId: string, options?: any): Promise<IMessage | null> {
+    return await this.findByMessageId(messageId);
   }
 
   /**

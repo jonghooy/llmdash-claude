@@ -13,6 +13,13 @@ import { MongoFileRepository } from './repositories/MongoFileRepository';
 import { MongoTransactionRepository } from './repositories/MongoTransactionRepository';
 import { MongoAgentRepository } from './repositories/MongoAgentRepository';
 import { MongoPromptRepository } from './repositories/MongoPromptRepository';
+import { MongoPresetRepository } from './repositories/MongoPresetRepository';
+import { MongoAssistantRepository } from './repositories/MongoAssistantRepository';
+import { MongoConversationTagRepository } from './repositories/MongoConversationTagRepository';
+import { MongoAuditLogRepository } from './repositories/MongoAuditLogRepository';
+import { MongoActionRepository } from './repositories/MongoActionRepository';
+import { MongoTokenRepository } from './MongoTokenRepository';
+import { MongoSessionRepository } from './MongoSessionRepository';
 import { createModels } from '@librechat/data-schemas';
 
 /**
@@ -186,6 +193,41 @@ export class MongoDbAdapter implements IDbGateway {
     // Prompt repository
     if (this.models.Prompt) {
       this.repositories.set('Prompt', new MongoPromptRepository(this.models.Prompt));
+    }
+
+    // Token repository
+    if (this.models.Token) {
+      this.repositories.set('Token', new MongoTokenRepository(this.models.Token));
+    }
+
+    // Session repository
+    if (this.models.Session) {
+      this.repositories.set('Session', new MongoSessionRepository(this.models.Session));
+    }
+
+    // Preset repository
+    if (this.models.Preset) {
+      this.repositories.set('Preset', new MongoPresetRepository(this.models.Preset));
+    }
+
+    // Assistant repository
+    if (this.models.Assistant) {
+      this.repositories.set('Assistant', new MongoAssistantRepository(this.models.Assistant));
+    }
+
+    // ConversationTag repository
+    if (this.models.ConversationTag) {
+      this.repositories.set('ConversationTag', new MongoConversationTagRepository(this.models.ConversationTag));
+    }
+
+    // AuditLog repository
+    if (this.models.AuditLog) {
+      this.repositories.set('AuditLog', new MongoAuditLogRepository(this.models.AuditLog));
+    }
+
+    // Action repository
+    if (this.models.Action) {
+      this.repositories.set('Action', new MongoActionRepository(this.models.Action));
     }
 
     console.log(`Initialized ${this.repositories.size} repositories`);

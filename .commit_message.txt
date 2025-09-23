@@ -1,1 +1,1 @@
-✅ AuthService Repository 패턴으로 완전 해결 - dbGateway 활성화 및 순환 의존성 제거 성공
+🔄 AuditLog & Action 모델 dbGateway 마이그레이션 완료 - 보안 이벤트 추적 및 액션 관리 구현 (진행률 60%)

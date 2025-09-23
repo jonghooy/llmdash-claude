@@ -299,4 +299,197 @@ export class MongoConversationRepository
     );
     return result.modifiedCount > 0;
   }
+
+  /**
+   * LibreChat specific methods (not in interface but needed)
+   */
+
+  /**
+   * Search conversation by userId, conversationId, and title
+   */
+  async searchConversation(userId: string, conversationId: string, title?: string): Promise<IConversation[]> {
+    const query: any = { user: userId };
+
+    if (conversationId) {
+      query.conversationId = conversationId;
+    }
+
+    if (title) {
+      query.title = new RegExp(title, 'i');
+    }
+
+    return await this.find(query, { sort: { updatedAt: -1 }, lean: true });
+  }
+
+  /**
+   * Get conversation by userId and conversationId
+   */
+  async getConvo(userId: string, conversationId: string): Promise<IConversation | null> {
+    return await this.findOne({ user: userId, conversationId });
+  }
+
+  /**
+   * Get conversation title
+   */
+  async getConvoTitle(userId: string, conversationId: string): Promise<string | null> {
+    const convo = await this.findOne({ user: userId, conversationId }, { select: 'title' });
+    return convo ? convo.title : null;
+  }
+
+  /**
+   * Save conversation (upsert)
+   */
+  async saveConvo(userId: string, conversationData: Partial<IConversation>): Promise<IConversation> {
+    const { conversationId } = conversationData;
+    if (!conversationId) {
+      throw new Error('conversationId is required');
+    }
+
+    return await this.model.findOneAndUpdate(
+      { user: userId, conversationId },
+      { ...conversationData, user: userId },
+      { upsert: true, new: true, lean: true }
+    ) as unknown as IConversation;
+  }
+
+  /**
+   * Delete conversations with optional file deletion
+   */
+  async deleteConvos(userId: string, filter: any, deleteFiles?: boolean): Promise<{ deletedCount: number }> {
+    const query = { user: userId, ...filter };
+    const result = await this.model.deleteMany(query);
+
+    // Note: File deletion should be handled separately if needed
+    if (deleteFiles) {
+      // This should trigger file deletion through a separate service
+      console.log('File deletion requested but not implemented in repository');
+    }
+
+    return { deletedCount: result.deletedCount || 0 };
+  }
+
+  /**
+   * Delete null or empty conversations
+   */
+  async deleteNullOrEmptyConversations(): Promise<{ deletedCount: number }> {
+    const result = await this.model.deleteMany({
+      $or: [
+        { conversationId: null },
+        { conversationId: '' },
+        { title: null },
+        { title: '' }
+      ]
+    });
+
+    return { deletedCount: result.deletedCount || 0 };
+  }
+
+  /**
+   * Get conversation files
+   */
+  async getConvoFiles(userId: string, conversationId: string): Promise<any[]> {
+    // This should be implemented with proper file lookup
+    // For now, return empty array or implement with file model
+    return [];
+  }
+
+  /**
+   * Get conversations by cursor (pagination) - LibreChat format
+   */
+  async getConvosByCursor(
+    user: string,
+    { cursor, limit = 25, isArchived = false, tags, search, order = 'desc' }: any = {},
+  ): Promise<any> {
+    const filters: any[] = [{ user }];
+
+    if (isArchived) {
+      filters.push({ isArchived: true });
+    } else {
+      filters.push({ $or: [{ isArchived: false }, { isArchived: { $exists: false } }] });
+    }
+
+    if (Array.isArray(tags) && tags.length > 0) {
+      filters.push({ tags: { $in: tags } });
+    }
+
+    filters.push({ $or: [{ expiredAt: null }, { expiredAt: { $exists: false } }] });
+
+    if (cursor) {
+      filters.push({ updatedAt: { $lt: new Date(cursor) } });
+    }
+
+    const query = filters.length === 1 ? filters[0] : { $and: filters };
+
+    try {
+      const convos = await this.model
+        .find(query)
+        .select(
+          'conversationId endpoint title createdAt updatedAt user model agent_id assistant_id spec iconURL',
+        )
+        .sort({ updatedAt: order === 'asc' ? 1 : -1 })
+        .limit(limit + 1)
+        .lean();
+
+      let nextCursor = null;
+      if (convos.length > limit) {
+        nextCursor = convos[limit - 1].updatedAt.toISOString();
+        convos.pop();
+      }
+
+      return { conversations: convos, nextCursor };
+    } catch (error) {
+      console.error('[getConvosByCursor] Error getting conversations', error);
+      return { message: 'Error getting conversations' };
+    }
+  }
+
+  /**
+   * Query conversations with search
+   */
+  async getConvosQueried(userId: string, query: string, pageNumber: number = 1, pageSize: number = 12): Promise<{
+    conversations: IConversation[];
+    pageNumber: number;
+    pageSize: number;
+    pages: number;
+  }> {
+    const searchQuery = {
+      user: userId,
+      $or: [
+        { title: new RegExp(query, 'i') },
+        { conversationId: query }
+      ]
+    };
+
+    const total = await this.count(searchQuery);
+    const pages = Math.ceil(total / pageSize);
+
+    const conversations = await this.find(searchQuery, {
+      sort: { updatedAt: -1 },
+      skip: (pageNumber - 1) * pageSize,
+      limit: pageSize,
+      lean: true
+    });
+
+    return {
+      conversations,
+      pageNumber,
+      pageSize,
+      pages
+    };
+  }
+
+  /**
+   * Bulk save conversations
+   */
+  async bulkSaveConvos(conversations: IConversation[]): Promise<any> {
+    const bulkOps = conversations.map(convo => ({
+      updateOne: {
+        filter: { conversationId: convo.conversationId },
+        update: { $set: convo },
+        upsert: true
+      }
+    }));
+
+    return await this.model.bulkWrite(bulkOps);
+  }
 }

@@ -7,23 +7,17 @@ const indexSync = require('./indexSync');
 createModels(mongoose);
 
 // Check if dbGateway is enabled
-console.log('[db/index.js] Starting - process.env.USE_DB_GATEWAY value:', process.env.USE_DB_GATEWAY);
-console.log('[db/index.js] Type of USE_DB_GATEWAY:', typeof process.env.USE_DB_GATEWAY);
 const useDbGateway = process.env.USE_DB_GATEWAY === 'true';
-console.log('[db/index.js] useDbGateway resolved to:', useDbGateway);
 
 if (useDbGateway) {
   const lazyGateway = require('./lazyGateway');
 
   // Create a wrapped connectDb that initializes both Mongoose and dbGateway
   async function connectDbWithGateway() {
-    console.log('[db/index.js] connectDbWithGateway called - initializing both Mongoose and dbGateway');
     // First connect with Mongoose (needed for models)
     await connectDb();
     // Then initialize dbGateway
-    console.log('[db/index.js] Initializing dbGateway...');
     await lazyGateway.initDbGateway();
-    console.log('[db/index.js] dbGateway initialized successfully');
     return true;
   }
 

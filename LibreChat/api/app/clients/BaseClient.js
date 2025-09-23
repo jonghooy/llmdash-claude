@@ -652,8 +652,15 @@ class BaseClient {
     }
 
     if (!isEdited && !this.skipSaveUserMessage) {
-      userMessagePromise = this.saveMessageToDatabase(userMessage, saveOptions, user);
-      this.savedMessageIds.add(userMessage.messageId);
+      if (!userMessage) {
+        console.error('[BaseClient] userMessage is undefined at line 655');
+        console.error('[BaseClient] isEdited:', isEdited);
+        console.error('[BaseClient] skipSaveUserMessage:', this.skipSaveUserMessage);
+        console.error('[BaseClient] handleStartMethods result keys:', Object.keys(opts || {}));
+      } else {
+        userMessagePromise = this.saveMessageToDatabase(userMessage, saveOptions, user);
+        this.savedMessageIds.add(userMessage.messageId);
+      }
       if (typeof opts?.getReqData === 'function') {
         opts.getReqData({
           userMessagePromise,
@@ -919,6 +926,12 @@ class BaseClient {
   async saveMessageToDatabase(message, endpointOptions, user = null) {
     if (this.user && user !== this.user) {
       throw new Error('User mismatch.');
+    }
+
+    if (!message) {
+      console.error('[BaseClient] saveMessageToDatabase called with undefined message');
+      console.error('[BaseClient] Stack trace:', new Error().stack);
+      throw new Error('Message is required for saveMessageToDatabase');
     }
 
     const savedMessage = await saveMessage(

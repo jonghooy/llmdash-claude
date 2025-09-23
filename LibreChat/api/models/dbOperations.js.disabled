@@ -1,0 +1,117 @@
+/**
+ * Database Operations Abstraction Layer
+ * This module provides a unified interface for database operations
+ * that can switch between direct Mongoose models and dbGateway repositories
+ */
+
+let cachedOperations = null;
+
+/**
+ * Get database operations based on configuration
+ * @returns {Object} Database operations interface
+ */
+function getDbOperations() {
+  // Return cached operations if already initialized
+  if (cachedOperations) {
+    return cachedOperations;
+  }
+
+  const useDbGateway = process.env.USE_DB_GATEWAY === 'true';
+
+  if (useDbGateway) {
+    // Use dbGateway repositories - Token/Session still use Mongoose as not implemented yet
+    const mongooseOps = getMongooseOperations();
+
+    cachedOperations = {
+        // User operations - lazily get repository and map to dbGateway methods
+        findUser: (filter, select) => {
+          const { getRepository } = require('~/db');
+          const userRepo = getRepository('User');
+          // findUser expects a filter object and optional select string
+          if (filter.email) {
+            return userRepo.findByEmail(filter.email);
+          }
+          if (filter.username) {
+            return userRepo.findByUsername(filter.username);
+          }
+          return userRepo.findOne(filter, { select });
+        },
+        createUser: (userData) => {
+          const { getRepository } = require('~/db');
+          const userRepo = getRepository('User');
+          return userRepo.create(userData);
+        },
+        updateUser: (userId, update) => {
+          const { getRepository } = require('~/db');
+          const userRepo = getRepository('User');
+          return userRepo.update(userId, update);
+        },
+        getUserById: (userId) => {
+          const { getRepository } = require('~/db');
+          const userRepo = getRepository('User');
+          return userRepo.findById(userId);
+        },
+        countUsers: () => {
+          const { getRepository } = require('~/db');
+          const userRepo = getRepository('User');
+          return userRepo.count();
+        },
+        deleteUserById: (userId) => {
+          const { getRepository } = require('~/db');
+          const userRepo = getRepository('User');
+          return userRepo.delete(userId);
+        },
+
+        // Token operations - use Mongoose (no dbGateway repo yet)
+        findToken: mongooseOps.findToken,
+        createToken: mongooseOps.createToken,
+        deleteTokens: mongooseOps.deleteTokens,
+
+        // Session operations - use Mongoose (no dbGateway repo yet)
+        findSession: mongooseOps.findSession,
+        createSession: mongooseOps.createSession,
+        deleteSession: mongooseOps.deleteSession,
+        generateToken: mongooseOps.generateToken,
+        generateRefreshToken: mongooseOps.generateRefreshToken,
+      };
+  } else {
+    // Use original Mongoose models
+    cachedOperations = getMongooseOperations();
+  }
+
+  return cachedOperations;
+}
+
+/**
+ * Get Mongoose-based operations
+ * @returns {Object} Mongoose operations
+ */
+function getMongooseOperations() {
+  // Require here to avoid circular dependencies at module load time
+  const models = require('~/models');
+
+  return {
+    findUser: models.findUser,
+    createUser: models.createUser,
+    updateUser: models.updateUser,
+    getUserById: models.getUserById,
+    countUsers: models.countUsers,
+    deleteUserById: models.deleteUserById,
+    findToken: models.findToken,
+    createToken: models.createToken,
+    deleteTokens: models.deleteTokens,
+    findSession: models.findSession,
+    createSession: models.createSession,
+    deleteSession: models.deleteSession,
+    generateToken: models.generateToken,
+    generateRefreshToken: models.generateRefreshToken,
+  };
+}
+
+// Export a proxy that lazily loads operations
+module.exports = new Proxy({}, {
+  get(target, prop) {
+    const ops = getDbOperations();
+    return ops[prop];
+  }
+});
