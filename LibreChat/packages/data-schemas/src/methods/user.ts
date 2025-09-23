@@ -2,6 +2,21 @@ import mongoose, { FilterQuery } from 'mongoose';
 import type { IUser, BalanceConfig, CreateUserRequest, UserDeleteResult } from '~/types';
 import { signPayload } from '~/crypto';
 
+/** Helper to check if dbGateway is enabled */
+function isDbGatewayEnabled() {
+  return process.env.USE_DB_GATEWAY === 'true';
+}
+
+/** Helper to get dbGateway lazily */
+function getLazyGateway() {
+  try {
+    // @ts-ignore - Dynamic import to avoid circular deps
+    return require('../../../api/server/services/dbGateway');
+  } catch {
+    return null;
+  }
+}
+
 /** Factory function that takes mongoose instance and returns the methods */
 export function createUserMethods(mongoose: typeof import('mongoose')) {
   /**
@@ -11,6 +26,16 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
     searchCriteria: FilterQuery<IUser>,
     fieldsToSelect?: string | string[] | null,
   ): Promise<IUser | null> {
+    if (isDbGatewayEnabled()) {
+      const gateway = getLazyGateway();
+      if (gateway) {
+        const { getRepository } = gateway;
+        const userRepo = await getRepository('User');
+        const options = fieldsToSelect ? { select: fieldsToSelect } : {};
+        return await userRepo.findOne(searchCriteria, options);
+      }
+    }
+
     const User = mongoose.models.User;
     const query = User.findOne(searchCriteria);
     if (fieldsToSelect) {
@@ -23,6 +48,15 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
    * Count the number of user documents in the collection based on the provided filter.
    */
   async function countUsers(filter: FilterQuery<IUser> = {}): Promise<number> {
+    if (isDbGatewayEnabled()) {
+      const gateway = getLazyGateway();
+      if (gateway) {
+        const { getRepository } = gateway;
+        const userRepo = await getRepository('User');
+        return await userRepo.count(filter);
+      }
+    }
+
     const User = mongoose.models.User;
     return await User.countDocuments(filter);
   }
@@ -36,9 +70,6 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
     disableTTL: boolean = true,
     returnUser: boolean = false,
   ): Promise<mongoose.Types.ObjectId | Partial<IUser>> {
-    const User = mongoose.models.User;
-    const Balance = mongoose.models.Balance;
-
     const userData: Partial<IUser> = {
       ...data,
       expiresAt: disableTTL ? undefined : new Date(Date.now() + 604800 * 1000), // 1 week in milliseconds
@@ -48,10 +79,26 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
       delete userData.expiresAt;
     }
 
-    const user = await User.create(userData);
+    let user: any;
+
+    if (isDbGatewayEnabled()) {
+      const gateway = getLazyGateway();
+      if (gateway) {
+        const { getRepository } = gateway;
+        const userRepo = await getRepository('User');
+        user = await userRepo.create(userData);
+      } else {
+        const User = mongoose.models.User;
+        user = await User.create(userData);
+      }
+    } else {
+      const User = mongoose.models.User;
+      user = await User.create(userData);
+    }
 
     // If balance is enabled, create or update a balance record for the user
     if (balanceConfig?.enabled && balanceConfig?.startBalance) {
+      const Balance = mongoose.models.Balance;
       const update: {
         $inc: { tokenCredits: number };
         $set?: {
@@ -94,6 +141,15 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
    * Update a user with new data without overwriting existing properties.
    */
   async function updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser | null> {
+    if (isDbGatewayEnabled()) {
+      const gateway = getLazyGateway();
+      if (gateway) {
+        const { getRepository } = gateway;
+        const userRepo = await getRepository('User');
+        return await userRepo.update(userId, updateData);
+      }
+    }
+
     const User = mongoose.models.User;
     const updateOperation = {
       $set: updateData,
@@ -112,6 +168,16 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
     userId: string,
     fieldsToSelect?: string | string[] | null,
   ): Promise<IUser | null> {
+    if (isDbGatewayEnabled()) {
+      const gateway = getLazyGateway();
+      if (gateway) {
+        const { getRepository } = gateway;
+        const userRepo = await getRepository('User');
+        const options = fieldsToSelect ? { select: fieldsToSelect } : {};
+        return await userRepo.findById(userId, options);
+      }
+    }
+
     const User = mongoose.models.User;
     const query = User.findById(userId);
     if (fieldsToSelect) {
@@ -125,6 +191,19 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
    */
   async function deleteUserById(userId: string): Promise<UserDeleteResult> {
     try {
+      if (isDbGatewayEnabled()) {
+        const gateway = getLazyGateway();
+        if (gateway) {
+          const { getRepository } = gateway;
+          const userRepo = await getRepository('User');
+          const deleted = await userRepo.delete(userId);
+          if (!deleted) {
+            return { deletedCount: 0, message: 'No user found with that ID.' };
+          }
+          return { deletedCount: 1, message: 'User was deleted successfully.' };
+        }
+      }
+
       const User = mongoose.models.User;
       const result = await User.deleteOne({ _id: userId });
       if (result.deletedCount === 0) {
@@ -178,6 +257,21 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
     userId: string,
     memoriesEnabled: boolean,
   ): Promise<IUser | null> {
+    if (isDbGatewayEnabled()) {
+      const gateway = getLazyGateway();
+      if (gateway) {
+        const { getRepository } = gateway;
+        const userRepo = await getRepository('User');
+        const user = await userRepo.findById(userId);
+        if (!user) {
+          return null;
+        }
+        return await userRepo.update(userId, {
+          'personalization.memories': memoriesEnabled,
+        } as any);
+      }
+    }
+
     const User = mongoose.models.User;
 
     // First, ensure the personalization object exists
@@ -217,6 +311,15 @@ export function createUserMethods(mongoose: typeof import('mongoose')) {
   }) {
     if (!searchPattern || searchPattern.trim().length === 0) {
       return [];
+    }
+
+    if (isDbGatewayEnabled()) {
+      const gateway = getLazyGateway();
+      if (gateway) {
+        const { getRepository } = gateway;
+        const userRepo = await getRepository('User');
+        return await userRepo.searchUsers(searchPattern.trim(), limit);
+      }
     }
 
     const regex = new RegExp(searchPattern.trim(), 'i');

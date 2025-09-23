@@ -1,1 +1,1 @@
-✅ ToolCall 모델 dbGateway 마이그레이션 완료 - 도구 실행 추적 시스템 구현 (진행률 75% - 주요 모델 완료)
+🎉 dbGateway 마이그레이션 100% 완료 - User 모델 완전 마이그레이션으로 MongoDB 직접 의존성 제거

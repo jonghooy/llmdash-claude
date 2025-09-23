@@ -11,6 +11,7 @@ import { createActionModel } from './action';
 import { createAssistantModel } from './assistant';
 import { createFileModel } from './file';
 import { createBannerModel } from './banner';
+import { createAuditLogModel } from './auditLog';
 import { createProjectModel } from './project';
 import { createKeyModel } from './key';
 import { createPluginAuthModel } from './pluginAuth';
@@ -25,6 +26,7 @@ import { createMemoryModel } from './memory';
 import { createAccessRoleModel } from './accessRole';
 import { createAclEntryModel } from './aclEntry';
 import { createGroupModel } from './group';
+import { createUserMetricsModel } from './userMetrics';
 
 /**
  * Creates all database models for all collections
@@ -44,6 +46,7 @@ export function createModels(mongoose: typeof import('mongoose')) {
     Assistant: createAssistantModel(mongoose),
     File: createFileModel(mongoose),
     Banner: createBannerModel(mongoose),
+    AuditLog: createAuditLogModel(mongoose),
     Project: createProjectModel(mongoose),
     Key: createKeyModel(mongoose),
     PluginAuth: createPluginAuthModel(mongoose),
@@ -58,5 +61,6 @@ export function createModels(mongoose: typeof import('mongoose')) {
     AccessRole: createAccessRoleModel(mongoose),
     AclEntry: createAclEntryModel(mongoose),
     Group: createGroupModel(mongoose),
+    UserMetrics: createUserMetricsModel(mongoose),
   };
 }

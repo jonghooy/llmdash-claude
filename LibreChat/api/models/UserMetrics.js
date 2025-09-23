@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const operations = require('./userMetricsOperations');
 
 const UserMetricsSchema = new Schema({
   userId: { 
@@ -135,4 +136,10 @@ UserMetricsSchema.statics.getTopUsers = async function(limit = 10, sortBy = 'tok
   ]);
 };
 
-module.exports = mongoose.model('UserMetrics', UserMetricsSchema);
+const UserMetrics = mongoose.model('UserMetrics', UserMetricsSchema);
+
+// Export model with operations
+module.exports = Object.assign(UserMetrics, operations);
+
+// Also export the model directly for backward compatibility
+module.exports.Model = UserMetrics;

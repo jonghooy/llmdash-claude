@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { createMethods } = require('@librechat/data-schemas');
 const methods = createMethods(mongoose);
 const { comparePassword } = require('./userMethods');
+const User = require('./User');
 const {
   findFileById,
   createFile,
@@ -34,6 +35,29 @@ module.exports = {
   ...methods,
   seedDatabase,
   comparePassword,
+
+  // User operations (override data-schemas methods)
+  findUser: User.findUser,
+  findByEmail: User.findByEmail,
+  findByUsername: User.findByUsername,
+  findByProviderId: User.findByProviderId,
+  getUserById: User.getUserById,
+  countUsers: User.countUsers,
+  createUser: User.createUser,
+  updateUser: User.updateUser,
+  deleteUserById: User.deleteUserById,
+  searchUsers: User.searchUsers,
+  generateToken: User.generateToken,
+  toggleUserMemories: User.toggleUserMemories,
+  verifyEmail: User.verifyEmail,
+  updatePassword: User.updatePassword,
+  updateLastLogin: User.updateLastLogin,
+  getUsersByRole: User.getUsersByRole,
+  findWithRoles: User.findWithRoles,
+  emailExists: User.emailExists,
+  usernameExists: User.usernameExists,
+  bulkCreateUsers: User.bulkCreateUsers,
+  getAllUsers: User.getAllUsers,
   findFileById,
   createFile,
   updateFile,
