@@ -20,6 +20,7 @@ import { MongoAuditLogRepository } from './repositories/MongoAuditLogRepository'
 import { MongoActionRepository } from './repositories/MongoActionRepository';
 import { MongoBannerRepository } from './repositories/MongoBannerRepository';
 import { MongoRoleRepository } from './repositories/MongoRoleRepository';
+import { MongoToolCallRepository } from './repositories/MongoToolCallRepository';
 import { MongoTokenRepository } from './MongoTokenRepository';
 import { MongoSessionRepository } from './MongoSessionRepository';
 import { createModels } from '@librechat/data-schemas';
@@ -240,6 +241,11 @@ export class MongoDbAdapter implements IDbGateway {
     // Role repository
     if (this.models.Role) {
       this.repositories.set('Role', new MongoRoleRepository(this.models.Role));
+    }
+
+    // ToolCall repository
+    if (this.models.ToolCall) {
+      this.repositories.set('ToolCall', new MongoToolCallRepository(this.models.ToolCall));
     }
 
     console.log(`Initialized ${this.repositories.size} repositories`);
