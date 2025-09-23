@@ -1,0 +1,15 @@
+{
+  "supabase": {
+    "url": "https://qctdaaezghvqnbpghinr.supabase.co",
+    "anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFjdGRhYWV6Z2h2cW5icGdoaW5yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyNzU3NTMsImV4cCI6MjA3Mzg1MTc1M30.WJVWs7aruIuo_jpa6o0xXbXefN8DCIK_1CTr_afVRos",
+    "options": {
+      "auth": {
+        "autoRefreshToken": true,
+        "persistSession": true
+      },
+      "realtime": {
+        "enabled": true
+      }
+    }
+  }
+}

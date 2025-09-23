@@ -5,16 +5,27 @@ import { adminTheme } from './theme/adminTheme';
 import Sidebar from './components/Layout/Sidebar';
 import Header from './components/Layout/Header';
 import Dashboard from './pages/Dashboard';
-import Organization from './pages/Organization';
+import { OrganizationManagement } from './features/organization/pages/OrganizationManagement';
+import { OrganizationMembers } from './features/organization/pages/OrganizationMembers';
+import { OrganizationSettings } from './features/organization/pages/OrganizationSettings';
+import { InvitationPage } from './features/invitation/components';
 import CostUsage from './pages/CostUsage';
 import Settings from './pages/Settings';
 import SystemConfiguration from './pages/SystemConfiguration';
 import Prompts from './pages/Prompts';
-import Memory from './pages/Memory';
 import MCPServers from './pages/MCPServers';
 import Agents from './pages/Agents';
+import Teams from './pages/Teams';
+import Roles from './pages/Roles';
+import BillingPlan from './pages/Billing/BillingPlan';
+import UsageAnalytics from './pages/Billing/UsageAnalytics';
+import Invoices from './pages/Billing/Invoices';
+import PaymentMethods from './pages/Billing/PaymentMethods';
+import UsageAlerts from './pages/Billing/UsageAlerts';
+import WorkspaceSettings from './pages/WorkspaceSettings';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/authStore';
+import { supabase } from './lib/supabase/client';
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -24,8 +35,31 @@ function App() {
     // Check for existing token on mount
     const token = localStorage.getItem('admin_token');
     if (token && !isAuthenticated) {
-      // Simple validation - in production, verify with backend
-      login(token, { id: 'admin', email: 'admin@librechat.local', role: 'admin' });
+      // Get saved user data or default to customer_admin for testing
+      const savedUser = localStorage.getItem('admin_user');
+      const user = savedUser ? JSON.parse(savedUser) : {
+        id: 'admin',
+        email: 'admin@librechat.local',
+        role: 'admin',
+        saasRole: 'customer_admin', // Default to customer_admin to see menus
+        tenantId: 'tenant123',
+        tenantName: 'Acme Corp',
+        subscription: {
+          plan: 'professional',
+          status: 'active'
+        }
+      };
+
+      login(token, user);
+
+      // Also set up a Supabase session for admin user
+      supabase.auth.signInWithPassword({
+        email: 'admin@librechat.local',
+        password: 'admin123456'
+      }).catch(() => {
+        // If login fails, we can still use the admin dashboard
+        console.log('Supabase auth setup skipped');
+      });
     }
   }, []);
 
@@ -52,15 +86,78 @@ function App() {
             }
           }}>
           <Routes>
+            {/* Dashboard */}
             <Route path="/" element={<Dashboard />} />
+
+            {/* Super Admin Routes */}
+            {/* Customer Management */}
+            <Route path="/customers" element={<OrganizationManagement />} />
+            <Route path="/customers/subscriptions" element={<CostUsage />} />
+            <Route path="/customers/support" element={<InvitationPage />} />
+
+            {/* Revenue & Analytics */}
+            <Route path="/revenue/dashboard" element={<CostUsage />} />
+            <Route path="/revenue/usage" element={<CostUsage />} />
+            <Route path="/revenue/churn" element={<Dashboard />} />
+            <Route path="/revenue/growth" element={<Dashboard />} />
+
+            {/* Platform Settings */}
+            <Route path="/platform/pricing" element={<Settings />} />
+            <Route path="/platform/models" element={<Settings />} />
+            <Route path="/platform/limits" element={<Settings />} />
+            <Route path="/platform/features" element={<Settings />} />
+            <Route path="/platform/api" element={<Settings />} />
+
+            {/* System Operations */}
+            <Route path="/operations/infrastructure" element={<SystemConfiguration />} />
+            <Route path="/operations/deployments" element={<SystemConfiguration />} />
+            <Route path="/operations/monitoring" element={<SystemConfiguration />} />
+            <Route path="/operations/security" element={<SystemConfiguration />} />
+            <Route path="/operations/backup" element={<SystemConfiguration />} />
+
+            {/* Customer Admin Routes */}
+            {/* Workspace */}
+            <Route path="/workspace/organization" element={<OrganizationManagement />} />
+            <Route path="/workspace/members" element={<OrganizationMembers />} />
+            <Route path="/workspace/teams" element={<Teams />} />
+            <Route path="/workspace/invitations" element={<InvitationPage />} />
+            <Route path="/workspace/roles" element={<Roles />} />
+
+            {/* Billing & Usage */}
+            <Route path="/billing/plan" element={<BillingPlan />} />
+            <Route path="/billing/usage" element={<UsageAnalytics />} />
+            <Route path="/billing/invoices" element={<Invoices />} />
+            <Route path="/billing/payment" element={<PaymentMethods />} />
+            <Route path="/billing/alerts" element={<UsageAlerts />} />
+
+            {/* AI Configuration */}
+            <Route path="/ai-config/models" element={<Settings />} />
+            <Route path="/ai-config/prompts" element={<Prompts />} />
+            <Route path="/ai-config/mcp" element={<MCPServers />} />
+            <Route path="/ai-config/agents" element={<Agents />} />
+            <Route path="/ai-config/api-keys" element={<Settings />} />
+
+            {/* Workspace Settings */}
+            <Route path="/settings/general" element={<WorkspaceSettings />} />
+            <Route path="/settings/security" element={<WorkspaceSettings />} />
+            <Route path="/settings/integrations" element={<WorkspaceSettings />} />
+            <Route path="/settings/notifications" element={<WorkspaceSettings />} />
+            <Route path="/settings/privacy" element={<WorkspaceSettings />} />
+
+            {/* Legacy routes for backward compatibility */}
+            <Route path="/organization" element={<OrganizationManagement />} />
+            <Route path="/organization/members" element={<OrganizationMembers />} />
+            <Route path="/organization/invitations" element={<InvitationPage />} />
+            <Route path="/organization/settings" element={<OrganizationSettings />} />
             <Route path="/cost-usage" element={<CostUsage />} />
-            <Route path="/organization" element={<Organization />} />
             <Route path="/prompts" element={<Prompts />} />
-            <Route path="/memory" element={<Memory />} />
             <Route path="/mcp-servers" element={<MCPServers />} />
             <Route path="/agents" element={<Agents />} />
-            <Route path="/settings" element={<Settings />} />
             <Route path="/system-config" element={<SystemConfiguration />} />
+            <Route path="/system/general" element={<SystemConfiguration />} />
+            <Route path="/system/security" element={<SystemConfiguration />} />
+            <Route path="/system/integrations" element={<SystemConfiguration />} />
+
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
           </Box>

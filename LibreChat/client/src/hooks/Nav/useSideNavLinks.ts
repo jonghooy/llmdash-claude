@@ -100,16 +100,15 @@ export default function useSideNavLinks({
     //   });
     // }
 
-    // Removed Prompts - now managed in Admin Dashboard
-    // if (hasAccessToPrompts) {
-    //   links.push({
-    //     title: 'com_ui_prompts',
-    //     label: '',
-    //     icon: MessageSquareQuote,
-    //     id: 'prompts',
-    //     Component: PromptsAccordion,
-    //   });
-    // }
+    if (hasAccessToPrompts) {
+      links.push({
+        title: 'com_ui_prompts',
+        label: '',
+        icon: MessageSquareQuote,
+        id: 'prompts',
+        Component: PromptsAccordion,
+      });
+    }
 
     // Removed Memories - now managed in Admin Dashboard
     // if (hasAccessToMemories && hasAccessToReadMemories) {

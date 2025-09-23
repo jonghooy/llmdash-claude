@@ -14,11 +14,12 @@ const TENANT_ID = process.env.TENANT_ID || 'default';
 const USER_ID = process.env.USER_ID || 'system';
 
 // Path to Memory Enterprise project directory
-const PROJECT_DIR = process.env.PROJECT_DIR || '/home/jonghooy/work/rag-mcp';
+const PROJECT_DIR = process.env.PROJECT_DIR || '/home/jonghooy/work/llmdash-claude/memory-enterprise';
 const STDIO_SERVER_PATH = 'src/mcp/stdio_server.py';
 
-// Spawn the stdio server process using Poetry
-const serverProcess = spawn('poetry', ['run', 'python', STDIO_SERVER_PATH], {
+// Spawn the stdio server process using Poetry virtualenv Python directly
+const PYTHON_PATH = '/root/.cache/pypoetry/virtualenvs/memory-agent-enterprise-CFpEst9h-py3.12/bin/python';
+const serverProcess = spawn(PYTHON_PATH, [STDIO_SERVER_PATH], {
   cwd: PROJECT_DIR,
   env: {
     ...process.env,

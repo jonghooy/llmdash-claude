@@ -41,6 +41,45 @@ const userSchema = new Schema<IUser>(
       match: [/\S+@\S+\.\S+/, 'is invalid'],
       index: true,
     },
+    // Multi-tenancy fields
+    tenantId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Tenant',
+      index: true,
+      sparse: true,  // Allow null for super admin
+    },
+    saasRole: {
+      type: String,
+      enum: ['super_admin', 'customer_admin', 'team_leader', 'user'],
+      default: 'user',
+    },
+    teamId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Team',
+      sparse: true,
+    },
+    subscription: {
+      plan: {
+        type: String,
+        enum: ['free', 'starter', 'professional', 'enterprise'],
+        default: 'free',
+      },
+      status: {
+        type: String,
+        enum: ['trial', 'active', 'past_due', 'cancelled', 'suspended'],
+        default: 'trial',
+      },
+      trialEndsAt: Date,
+      currentPeriodEnd: Date,
+      monthlyQuota: {
+        tokens: { type: Number, default: 100000 },
+        messages: { type: Number, default: 1000 },
+      },
+      usage: {
+        tokens: { type: Number, default: 0 },
+        messages: { type: Number, default: 0 },
+      },
+    },
     emailVerified: {
       type: Boolean,
       required: true,

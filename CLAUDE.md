@@ -178,7 +178,7 @@ Production Stack:
 #### Authentication Flow
 - JWT-based with MongoDB session storage
 - Admin dashboard has separate auth from LibreChat
-- Rate limiting on auth endpoints
+- Rate limiting on auth endpointsㅔㅡ2
 
 #### Real-time Features
 - SSE for streaming LLM responses
@@ -193,7 +193,7 @@ Production Stack:
 ```bash
 # Check backend logs
 pm2 logs librechat-backend --lines 50 --nostream
-
+2
 # Common causes:
 # - MCPManager not initialized (can be ignored)
 # - OCR/RAG configuration issues

@@ -10,6 +10,24 @@ export interface IUser extends Document {
   avatar?: string;
   provider: string;
   role?: string;
+  // Multi-tenancy fields
+  tenantId?: Types.ObjectId;
+  saasRole?: 'super_admin' | 'customer_admin' | 'team_leader' | 'user';
+  teamId?: Types.ObjectId;
+  subscription?: {
+    plan: 'free' | 'starter' | 'professional' | 'enterprise';
+    status: 'trial' | 'active' | 'past_due' | 'cancelled' | 'suspended';
+    trialEndsAt?: Date;
+    currentPeriodEnd?: Date;
+    monthlyQuota: {
+      tokens: number;
+      messages: number;
+    };
+    usage: {
+      tokens: number;
+      messages: number;
+    };
+  };
   googleId?: string;
   facebookId?: string;
   openidId?: string;
