@@ -5,4 +5,17 @@ const indexSync = require('./indexSync');
 
 createModels(mongoose);
 
-module.exports = { connectDb, indexSync };
+// Export dbGateway functionality if enabled
+const useDbGateway = process.env.USE_DB_GATEWAY === 'true';
+if (useDbGateway) {
+  const { initDbGateway, getRepository, executeTransaction, closeDbGateway } = require('./gateway');
+  module.exports = {
+    connectDb: initDbGateway, // Use dbGateway initialization instead
+    indexSync,
+    getRepository,
+    executeTransaction,
+    closeDbGateway,
+  };
+} else {
+  module.exports = { connectDb, indexSync };
+}

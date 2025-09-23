@@ -6,7 +6,7 @@ const resourceHints = () => {
   return (req, res, next) => {
     // Add resource hints for common API endpoints
     const hints = [
-      '</api/models>; rel=preconnect',
+      // '</api/models>; rel=preconnect',  // Removed as it causes unnecessary 401 errors
       '</api/endpoints>; rel=preconnect',
       '</api/config>; rel=preconnect',
       '</api/user>; rel=dns-prefetch',
@@ -14,15 +14,11 @@ const resourceHints = () => {
     ];
 
     // For chat pages, add more aggressive hints
-    if (req.path.includes('/chat') || req.path === '/') {
-      hints.push(
-        '</api/ask>; rel=preload; as=fetch; crossorigin',
-        '</api/models>; rel=preload; as=fetch; crossorigin'
-      );
-      
-      // Add early hints for WebSocket/SSE connections
-      res.setHeader('Early-Hints', 'Link: </api/ask>; rel=preconnect');
-    }
+    // Removed /api/ask and /api/models preload hints as these endpoints don't exist
+    // if (req.path.includes('/chat') || req.path === '/') {
+    //   // Add early hints for WebSocket/SSE connections
+    //   // res.setHeader('Early-Hints', 'Link: </api/ask>; rel=preconnect');
+    // }
 
     // Set Link header for resource hints
     if (hints.length > 0) {

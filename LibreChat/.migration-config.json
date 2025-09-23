@@ -1,0 +1,135 @@
+{
+  "enabled": true,
+  "strategy": "gradual",
+  "rollbackEnabled": true,
+  "monitoringEnabled": true,
+  "phases": {
+    "phase1": {
+      "name": "Read-Only Models",
+      "status": "ready",
+      "models": {
+        "ModelRegistry": {
+          "enabled": false,
+          "percentage": 0,
+          "startDate": null,
+          "completionDate": null
+        },
+        "ModelPricing": {
+          "enabled": false,
+          "percentage": 0,
+          "startDate": null,
+          "completionDate": null
+        }
+      }
+    },
+    "phase2": {
+      "name": "Authentication System",
+      "status": "completed",
+      "models": {
+        "User": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T11:02:07.913Z",
+          "completionDate": "2025-09-21T11:13:13.721Z"
+        },
+        "Session": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T11:02:07.914Z",
+          "completionDate": "2025-09-21T11:13:13.722Z"
+        }
+      }
+    },
+    "phase3": {
+      "name": "Core Chat Data",
+      "status": "completed",
+      "models": {
+        "Conversation": {
+          "enabled": true,
+          "percentage": 100,
+          "strategy": "new_only",
+          "startDate": "2025-09-21T11:13:13.722Z",
+          "completionDate": "2025-09-21T11:13:13.722Z"
+        },
+        "Message": {
+          "enabled": true,
+          "percentage": 100,
+          "strategy": "new_only",
+          "startDate": "2025-09-21T11:13:13.723Z",
+          "completionDate": "2025-09-21T11:13:13.723Z"
+        },
+        "File": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T10:09:28.383Z",
+          "completionDate": "2025-09-21T11:13:13.723Z"
+        },
+        "Transaction": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T10:09:28.383Z",
+          "completionDate": "2025-09-21T11:13:13.723Z"
+        }
+      }
+    },
+    "phase4": {
+      "name": "Advanced Features",
+      "status": "completed",
+      "models": {
+        "Agent": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T11:13:13.724Z",
+          "completionDate": "2025-09-21T11:13:13.724Z"
+        },
+        "Assistant": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T11:13:13.724Z",
+          "completionDate": "2025-09-21T11:13:13.724Z"
+        },
+        "Tool": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T11:13:13.724Z",
+          "completionDate": "2025-09-21T11:13:13.724Z"
+        },
+        "Preset": {
+          "enabled": true,
+          "percentage": 100,
+          "startDate": "2025-09-21T09:45:39.280Z",
+          "completionDate": "2025-09-21T11:13:13.724Z"
+        }
+      }
+    }
+  },
+  "metrics": {
+    "totalRequests": 14,
+    "mongoRequests": 8,
+    "supabaseRequests": 6,
+    "errors": {
+      "mongo": 0,
+      "supabase": 1
+    },
+    "latency": {
+      "mongo": [
+        15,
+        20,
+        34.32187910938103,
+        48.09824478290758,
+        47.032194209735415,
+        32.59842214763496,
+        35.76606341434086,
+        19.043007990636298
+      ],
+      "supabase": [
+        25,
+        55.54571353965731,
+        58.70200523524073,
+        55.75147949512647,
+        15.617038488817961
+      ]
+    },
+    "lastUpdated": "2025-09-21T09:52:12.946Z"
+  }
+}
