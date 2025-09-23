@@ -1,1 +1,1 @@
-🔄 AuditLog & Action 모델 dbGateway 마이그레이션 완료 - 보안 이벤트 추적 및 액션 관리 구현 (진행률 60%)
+🚀 Banner & Role 모델 dbGateway 마이그레이션 완료 - 배너 관리 및 역할 권한 시스템 구현 (진행률 70%)

@@ -4,10 +4,10 @@
 Migrate LibreChat from direct Mongoose model usage to a database-agnostic gateway pattern for improved flexibility and maintainability.
 
 ## 📊 Current Status
-- **Migration Status**: Partially Complete (60%)
+- **Migration Status**: Partially Complete (70%)
 - **System Status**: ✅ Fully Functional
 - **Date**: 2025-09-23
-- **Last Update**: 18:35 KST
+- **Last Update**: 19:20 KST
 
 ## ✅ Completed Migrations
 
@@ -85,7 +85,29 @@ Migrate LibreChat from direct Mongoose model usage to a database-agnostic gatewa
   - OAuth metadata support
   - Assistant/Agent integration
 
-### 9. Existing Repositories (Already in dbGateway)
+### 9. Banner Model ✅
+- **Status**: Fully migrated
+- **Files**:
+  - `/api/models/bannerOperations.js` - Abstraction layer
+  - `/packages/db-gateway/src/adapters/mongodb/repositories/MongoBannerRepository.ts`
+  - `/packages/db-gateway/src/interfaces/IBannerRepository.ts`
+- **Special Features**:
+  - Active banner management
+  - Public/private banner support
+  - Time-based display control
+
+### 10. Role Model ✅
+- **Status**: Fully migrated
+- **Files**:
+  - `/api/models/roleOperations.js` - Abstraction layer
+  - `/packages/db-gateway/src/adapters/mongodb/repositories/MongoRoleRepository.ts`
+  - `/packages/db-gateway/src/interfaces/IRoleRepository.ts`
+- **Special Features**:
+  - Permission management
+  - Schema migration support
+  - Cache integration
+
+### 11. Existing Repositories (Already in dbGateway)
 - Agent ✅
 - Prompt ✅
 - Transaction ✅
@@ -108,12 +130,10 @@ Migrate LibreChat from direct Mongoose model usage to a database-agnostic gatewa
 ## ❌ Pending Migrations
 
 ### Remaining Models (Lower Priority)
-1. **Banner** - UI banners
+1. **ToolCall** - Tool/function calling (In Progress)
 2. **Categories** - Category management
 3. **Project** - Project management
-4. **Role** - RBAC system
-5. **ToolCall** - Tool/function calling
-6. **UserMetrics** - User analytics
+4. **UserMetrics** - User analytics
 
 ## 🏗️ Migration Architecture
 
